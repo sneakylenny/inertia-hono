@@ -9,3 +9,7 @@ vcs:
   defaultBranch: main
 
 versionConstraint: '>=1.0.0'
+
+# Single-commit repos have no `HEAD~1`; avoid git-based hashing until history exists.
+hasher:
+  walkStrategy: 'glob'

@@ -11,7 +11,8 @@
 ## Prerequisites
 
 - [Bun](https://bun.sh/) 1.2+
-- [moon](https://moonrepo.dev/docs/install) 1.x (optional but recommended for `moon run :build`)
+- [moon](https://moonrepo.dev/docs/install) (optional; this repo targets the **moon v1**-style project config: `layer`, not `type`)
+- A Git repo with **at least two commits** (moon may call `git` with `HEAD~1` for change detection). If you see that error once, run: `git commit --allow-empty -m "chore: base"`
 
 ## Setup
 

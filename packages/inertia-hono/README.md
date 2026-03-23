@@ -1,6 +1,6 @@
 # inertia-hono
 
-[Hono](https://hono.dev/) adapter for [Inertia.js v3](https://inertiajs.com/docs/v3/core-concepts/the-protocol), built on [`inertia-server`](../inertia-server/).
+[Hono](https://hono.dev/) adapter for [Inertia.js v3](https://inertiajs.com/docs/v3/core-concepts/the-protocol), built on the **`inertia-server`** package (framework-agnostic protocol layer).
 
 ## Install
 
