@@ -9,9 +9,9 @@ tasks:
     command: 'bun run build'
     inputs:
       - 'src/**/*'
-      - 'tsup.config.ts'
       - 'package.json'
       - 'tsconfig.json'
+      - 'tsconfig.build.json'
     outputs:
       - 'dist'
 

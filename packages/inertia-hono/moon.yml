@@ -14,9 +14,9 @@ tasks:
       - 'inertia-server:build'
     inputs:
       - 'src/**/*'
-      - 'tsup.config.ts'
       - 'package.json'
       - 'tsconfig.json'
+      - 'tsconfig.build.json'
       - 'project://inertia-server'
     outputs:
       - 'dist'

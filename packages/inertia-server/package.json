@@ -14,7 +14,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "rm -rf dist && bun build ./src/index.ts --outdir ./dist --format esm --sourcemap --target node && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "prepublishOnly": "bun run build"
   },
@@ -22,7 +22,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.13.10",
-    "tsup": "^8.4.0",
     "typescript": "^5.8.2",
     "vitest": "^3.0.9"
   }
