@@ -15,4 +15,14 @@ tasks:
       - 'inertia-hono:build'
     inputs:
       - 'src/**/*'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'package.json'
+
+  test:
+    command: 'bun run test'
+    inputs:
+      - 'src/**/*'
+      - 'vitest.config.ts'
+      - 'vite.config.ts'
       - 'package.json'

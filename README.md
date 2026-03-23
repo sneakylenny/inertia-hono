@@ -6,7 +6,7 @@
 | --------|-------------|
 | [`inertia-server`](packages/inertia-server/) | Framework-agnostic [Inertia v3 protocol](https://inertiajs.com/docs/v3/core-concepts/the-protocol) (headers, partial reloads, asset version 409, HTML vs JSON). |
 | [`inertia-hono`](packages/inertia-hono/) | Thin Hono adapter that maps `Context` → `inertia-server` and returns `Response`. |
-| [`apps/playground`](apps/playground/) | Small Hono app for manual checks (not published). |
+| [`apps/playground`](apps/playground/) | Hono + **Vue 3** + `@inertiajs/vue3` + Vite: full-page HTML from the adapter, client modules from Vite (`bun run dev` runs both). Vitest covers the Vue page and a small Hono/Inertia integration spec. |
 
 ## Prerequisites
 
@@ -35,11 +35,15 @@ moon run :test
 # Or
 (cd packages/inertia-server && bun run test)
 (cd packages/inertia-hono && bun run test)
+(cd apps/playground && bun run test)
 
-# Playground HTTP server (builds adapter dependency first with moon)
+# Playground: Hono (3000) + Vite (5173) together — open http://localhost:3000
 moon run playground:dev
-# Or, after building packages once:
+# Or, after `bun install`:
 (cd apps/playground && bun run dev)
+
+# Optional: point the HTML shell at another Vite origin
+PLAYGROUND_VITE_ORIGIN=http://127.0.0.1:5173 bun run dev:server
 ```
 
 ## Publishing to npm
