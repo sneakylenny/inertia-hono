@@ -42,6 +42,8 @@ describe('resolveInertia', () => {
     })
     expect(result.kind).toBe('success')
     if (result.kind !== 'success') return
+    expect(result.format).toBe('json')
+    if (result.format !== 'json') return
     expect(result.headers['Content-Type']).toMatch(/application\/json/)
     expect(result.headers['X-Inertia']).toBe('true')
     expect(result.headers.Vary).toBe('X-Inertia')

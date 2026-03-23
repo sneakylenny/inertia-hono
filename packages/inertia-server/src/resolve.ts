@@ -82,6 +82,7 @@ export async function resolveInertia(
 
     return {
       kind: 'success',
+      format: 'html',
       status: 200,
       body,
       headers: { 'Content-Type': 'text/html; charset=utf-8' },
@@ -90,6 +91,7 @@ export async function resolveInertia(
 
   return {
     kind: 'success',
+    format: 'json',
     status: 200,
     body: page,
     headers: {

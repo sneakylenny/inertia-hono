@@ -35,18 +35,23 @@ export type InertiaVersionMismatchResult = {
   }
 }
 
-export type InertiaSuccessResult = {
-  kind: 'success'
-  status: 200
-  /** Full HTML document for first (non-XHR) visits */
-  body: string
-  headers: InertiaHtmlHeaders
-} | {
-  kind: 'success'
-  status: 200
-  /** JSON page object for Inertia visits */
-  body: InertiaPage
-  headers: InertiaJsonHeaders
-}
+export type InertiaSuccessResult
+  = | {
+    kind: 'success'
+    /** Discriminates HTML vs JSON success so `headers` narrows with `body`. */
+    format: 'html'
+    status: 200
+    /** Full HTML document for first (non-XHR) visits */
+    body: string
+    headers: InertiaHtmlHeaders
+  }
+  | {
+    kind: 'success'
+    format: 'json'
+    status: 200
+    /** JSON page object for Inertia visits */
+    body: InertiaPage
+    headers: InertiaJsonHeaders
+  }
 
 export type ResolveInertiaResult = InertiaVersionMismatchResult | InertiaSuccessResult
