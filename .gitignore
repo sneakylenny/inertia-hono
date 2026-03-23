@@ -1,0 +1,7 @@
+node_modules
+dist
+.moon/cache
+*.tsbuildinfo
+.DS_Store
+.env
+.env.*

@@ -1,0 +1,36 @@
+{
+  "name": "inertia-hono",
+  "version": "0.1.0",
+  "description": "Inertia.js v3 adapter for Hono",
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist"],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "bun run --cwd ../inertia-server build && tsup",
+    "test": "vitest run",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": ["inertia", "inertiajs", "hono"],
+  "license": "MIT",
+  "peerDependencies": {
+    "hono": "^4.7.0"
+  },
+  "dependencies": {
+    "inertia-server": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "hono": "^4.7.4",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
+  }
+}

@@ -1,0 +1,31 @@
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+language: typescript
+type: library
+stack: backend
+
+dependsOn:
+  - 'inertia-server'
+
+tasks:
+  build:
+    command: 'bun run build'
+    deps:
+      - 'inertia-server:build'
+    inputs:
+      - 'src/**/*'
+      - 'tsup.config.ts'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'project://inertia-server'
+    outputs:
+      - 'dist'
+
+  test:
+    command: 'bun run test'
+    deps:
+      - 'inertia-server:build'
+    inputs:
+      - 'src/**/*'
+      - 'package.json'
+      - 'vitest.config.ts'

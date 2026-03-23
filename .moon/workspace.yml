@@ -1,0 +1,11 @@
+$schema: 'https://moonrepo.dev/schemas/workspace.json'
+
+projects:
+  - 'apps/*'
+  - 'packages/*'
+
+vcs:
+  provider: github
+  defaultBranch: main
+
+versionConstraint: '>=1.0.0'
