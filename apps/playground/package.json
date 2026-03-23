@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -k -n server,vite -c blue,green \"bun run dev:server\" \"bun run dev:vite\"",
-    "dev:server": "bun --watch run src/index.ts",
+    "dev:server": "bun --watch --no-clear-screen run src/index.ts",
     "dev:vite": "vite",
     "start": "bun run src/index.ts",
     "test": "vitest run",

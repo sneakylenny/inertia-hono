@@ -3,6 +3,7 @@ import {
   createInertia,
   type InertiaVariables,
 } from 'inertia-hono'
+import todoRouter from './app/todo/todo.router.js'
 import { createPlaygroundHtmlRenderer } from './inertia/playground-html.js'
 
 const viteOrigin = process.env.PLAYGROUND_VITE_ORIGIN ?? 'http://localhost:5173'
@@ -30,3 +31,5 @@ playgroundApp.get('/', c =>
 playgroundApp.get('/about', c =>
   instance.render(c, 'About', { section: 'demo' }),
 )
+
+playgroundApp.route('/', todoRouter)

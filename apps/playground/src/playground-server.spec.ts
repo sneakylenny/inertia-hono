@@ -34,4 +34,23 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(body.component).toBe('About')
     expect(body.props.section).toBe('demo')
   })
+
+  it('should partially reload on /todos and return only todos (plus errors)', async () => {
+    const res = await playgroundApp.request('http://localhost/todos', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'playground-1',
+        'X-Inertia-Partial-Component': 'Todos',
+        'X-Inertia-Partial-Data': 'todos',
+        'Accept': 'application/json',
+      },
+    })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      props: { todos?: unknown[], appName?: string, errors: unknown }
+    }
+    expect(Array.isArray(body.props.todos)).toBe(true)
+    expect(body.props.errors).toEqual({})
+    expect(body.props.appName).toBeUndefined()
+  })
 })

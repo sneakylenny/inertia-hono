@@ -31,6 +31,9 @@ const count = ref(0)
       <Link href="/about">
         About
       </Link>
+      <Link href="/todos">
+        Todos
+      </Link>
     </nav>
   </div>
 </template>
