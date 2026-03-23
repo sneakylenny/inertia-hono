@@ -94,7 +94,7 @@ export async function resolveInertia(
     body: page,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      Vary: 'X-Inertia',
+      'Vary': 'X-Inertia',
       'X-Inertia': 'true',
     },
   }

@@ -25,12 +25,12 @@ describe('playground Hono + Inertia HTML shell', () => {
       headers: {
         'X-Inertia': 'true',
         'X-Inertia-Version': 'playground-1',
-        Accept: 'application/json',
+        'Accept': 'application/json',
       },
     })
     expect(res.status).toBe(200)
     expect(res.headers.get('x-inertia')).toBe('true')
-    const body = (await res.json()) as { component: string; props: { section?: string } }
+    const body = (await res.json()) as { component: string, props: { section?: string } }
     expect(body.component).toBe('About')
     expect(body.props.section).toBe('demo')
   })

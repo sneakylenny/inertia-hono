@@ -26,3 +26,15 @@ tasks:
       - 'vitest.config.ts'
       - 'vite.config.ts'
       - 'package.json'
+
+  lint:
+    command: 'bun run lint:playground'
+    options:
+      runFromWorkspaceRoot: true
+    inputs:
+      - 'src/**/*'
+      - 'src/**/*.vue'
+      - 'index.html'
+      - 'vite.config.ts'
+      - '/eslint.config.js'
+      - 'package.json'

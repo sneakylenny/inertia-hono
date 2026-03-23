@@ -9,7 +9,11 @@ defineProps<{
 <template>
   <div>
     <h1>About</h1>
-    <p v-if="section">Section: {{ section }}</p>
-    <Link href="/">Back home</Link>
+    <p v-if="section">
+      Section: {{ section }}
+    </p>
+    <Link href="/">
+      Back home
+    </Link>
   </div>
 </template>

@@ -21,12 +21,12 @@ export const playgroundApp = new Hono<{ Variables: InertiaVariables }>()
 
 playgroundApp.use(middleware)
 
-playgroundApp.get('/', (c) =>
+playgroundApp.get('/', c =>
   instance.render(c, 'Index', {
     hint: 'Run `bun run dev` so Vite serves the Vue app on port 5173.',
   }),
 )
 
-playgroundApp.get('/about', (c) =>
+playgroundApp.get('/about', c =>
   instance.render(c, 'About', { section: 'demo' }),
 )

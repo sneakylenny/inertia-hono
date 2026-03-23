@@ -21,3 +21,11 @@ tasks:
       - 'src/**/*'
       - 'package.json'
       - 'vitest.config.ts'
+
+  lint:
+    command: 'bun run lint:inertia-server'
+    options:
+      runFromWorkspaceRoot: true
+    inputs:
+      - 'src/**/*'
+      - '/eslint.config.js'

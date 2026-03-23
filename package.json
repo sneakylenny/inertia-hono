@@ -5,12 +5,23 @@
   "scripts": {
     "build": "moon run :build",
     "test": "moon run :test",
-    "dev": "moon run playground:dev"
+    "dev": "moon run playground:dev",
+    "lint": "eslint packages apps --max-warnings 0",
+    "lint:fix": "eslint packages apps --fix",
+    "lint:inertia-server": "eslint packages/inertia-server --max-warnings 0",
+    "lint:inertia-hono": "eslint packages/inertia-hono --max-warnings 0",
+    "lint:playground": "eslint apps/playground --max-warnings 0"
   },
-  "module": "index.ts",
   "type": "module",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/bun": "latest",
+    "eslint": "^10.1.0",
+    "eslint-plugin-vue": "^10.8.0",
+    "globals": "^17.4.0",
+    "typescript-eslint": "^8.57.1",
+    "vue-eslint-parser": "^10.4.0"
   },
   "peerDependencies": {
     "typescript": "^5"

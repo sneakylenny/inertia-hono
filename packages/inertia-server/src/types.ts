@@ -19,7 +19,7 @@ export type InertiaPage = {
 
 export type InertiaJsonHeaders = {
   'Content-Type': 'application/json; charset=utf-8'
-  Vary: 'X-Inertia'
+  'Vary': 'X-Inertia'
   'X-Inertia': 'true'
 }
 

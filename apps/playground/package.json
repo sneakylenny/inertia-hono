@@ -24,7 +24,7 @@
     "concurrently": "^9.1.2",
     "happy-dom": "^17.4.4",
     "typescript": "^5.8.2",
-    "vite": "^6.2.2",
+    "vite": "5.4.14",
     "vitest": "^3.0.9"
   }
 }

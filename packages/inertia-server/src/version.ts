@@ -9,7 +9,7 @@ export function getVersionMismatch(
   req: InertiaRequestLike,
   serverVersion: string | number,
   locationUrl: string,
-): { mismatch: true; location: string } | { mismatch: false } {
+): { mismatch: true, location: string } | { mismatch: false } {
   if (!isInertiaRequest(req)) return { mismatch: false }
   if (req.method.toUpperCase() !== 'GET') return { mismatch: false }
 

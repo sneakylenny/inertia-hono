@@ -12,11 +12,25 @@ const count = ref(0)
 
 <template>
   <div>
-    <p v-if="appName">{{ appName }}</p>
-    <p v-if="hint" class="hint">{{ hint }}</p>
-    <button type="button" @click="count++">Count is: {{ count }}</button>
+    <p v-if="appName">
+      {{ appName }}
+    </p>
+    <p
+      v-if="hint"
+      class="hint"
+    >
+      {{ hint }}
+    </p>
+    <button
+      type="button"
+      @click="count++"
+    >
+      Count is: {{ count }}
+    </button>
     <nav>
-      <Link href="/about">About</Link>
+      <Link href="/about">
+        About
+      </Link>
     </nav>
   </div>
 </template>

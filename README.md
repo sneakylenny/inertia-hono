@@ -23,6 +23,11 @@ bun install
 ## Commands
 
 ```bash
+# Lint (ESLint + @stylistic — see https://eslint.style/rules)
+bun run lint
+bun run lint:fix
+moon run :lint
+
 # Build libraries (via moon, if installed)
 moon run :build
 

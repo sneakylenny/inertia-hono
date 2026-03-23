@@ -7,7 +7,7 @@ describe('createInertia', () => {
     const { middleware } = createInertia({ version: 'abc' })
     const app = new Hono<{ Variables: InertiaVariables }>()
     app.use(middleware)
-    app.get('/hello', (c) => c.var.inertia.render(c, 'Hello', { name: 'Tim' }))
+    app.get('/hello', c => c.var.inertia.render(c, 'Hello', { name: 'Tim' }))
 
     const htmlRes = await app.request('http://localhost/hello')
     expect(htmlRes.status).toBe(200)
@@ -36,7 +36,7 @@ describe('createInertia', () => {
     const { middleware } = createInertia({ version: 'new' })
     const app = new Hono<{ Variables: InertiaVariables }>()
     app.use(middleware)
-    app.get('/', (c) => c.var.inertia.render(c, 'Home', {}))
+    app.get('/', c => c.var.inertia.render(c, 'Home', {}))
 
     const res = await app.request('http://localhost/', {
       headers: {

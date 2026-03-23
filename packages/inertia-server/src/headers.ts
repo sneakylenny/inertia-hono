@@ -25,6 +25,6 @@ export function parseCommaList(value: string | undefined): string[] {
   if (value === undefined || value === '') return []
   return value
     .split(',')
-    .map((s) => s.trim())
+    .map(s => s.trim())
     .filter(Boolean)
 }
