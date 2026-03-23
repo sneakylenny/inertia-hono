@@ -9,8 +9,10 @@ dependsOn:
 
 tasks:
   dev:
+    options:
+      envFile: '/.env'
     command: 'bun run dev'
-    preset: server
+    preset: server      
     deps:
       - 'inertia-hono:build'
     inputs:

@@ -1,6 +1,6 @@
 import { playgroundApp } from './server.js'
 
-const port = process.env.PORT ? Number(process.env.PORT) : 3000
+const port = process.env.PLAYGROUND_PORT ? Number(process.env.PLAYGROUND_PORT) : 3000
 
 export default {
   port,
