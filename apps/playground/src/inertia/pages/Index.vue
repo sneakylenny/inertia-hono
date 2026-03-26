@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3'
 import { ref } from 'vue'
 
 defineProps<{
@@ -34,46 +33,5 @@ const count = ref(0)
         Count is: {{ count }}
       </button>
     </div>
-    <div class="divider mt-10">
-      Demos
-    </div>
-    <nav class="flex flex-wrap gap-2">
-      <Link
-        class="btn btn-ghost btn-sm"
-        href="/"
-      >
-        Home
-      </Link>
-      <Link
-        class="btn btn-ghost btn-sm"
-        href="/about"
-      >
-        About
-      </Link>
-      <Link
-        class="btn btn-ghost btn-sm"
-        href="/todos"
-      >
-        Todos
-      </Link>
-      <Link
-        class="btn btn-ghost btn-sm"
-        href="/shared-demo"
-      >
-        Shared props demo
-      </Link>
-      <Link
-        class="btn btn-ghost btn-sm"
-        href="/lazy-demo"
-      >
-        Partial reloads (lazy / optional / always)
-      </Link>
-      <Link
-        class="btn btn-ghost btn-sm"
-        href="/deferred-demo"
-      >
-        Deferred props (defer + Deferred)
-      </Link>
-    </nav>
   </div>
 </template>
