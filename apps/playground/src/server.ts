@@ -6,7 +6,8 @@ import {
 import todoRouter from './app/todo/todo.router.js'
 import { createPlaygroundHtmlRenderer } from './inertia/playground-html.js'
 
-const viteOrigin = process.env.PLAYGROUND_VITE_ORIGIN ?? 'http://localhost:5173'
+const vitePort = process.env.VITE_PORT ? Number(process.env.VITE_PORT) : 5173
+const viteOrigin = process.env.PLAYGROUND_VITE_ORIGIN ?? `http://localhost:${vitePort}`
 const isDev = process.env.NODE_ENV !== 'production'
 
 const { middleware, instance } = createInertia({
@@ -24,7 +25,7 @@ playgroundApp.use(middleware)
 
 playgroundApp.get('/', c =>
   instance.render(c, 'Index', {
-    hint: 'Run `bun run dev` so Vite serves the Vue app on port 5173.',
+    hint: `Run \`bun run dev\` so Vite serves the Vue app on port ${vitePort}.`,
   }),
 )
 
