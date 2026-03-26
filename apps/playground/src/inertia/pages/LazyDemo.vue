@@ -2,7 +2,6 @@
 import { Link, router } from '@inertiajs/vue3'
 
 defineProps<{
-  appName?: string
   lazyMain?: {
     resolverRuns: number
     label: string
@@ -128,13 +127,6 @@ function visit(opts: { only?: string[] }) {
         Full visit
       </button>
     </div>
-
-    <p
-      v-if="appName"
-      class="mt-6 text-sm opacity-70"
-    >
-      Shared <kbd class="kbd kbd-sm">appName</kbd>: {{ appName }}
-    </p>
 
     <nav class="mt-10">
       <Link
