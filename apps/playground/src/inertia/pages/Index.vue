@@ -66,7 +66,7 @@ const count = ref(0)
         class="btn btn-ghost btn-sm"
         href="/lazy-demo"
       >
-        Deferred props (lazy / optional / always)
+        Partial reloads (lazy / optional / always)
       </Link>
     </nav>
   </div>
