@@ -10,64 +10,52 @@ defineProps<{
 </script>
 
 <template>
-  <div class="shared-demo">
-    <h1>Shared props</h1>
-    <p class="lead">
-      This page shows data from <code>createInertia({ share })</code>, path
-      middleware, <code>share(c)</code> in the handler, and
-      <code>render(c, component, props)</code>.
+  <div class="container mx-auto max-w-3xl px-4 py-10">
+    <h1 class="text-2xl font-bold">
+      Shared props
+    </h1>
+    <p class="mt-4 max-w-2xl opacity-80">
+      This page shows data from <kbd class="kbd kbd-sm">createInertia({ share })</kbd>, path
+      middleware, <kbd class="kbd kbd-sm">share(c)</kbd> in the handler, and
+      <kbd class="kbd kbd-sm">render(c, component, props)</kbd>.
     </p>
-    <dl>
-      <dt><code>appName</code></dt>
-      <dd>{{ appName ?? '—' }}</dd>
-      <dt><code>sharedViaMiddleware</code></dt>
-      <dd>{{ sharedViaMiddleware ?? '—' }}</dd>
-      <dt><code>sharedViaRouteHandler</code></dt>
-      <dd>{{ sharedViaRouteHandler ?? '—' }}</dd>
-      <dt><code>fromRender</code></dt>
-      <dd>{{ fromRender ?? '—' }}</dd>
-    </dl>
-    <nav>
-      <Link href="/">
+    <div class="mt-8 overflow-x-auto rounded-box border border-base-300 bg-base-100">
+      <table class="table">
+        <tbody>
+          <tr>
+            <th class="w-1/3">
+              <code>appName</code>
+            </th>
+            <td>{{ appName ?? '—' }}</td>
+          </tr>
+          <tr>
+            <th>
+              <code>sharedViaMiddleware</code>
+            </th>
+            <td>{{ sharedViaMiddleware ?? '—' }}</td>
+          </tr>
+          <tr>
+            <th>
+              <code>sharedViaRouteHandler</code>
+            </th>
+            <td>{{ sharedViaRouteHandler ?? '—' }}</td>
+          </tr>
+          <tr>
+            <th>
+              <code>fromRender</code>
+            </th>
+            <td>{{ fromRender ?? '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <nav class="mt-10">
+      <Link
+        class="btn btn-link px-0"
+        href="/"
+      >
         Back home
       </Link>
     </nav>
   </div>
 </template>
-
-<style scoped>
-.shared-demo {
-  max-width: 40rem;
-}
-
-.lead {
-  margin-bottom: 1.25rem;
-  line-height: 1.5;
-}
-
-dl {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.35rem 1rem;
-  margin: 0 0 1.5rem;
-}
-
-@media (min-width: 32rem) {
-  dl {
-    grid-template-columns: auto 1fr;
-  }
-}
-
-dt {
-  font-weight: 600;
-  color: var(--muted, #6b7280);
-}
-
-dd {
-  margin: 0;
-}
-
-nav {
-  margin-top: 1rem;
-}
-</style>

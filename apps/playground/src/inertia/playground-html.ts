@@ -50,13 +50,13 @@ export function createPlaygroundHtmlRenderer(options: PlaygroundHtmlOptions) {
       : `\n<script type="module" src="${options.prodScriptSrc ?? '/assets/main.js'}"></script>\n`
 
     return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 </head>
-<body>
+<body class="min-h-screen bg-base-200">
 <script data-page="${dataPage}" type="application/json">${safeJson}</script>
 <div id="${rootId}"></div>${clientScripts}
 </body>

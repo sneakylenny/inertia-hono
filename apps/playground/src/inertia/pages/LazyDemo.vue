@@ -30,75 +30,99 @@ function visit(opts: { only?: string[] }) {
 </script>
 
 <template>
-  <div class="lazy-demo">
-    <h1>Deferred props</h1>
-    <p class="lead">
-      This route uses <code>partial.lazy()</code>, <code>partial.optional()</code>, and
-      <code>partial.always()</code> from <code>inertia-hono</code>. Open the server terminal and use the buttons below:
+  <div class="container mx-auto max-w-2xl px-4 py-10">
+    <h1 class="text-2xl font-bold">
+      Deferred props
+    </h1>
+    <p class="mt-4 opacity-80">
+      This route uses <kbd class="kbd kbd-sm">partial.lazy()</kbd>,
+      <kbd class="kbd kbd-sm">partial.optional()</kbd>, and
+      <kbd class="kbd kbd-sm">partial.always()</kbd> from
+      <kbd class="kbd kbd-sm">inertia-hono</kbd>. Open the server terminal and use the buttons below:
       resolver run counts go up only when that deferred prop is evaluated on the server.
     </p>
 
-    <section
+    <div
       v-if="lazyMain"
-      class="card"
+      class="card mt-8 border border-base-300 bg-base-100 shadow-sm"
     >
-      <h2>{{ lazyMain.label }}</h2>
-      <p>{{ lazyMain.detail }}</p>
-      <p class="meta">
-        Server resolver runs: <strong>{{ lazyMain.resolverRuns }}</strong>
-      </p>
-    </section>
+      <div class="card-body">
+        <h2 class="card-title text-base">
+          {{ lazyMain.label }}
+        </h2>
+        <p>{{ lazyMain.detail }}</p>
+        <p class="text-sm opacity-70">
+          Server resolver runs: <strong>{{ lazyMain.resolverRuns }}</strong>
+        </p>
+      </div>
+    </div>
 
-    <section
+    <div
       v-if="optionalChunk"
-      class="card optional"
+      class="card mt-4 border-secondary bg-secondary/10 shadow-sm"
     >
-      <h2>{{ optionalChunk.label }}</h2>
-      <p>{{ optionalChunk.detail }}</p>
-      <p class="meta">
-        Server resolver runs: <strong>{{ optionalChunk.resolverRuns }}</strong>
-      </p>
-    </section>
+      <div class="card-body">
+        <h2 class="card-title text-base text-secondary">
+          {{ optionalChunk.label }}
+        </h2>
+        <p class="text-secondary">
+          {{ optionalChunk.detail }}
+        </p>
+        <p class="text-sm opacity-80">
+          Server resolver runs: <strong>{{ optionalChunk.resolverRuns }}</strong>
+        </p>
+      </div>
+    </div>
 
     <p
       v-else
-      class="muted"
+      class="mt-4 text-sm opacity-70"
     >
-      <code>optionalChunk</code> is not in props (expected on a full visit).
+      <kbd class="kbd kbd-sm">optionalChunk</kbd> is not in props (expected on a full visit).
     </p>
 
-    <section
+    <div
       v-if="alwaysMeta"
-      class="card always"
+      class="card mt-4 border-success bg-success/10 shadow-sm"
     >
-      <h2>{{ alwaysMeta.label }}</h2>
-      <p>{{ alwaysMeta.detail }}</p>
-      <p class="meta">
-        Server resolver runs: <strong>{{ alwaysMeta.resolverRuns }}</strong>
-      </p>
-    </section>
+      <div class="card-body">
+        <h2 class="card-title text-base text-success">
+          {{ alwaysMeta.label }}
+        </h2>
+        <p class="text-success">
+          {{ alwaysMeta.detail }}
+        </p>
+        <p class="text-sm opacity-80">
+          Server resolver runs: <strong>{{ alwaysMeta.resolverRuns }}</strong>
+        </p>
+      </div>
+    </div>
 
-    <div class="actions">
+    <div class="mt-8 flex flex-wrap gap-2">
       <button
         type="button"
+        class="btn btn-outline btn-sm"
         @click="visit({ only: ['lazyMain'] })"
       >
         Partial: only lazyMain
       </button>
       <button
         type="button"
+        class="btn btn-outline btn-sm"
         @click="visit({ only: ['optionalChunk'] })"
       >
         Partial: only optionalChunk
       </button>
       <button
         type="button"
+        class="btn btn-outline btn-sm"
         @click="visit({ only: ['lazyMain', 'optionalChunk'] })"
       >
         Partial: lazyMain + optionalChunk
       </button>
       <button
         type="button"
+        class="btn btn-primary btn-sm"
         @click="router.visit('/lazy-demo')"
       >
         Full visit
@@ -107,74 +131,18 @@ function visit(opts: { only?: string[] }) {
 
     <p
       v-if="appName"
-      class="muted"
+      class="mt-6 text-sm opacity-70"
     >
-      Shared <code>appName</code>: {{ appName }}
+      Shared <kbd class="kbd kbd-sm">appName</kbd>: {{ appName }}
     </p>
 
-    <nav>
-      <Link href="/">
+    <nav class="mt-10">
+      <Link
+        class="btn btn-link px-0"
+        href="/"
+      >
         Home
       </Link>
     </nav>
   </div>
 </template>
-
-<style scoped>
-.lazy-demo {
-  max-width: 44rem;
-}
-
-.lead {
-  line-height: 1.5;
-  margin-bottom: 1.25rem;
-}
-
-.card {
-  border: 1px solid var(--border, #e5e7eb);
-  border-radius: 0.5rem;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
-}
-
-.card.optional {
-  border-color: #a78bfa;
-  background: color-mix(in srgb, #a78bfa 8%, transparent);
-}
-
-.card.always {
-  border-color: #34d399;
-  background: color-mix(in srgb, #34d399 8%, transparent);
-}
-
-.card h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.1rem;
-}
-
-.meta {
-  margin: 0.5rem 0 0;
-  font-size: 0.9rem;
-}
-
-.muted {
-  color: var(--muted, #6b7280);
-  font-size: 0.9rem;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1rem 0;
-}
-
-.actions button {
-  cursor: pointer;
-  padding: 0.35rem 0.65rem;
-}
-
-nav {
-  margin-top: 1rem;
-}
-</style>

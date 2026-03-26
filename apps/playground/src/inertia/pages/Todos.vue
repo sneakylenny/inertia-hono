@@ -30,69 +30,96 @@ function del(id: number) {
 </script>
 
 <template>
-  <div>
-    <h1>Todos</h1>
-    <form @submit.prevent="submit">
-      <input
-        v-model="form.text"
-        type="text"
-        name="text"
-      >
-      <button
-        type="submit"
-        :disabled="form.processing"
-      >
-        Add
-      </button>
+  <div class="container mx-auto max-w-3xl px-4 py-10">
+    <h1 class="text-2xl font-bold">
+      Todos
+    </h1>
+    <form
+      class="mt-6 flex flex-col gap-2"
+      @submit.prevent="submit"
+    >
+      <div class="join w-full max-w-xl">
+        <label
+          class="sr-only"
+          for="todo-text"
+        >New todo</label>
+        <input
+          id="todo-text"
+          v-model="form.text"
+          class="input input-bordered join-item flex-1"
+          type="text"
+          name="text"
+          placeholder="What needs doing?"
+        >
+        <button
+          type="submit"
+          class="btn btn-primary join-item"
+          :disabled="form.processing"
+        >
+          Add
+        </button>
+      </div>
       <span
         v-if="errors?.text"
-        class="err"
+        class="text-sm text-error"
       >{{ errors.text }}</span>
     </form>
-    <ul>
-      <li
-        v-for="todo in todos"
-        :key="todo.id"
-      >
-        <label>
-          <input
-            type="checkbox"
-            :checked="todo.done"
-            @change="toggle(todo.id)"
+    <div class="mt-6 overflow-x-auto rounded-box border border-base-300 bg-base-100">
+      <table class="table">
+        <tbody>
+          <tr
+            v-for="todo in todos"
+            :key="todo.id"
           >
-          {{ todo.text }}
-        </label>
-        <button
-          type="button"
-          @click="del(todo.id)"
-        >
-          ×
-        </button>
-      </li>
-    </ul>
-    <p>
+            <td class="w-12">
+              <input
+                type="checkbox"
+                class="checkbox checkbox-primary"
+                :checked="todo.done"
+                @change="toggle(todo.id)"
+              >
+            </td>
+            <td
+              class="max-w-0"
+              :class="todo.done ? 'line-through opacity-50' : ''"
+            >
+              {{ todo.text }}
+            </td>
+            <td class="w-12 text-right">
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm btn-circle text-error"
+                aria-label="Delete"
+                @click="del(todo.id)"
+              >
+                ×
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-6 flex flex-wrap gap-2">
       <button
         type="button"
+        class="btn btn-outline btn-sm"
         @click="simulateDbWrite"
       >
         + row (fetch)
       </button>
       <button
         type="button"
+        class="btn btn-outline btn-sm"
         @click="partialReloadTodos"
       >
         partial reload
       </button>
     </p>
-    <Link href="/">
+    <Link
+      class="btn btn-link px-0 mt-8"
+      href="/"
+    >
       Home
     </Link>
   </div>
 </template>
-
-<style scoped>
-.err {
-  color: crimson;
-  margin-left: 0.5rem;
-}
-</style>

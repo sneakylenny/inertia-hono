@@ -1,3 +1,5 @@
+import './main.css'
+
 import { createInertiaApp } from '@inertiajs/vue3'
 import { createApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
@@ -21,6 +23,6 @@ createInertiaApp({
       .mount(el)
   },
   progress: {
-    color: '#4B5563',
+    color: '#4f46e5',
   },
 })

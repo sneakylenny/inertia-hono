@@ -11,50 +11,63 @@ const count = ref(0)
 </script>
 
 <template>
-  <div>
-    <p v-if="appName">
+  <div class="container mx-auto max-w-3xl px-4 py-10">
+    <p
+      v-if="appName"
+      class="text-sm opacity-60"
+    >
       {{ appName }}
     </p>
-    <p
+    <div
       v-if="hint"
-      class="hint"
+      role="alert"
+      class="alert alert-warning mt-2"
     >
-      {{ hint }}
-    </p>
-    <button
-      type="button"
-      @click="count++"
-    >
-      Count is: {{ count }}
-    </button>
-    <nav>
-      <ul>
-        <li>
-          <Link href="/">
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link href="/about">
-            About
-          </Link>
-        </li>
-        <li>
-          <Link href="/todos">
-            Todos
-          </Link>
-        </li>
-        <li>
-          <Link href="/shared-demo">
-            Shared props demo
-          </Link>
-        </li>
-        <li>
-          <Link href="/lazy-demo">
-            Deferred props (lazy / optional / always)
-          </Link>
-        </li>
-      </ul>
+      <span>{{ hint }}</span>
+    </div>
+    <div class="mt-8">
+      <button
+        type="button"
+        class="btn btn-neutral"
+        @click="count++"
+      >
+        Count is: {{ count }}
+      </button>
+    </div>
+    <div class="divider mt-10">
+      Demos
+    </div>
+    <nav class="flex flex-wrap gap-2">
+      <Link
+        class="btn btn-ghost btn-sm"
+        href="/"
+      >
+        Home
+      </Link>
+      <Link
+        class="btn btn-ghost btn-sm"
+        href="/about"
+      >
+        About
+      </Link>
+      <Link
+        class="btn btn-ghost btn-sm"
+        href="/todos"
+      >
+        Todos
+      </Link>
+      <Link
+        class="btn btn-ghost btn-sm"
+        href="/shared-demo"
+      >
+        Shared props demo
+      </Link>
+      <Link
+        class="btn btn-ghost btn-sm"
+        href="/lazy-demo"
+      >
+        Deferred props (lazy / optional / always)
+      </Link>
     </nav>
   </div>
 </template>

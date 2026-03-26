@@ -7,12 +7,20 @@ defineProps<{
 </script>
 
 <template>
-  <div>
-    <h1>About</h1>
-    <p v-if="section">
+  <div class="container mx-auto max-w-3xl px-4 py-10">
+    <h1 class="text-2xl font-bold">
+      About
+    </h1>
+    <p
+      v-if="section"
+      class="mt-4 opacity-80"
+    >
       Section: {{ section }}
     </p>
-    <Link href="/">
+    <Link
+      class="btn btn-link px-0 mt-8"
+      href="/"
+    >
       Back home
     </Link>
   </div>
