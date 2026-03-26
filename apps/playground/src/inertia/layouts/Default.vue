@@ -60,6 +60,14 @@ import { Link } from '@inertiajs/vue3'
               Deferred props (defer + Deferred)
             </Link>
           </li>
+          <li>
+            <Link
+              href="/redirect-demo"
+              :class="{ 'menu-active': $page.url === '/redirect-internal-test' }"
+            >
+              Redirect demo
+            </Link>
+          </li>
         </ul>
       </nav>
     </aside>

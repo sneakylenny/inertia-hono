@@ -1,6 +1,11 @@
 import type { Context, MiddlewareHandler } from 'hono'
 import { createMiddleware } from 'hono/factory'
-import { resolveInertia, type ResolveInertiaInput } from 'inertia-server'
+import type { RedirectStatusCode } from 'hono/utils/http-status'
+import {
+  isInertiaRequest,
+  resolveInertia,
+  type ResolveInertiaInput,
+} from 'inertia-server'
 
 export type InertiaVersion = string | number | (() => string | number)
 
@@ -97,6 +102,27 @@ function toInertiaRequest(c: Context) {
   }
 }
 
+/**
+ * [External / full-page redirect](https://inertiajs.com/redirects#external-redirects):
+ * Inertia XHR requests receive `409` + `X-Inertia-Location` so the client performs a
+ * full navigation (`window.location`); other requests get a normal HTTP redirect
+ * (same idea as Laravel `Inertia::location()` + `Redirect::away()` for non-Inertia).
+ */
+export function location(
+  c: Context,
+  url: string | URL,
+  redirectStatus: RedirectStatusCode = 302,
+): Response {
+  const href = typeof url === 'string' ? url : url.href
+  if (isInertiaRequest(toInertiaRequest(c))) {
+    return new Response(null, {
+      status: 409,
+      headers: { 'X-Inertia-Location': href },
+    })
+  }
+  return c.redirect(href, redirectStatus)
+}
+
 function inertiaResponse(result: Awaited<ReturnType<typeof resolveInertia>>): Response {
   if (result.kind === 'version-mismatch') {
     return new Response(null, {
@@ -173,6 +199,7 @@ export {
   defer,
   isInertiaDeferProp,
   isInertiaDeferred,
+  isInertiaRequest,
   partial,
   resolveInertia,
   type InertiaDeferProp,

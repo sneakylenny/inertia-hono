@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { Hono } from 'hono'
 import {
   createInertia,
+  location,
   render,
   share,
   type InertiaVariables,
@@ -35,6 +36,33 @@ describe('createInertia', () => {
     }
     expect(body.component).toBe('Hello')
     expect(body.props.name).toBe('Tim')
+  })
+
+  it('location() returns 409 + X-Inertia-Location for Inertia requests', async () => {
+    const { middleware } = createInertia({ version: 'v1' })
+    const app = new Hono<{ Variables: InertiaVariables }>()
+    app.use(middleware)
+    app.get('/away', c => location(c, 'https://example.com/oauth'))
+
+    const res = await app.request('http://localhost/away', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'v1',
+      },
+    })
+    expect(res.status).toBe(409)
+    expect(res.headers.get('x-inertia-location')).toBe('https://example.com/oauth')
+  })
+
+  it('location() returns HTTP redirect when not an Inertia request', async () => {
+    const { middleware } = createInertia({ version: 'v1' })
+    const app = new Hono<{ Variables: InertiaVariables }>()
+    app.use(middleware)
+    app.get('/away', c => location(c, 'https://example.com/oauth'))
+
+    const res = await app.request('http://localhost/away')
+    expect(res.status).toBe(302)
+    expect(res.headers.get('location')).toBe('https://example.com/oauth')
   })
 
   it('returns 409 when version mismatches on GET', async () => {
