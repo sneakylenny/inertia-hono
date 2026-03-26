@@ -9,7 +9,7 @@ let alwaysMetaRuns = 0
 const app = new Hono<{ Variables: InertiaVariables }>()
 
 app.get('/lazy-demo', c =>
-  render(c, 'LazyDemo', {
+  render(c, 'PartialDemo', {
     lazyMain: partial.lazy(() => {
       lazyMainRuns++
       return {

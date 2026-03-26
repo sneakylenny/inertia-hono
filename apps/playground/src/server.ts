@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { createInertia, render, type InertiaVariables } from 'inertia-hono'
 import deferredDemoRouter from './app/deferred-demo/deferred-demo.router.js'
-import lazyDemoRouter from './app/lazy-demo/lazy-demo.router.js'
+import lazyDemoRouter from './app/partial-demo/partial-demo.router.js'
 import sharedDemoRouter from './app/shared-demo/shared-demo.router.js'
 import todoRouter from './app/todo/todo.router.js'
 import redirectDemoRouter from './app/redirect-demo/redirect-demo.router.js'
