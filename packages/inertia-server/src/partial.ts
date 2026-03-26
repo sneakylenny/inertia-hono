@@ -2,6 +2,21 @@ import { parseCommaList, readHeader } from './headers.js'
 import type { InertiaRequestLike } from './types.js'
 
 /**
+ * True when this request is a [partial reload](https://inertiajs.com/docs/v3/core-concepts/the-protocol#partial-reloads)
+ * that lists `X-Inertia-Partial-Data` (non-empty) for the current component.
+ * Used to resolve [deferred props](https://inertiajs.com/docs/v3/data-props/deferred-props) after the first paint.
+ */
+export function isPartialDataReload(
+  req: InertiaRequestLike,
+  component: string,
+): boolean {
+  const partialComponent = readHeader(req.headers, 'x-inertia-partial-component')
+  if (!partialComponent || partialComponent !== component) return false
+  const partialDataRaw = readHeader(req.headers, 'x-inertia-partial-data')
+  return partialDataRaw !== undefined && partialDataRaw !== ''
+}
+
+/**
  * Apply [partial reload](https://inertiajs.com/docs/v3/core-concepts/the-protocol#partial-reloads) prop filtering.
  * `errors` is always kept. If both Partial-Data and Partial-Except are sent, Except wins.
  */

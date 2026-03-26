@@ -68,6 +68,12 @@ const count = ref(0)
       >
         Partial reloads (lazy / optional / always)
       </Link>
+      <Link
+        class="btn btn-ghost btn-sm"
+        href="/deferred-demo"
+      >
+        Deferred props (defer + Deferred)
+      </Link>
     </nav>
   </div>
 </template>

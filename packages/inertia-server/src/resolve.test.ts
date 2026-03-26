@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { defer } from './defer.js'
 import { partial } from './deferred.js'
 import { resolveInertia } from './resolve.js'
 
@@ -361,5 +362,191 @@ describe('resolveInertia', () => {
     expect(result.kind).toBe('success')
     if (result.kind !== 'success' || result.format !== 'json') return
     expect(result.body.props.users).toEqual([1, 2])
+  })
+
+  it('omits defer props on first visit and lists deferredProps', async () => {
+    let permissionsCalls = 0
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        users: [{ id: 1 }],
+        permissions: defer(() => {
+          permissionsCalls++
+          return ['a']
+        }),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(permissionsCalls).toBe(0)
+    expect(result.body.props).toEqual({
+      errors: {},
+      users: [{ id: 1 }],
+    })
+    expect(result.body.deferredProps).toEqual({ default: ['permissions'] })
+  })
+
+  it('resolves defer prop on partial-data reload and clears deferredProps', async () => {
+    let calls = 0
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+          'X-Inertia-Partial-Component': 'Users',
+          'X-Inertia-Partial-Data': 'permissions',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        permissions: defer(() => {
+          calls++
+          return ['x']
+        }),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(calls).toBe(1)
+    expect(result.body.props).toEqual({
+      errors: {},
+      permissions: ['x'],
+    })
+    expect(result.body.deferredProps).toBeUndefined()
+  })
+
+  it('groups defer props for deferredProps map', async () => {
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        a: defer(() => 1, 'batch'),
+        b: defer(() => 2, 'batch'),
+        c: defer(() => 3),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(result.body.deferredProps).toEqual({
+      batch: ['a', 'b'],
+      default: ['c'],
+    })
+  })
+
+  it('does not list single-key default group as pending when only another group is requested', async () => {
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+          'X-Inertia-Partial-Component': 'Users',
+          'X-Inertia-Partial-Data': 'secondaryData,secondaryMore',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        primaryData: defer(() => 'primary'),
+        secondaryData: defer(() => 'a', 'secondary'),
+        secondaryMore: defer(() => 'b', 'secondary'),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(result.body.props.secondaryData).toBe('a')
+    expect(result.body.props.secondaryMore).toBe('b')
+    expect(result.body.deferredProps).toBeUndefined()
+  })
+
+  it('still lists multi-key groups as pending when only another group is requested', async () => {
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+          'X-Inertia-Partial-Component': 'Users',
+          'X-Inertia-Partial-Data': 'primaryData',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        primaryData: defer(() => 'p'),
+        secondaryData: defer(() => 'a', 'secondary'),
+        secondaryMore: defer(() => 'b', 'secondary'),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(result.body.props.primaryData).toBe('p')
+    expect(result.body.deferredProps).toEqual({
+      secondary: ['secondaryData', 'secondaryMore'],
+    })
+  })
+
+  it('strips defer props on partial-except reload without resolving them', async () => {
+    let permCalls = 0
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+          'X-Inertia-Partial-Component': 'Users',
+          'X-Inertia-Partial-Except': 'users',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        users: [1],
+        permissions: defer(() => {
+          permCalls++
+          return ['p']
+        }),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(permCalls).toBe(0)
+    expect(result.body.props.permissions).toBeUndefined()
+    expect(result.body.deferredProps).toEqual({ default: ['permissions'] })
   })
 })

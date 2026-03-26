@@ -170,9 +170,12 @@ export function createInertia(options: CreateInertiaOptions): {
 }
 
 export {
+  defer,
+  isInertiaDeferProp,
   isInertiaDeferred,
   partial,
   resolveInertia,
+  type InertiaDeferProp,
   type InertiaDeferredProp,
   type InertiaPage,
   type InertiaRequestLike,

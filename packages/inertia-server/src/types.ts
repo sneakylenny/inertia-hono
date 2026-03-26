@@ -15,6 +15,16 @@ export type InertiaPage = {
   encryptHistory?: boolean
   clearHistory?: boolean
   preserveFragment?: boolean
+  /**
+   * Pending [deferred props](https://inertiajs.com/docs/v3/data-props/deferred-props) by group name.
+   * Omitted when there are no deferred props left to load.
+   */
+  deferredProps?: Record<string, string[]>
+  /**
+   * Snapshot of which props were deferred on first paint; used by the client across follow-up requests.
+   * Optional — the client copies from `deferredProps` on the first response when unset.
+   */
+  initialDeferredProps?: Record<string, string[]>
 }
 
 export type InertiaJsonHeaders = {

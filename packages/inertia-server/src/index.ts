@@ -16,7 +16,8 @@ export {
   type InertiaDeferredKind,
   type InertiaDeferredProp,
 } from './deferred.js'
-export { filterPartialProps } from './partial.js'
+export { defer, isInertiaDeferProp, type InertiaDeferProp } from './defer.js'
+export { filterPartialProps, isPartialDataReload } from './partial.js'
 export { getVersionMismatch } from './version.js'
 export { defaultHtmlShell, escapeForScriptJson } from './html.js'
 export { resolveInertia, type ResolveInertiaInput } from './resolve.js'

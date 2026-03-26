@@ -60,6 +60,36 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(body.props.fromRender).toContain('render()')
   })
 
+  it('serves /deferred-demo: full visit omits defer props, lists deferredProps', async () => {
+    const res = await playgroundApp.request('http://localhost/deferred-demo', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'playground-1',
+        'Accept': 'application/json',
+      },
+    })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      component: string
+      props: {
+        intro?: string
+        primaryData?: unknown
+        secondaryData?: unknown
+        secondaryMore?: unknown
+      }
+      deferredProps?: Record<string, string[]>
+    }
+    expect(body.component).toBe('DeferredDemo')
+    expect(body.props.intro).toContain('defer()')
+    expect(body.props.primaryData).toBeUndefined()
+    expect(body.props.secondaryData).toBeUndefined()
+    expect(body.props.secondaryMore).toBeUndefined()
+    expect(body.deferredProps).toEqual({
+      default: ['primaryData'],
+      secondary: ['secondaryData', 'secondaryMore'],
+    })
+  })
+
   it('serves /lazy-demo: full visit omits optional, includes lazy + always', async () => {
     const res = await playgroundApp.request('http://localhost/lazy-demo', {
       headers: {
