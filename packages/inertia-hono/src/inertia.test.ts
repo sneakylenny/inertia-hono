@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { Hono } from 'hono'
 import {
   createInertia,
+  render,
   share,
   type InertiaVariables,
 } from './index.js'
@@ -11,7 +12,7 @@ describe('createInertia', () => {
     const { middleware } = createInertia({ version: 'abc' })
     const app = new Hono<{ Variables: InertiaVariables }>()
     app.use(middleware)
-    app.get('/hello', c => c.var.inertia.render(c, 'Hello', { name: 'Tim' }))
+    app.get('/hello', c => render(c, 'Hello', { name: 'Tim' }))
 
     const htmlRes = await app.request('http://localhost/hello')
     expect(htmlRes.status).toBe(200)
@@ -40,7 +41,7 @@ describe('createInertia', () => {
     const { middleware } = createInertia({ version: 'new' })
     const app = new Hono<{ Variables: InertiaVariables }>()
     app.use(middleware)
-    app.get('/', c => c.var.inertia.render(c, 'Home', {}))
+    app.get('/', c => render(c, 'Home', {}))
 
     const res = await app.request('http://localhost/', {
       headers: {
@@ -52,7 +53,7 @@ describe('createInertia', () => {
     expect(res.headers.get('x-inertia-location')).toBe('http://localhost/')
   })
 
-  it('merges share() and inertia.share() into render props', async () => {
+  it('merges share() and inertia.share into render props', async () => {
     const { middleware } = createInertia({
       version: 'v1',
       share: async () => ({ fromOptions: true }),
@@ -63,9 +64,9 @@ describe('createInertia', () => {
       await next()
     })
     app.use(middleware)
-    app.get('/', c => {
-      c.var.inertia.share(c, { fromInstance: 1 })
-      return c.var.inertia.render(c, 'Home', { fromRender: 2 })
+    app.get('/', (c) => {
+      c.var.inertia.share({ fromInstance: 1 })
+      return render(c, 'Home', { fromRender: 2 })
     })
 
     const res = await app.request('http://localhost/', {

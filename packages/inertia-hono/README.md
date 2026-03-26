@@ -14,9 +14,9 @@ bun add inertia-hono hono
 
 ```ts
 import { Hono } from 'hono'
-import { createInertia, type InertiaVariables } from 'inertia-hono'
+import { createInertia, render, type InertiaVariables } from 'inertia-hono'
 
-const { middleware, instance } = createInertia({
+const { middleware } = createInertia({
   version: 'your-asset-version',
   share: async () => ({ /* shared props */ }),
   // Optional: custom HTML shell for full page loads
@@ -27,9 +27,12 @@ const app = new Hono<{ Variables: InertiaVariables }>()
 app.use(middleware)
 
 app.get('/posts', (c) =>
-  instance.render(c, 'Posts/Index', { posts: [] }),
+  render(c, 'Posts/Index', { posts: [] }),
 )
 ```
+
+- **`share(c, props)`** and **`render(c, component, props?)`** — same shape: context first, then payload (mirrors Hono patterns).
+- **`c.var.inertia.share(props)`** and **`c.var.inertia.render(component, props?)`** — bound to the request; no repeated `c` on the method calls.
 
 - First visit → HTML with embedded page JSON (`<script type="application/json">`).
 - Inertia XHR (`X-Inertia: true`) → JSON with `Vary: X-Inertia` and `X-Inertia: true`.

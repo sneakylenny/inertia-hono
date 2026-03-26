@@ -19,9 +19,8 @@ export type CreateInertiaOptions = {
 
 export type InertiaInstance = {
   /** Merge props into this request’s shared Inertia payload (same merge order as `share()`). */
-  share: (c: Context, props: Record<string, unknown>) => void
+  share: (props: Record<string, unknown>) => void
   render: (
-    c: Context,
     component: string,
     props?: Record<string, unknown>,
   ) => Promise<Response>
@@ -31,6 +30,18 @@ export type InertiaVariables = {
   inertia: InertiaInstance
   /** Populated by `share()` / `inertia.share()`; merged into page props on `render`. */
   inertiaShared?: Record<string, unknown>
+}
+
+/**
+ * Render an Inertia page. Same contract as `share(c, props)` — `c` first, then payload.
+ * Delegates to `c.var.inertia` (requires Inertia middleware on the route).
+ */
+export function render(
+  c: Context<{ Variables: InertiaVariables }>,
+  component: string,
+  props?: Record<string, unknown>,
+): Promise<Response> {
+  return c.var.inertia.render(component, props)
 }
 
 function mergeInertiaShared(c: Context, props: Record<string, unknown>): void {
@@ -113,47 +124,49 @@ function inertiaResponse(result: Awaited<ReturnType<typeof resolveInertia>>): Re
  */
 export function createInertia(options: CreateInertiaOptions): {
   middleware: MiddlewareHandler
-  /** Same instance stored on `c.var.inertia` after `middleware` runs. */
-  instance: InertiaInstance
 } {
-  const inertia: InertiaInstance = {
-    share(c, props) {
-      mergeInertiaShared(c, props)
-    },
-    async render(c, component, props = {}) {
-      const fromOptions = options.share ? await options.share(c) : {}
-      const fromCalls = c.var.inertiaShared ?? {}
-      const merged: Record<string, unknown> = {
-        ...fromOptions,
-        ...fromCalls,
-        ...props,
-        errors: props.errors ?? {},
-      }
+  async function renderForContext(
+    c: Context,
+    component: string,
+    props: Record<string, unknown> = {},
+  ): Promise<Response> {
+    const fromOptions = options.share ? await options.share(c) : {}
+    const fromCalls = c.var.inertiaShared ?? {}
+    const merged: Record<string, unknown> = {
+      ...fromOptions,
+      ...fromCalls,
+      ...props,
+      errors: props.errors ?? {},
+    }
 
-      const result = await resolveInertia({
-        request: toInertiaRequest(c),
-        component,
-        props: merged,
-        version: resolveVersion(options.version),
-        locationUrl: inertiaLocationUrl(c),
-        rootElementId: options.rootElementId,
-        pageScriptDataAttribute: options.pageScriptDataAttribute,
-        encryptHistory: options.encryptHistory,
-        clearHistory: options.clearHistory,
-        preserveFragment: options.preserveFragment,
-        renderHtml: options.renderHtml,
-      })
+    const result = await resolveInertia({
+      request: toInertiaRequest(c),
+      component,
+      props: merged,
+      version: resolveVersion(options.version),
+      locationUrl: inertiaLocationUrl(c),
+      rootElementId: options.rootElementId,
+      pageScriptDataAttribute: options.pageScriptDataAttribute,
+      encryptHistory: options.encryptHistory,
+      clearHistory: options.clearHistory,
+      preserveFragment: options.preserveFragment,
+      renderHtml: options.renderHtml,
+    })
 
-      return inertiaResponse(result)
-    },
+    return inertiaResponse(result)
   }
 
   const middleware = createMiddleware(async (c, next) => {
+    const inertia: InertiaInstance = {
+      share: props => mergeInertiaShared(c, props),
+      render: (component, props) =>
+        renderForContext(c, component, props ?? {}),
+    }
     c.set('inertia', inertia)
     await next()
   })
 
-  return { middleware, instance: inertia }
+  return { middleware }
 }
 
 export {

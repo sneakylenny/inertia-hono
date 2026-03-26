@@ -73,9 +73,9 @@ PLAYGROUND_VITE_ORIGIN=http://127.0.0.1:5173 bun run dev:server
 
 ```ts
 import { Hono } from 'hono'
-import { createInertia, type InertiaVariables } from 'inertia-hono'
+import { createInertia, render, type InertiaVariables } from 'inertia-hono'
 
-const { middleware, instance } = createInertia({
+const { middleware } = createInertia({
   version: process.env.ASSET_VERSION ?? '1',
   share: async (c) => ({ requestId: c.req.header('x-request-id') }),
 })
@@ -83,7 +83,7 @@ const { middleware, instance } = createInertia({
 const app = new Hono<{ Variables: InertiaVariables }>()
 app.use(middleware)
 
-app.get('/', (c) => instance.render(c, 'Home', { user: { name: 'Ada' } }))
+app.get('/', (c) => render(c, 'Home', { user: { name: 'Ada' } }))
 ```
 
-Use `c.var.inertia` inside handlers if you prefer context over `instance`.
+Use `c.var.inertia.render(...)` / `c.var.inertia.share(...)` when you want the context-bound helpers (no leading `c` on those methods).

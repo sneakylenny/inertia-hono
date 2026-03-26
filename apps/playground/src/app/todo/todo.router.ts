@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import type { InertiaVariables } from 'inertia-hono'
+import { render, type InertiaVariables } from 'inertia-hono'
 import {
   addTodo,
   listTodos,
@@ -11,7 +11,7 @@ import {
 const app = new Hono<{ Variables: InertiaVariables }>()
 
 app.get('/todos', c =>
-  c.var.inertia.render(c, 'Todos', { todos: listTodos() }),
+  render(c, 'Todos', { todos: listTodos() }),
 )
 
 app.post('/todos', async (c) => {
@@ -21,7 +21,7 @@ app.post('/todos', async (c) => {
     : String((await c.req.parseBody()).text ?? '')
   const todo = addTodo(text)
   if (!todo) {
-    return c.var.inertia.render(c, 'Todos', {
+    return render(c, 'Todos', {
       todos: listTodos(),
       errors: { text: 'Add some text for the todo.' },
     })
