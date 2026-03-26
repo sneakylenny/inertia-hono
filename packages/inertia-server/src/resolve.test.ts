@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { partial } from './deferred.js'
 import { resolveInertia } from './resolve.js'
 
 describe('resolveInertia', () => {
@@ -155,5 +156,210 @@ describe('resolveInertia', () => {
       errors: {},
       events: [{ id: 1 }],
     })
+  })
+
+  it('resolves lazy props on full Inertia visit', async () => {
+    let usersCalls = 0
+    let companiesCalls = 0
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        users: partial.lazy(() => {
+          usersCalls++
+          return [1]
+        }),
+        companies: partial.lazy(() => {
+          companiesCalls++
+          return [2]
+        }),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(usersCalls).toBe(1)
+    expect(companiesCalls).toBe(1)
+    expect(result.body.props).toEqual({
+      errors: {},
+      users: [1],
+      companies: [2],
+    })
+  })
+
+  it('evaluates only lazy props included in partial reload', async () => {
+    let usersCalls = 0
+    let companiesCalls = 0
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+          'X-Inertia-Partial-Component': 'Users',
+          'X-Inertia-Partial-Data': 'users',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        users: partial.lazy(() => {
+          usersCalls++
+          return [1]
+        }),
+        companies: partial.lazy(() => {
+          companiesCalls++
+          return [2]
+        }),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(usersCalls).toBe(1)
+    expect(companiesCalls).toBe(0)
+    expect(result.body.props).toEqual({
+      errors: {},
+      users: [1],
+    })
+  })
+
+  it('omits optional props on full visit without running their resolvers', async () => {
+    let sidebarCalls = 0
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        users: partial.lazy(() => [1]),
+        sidebar: partial.optional(() => {
+          sidebarCalls++
+          return 'side'
+        }),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(sidebarCalls).toBe(0)
+    expect(result.body.props).toEqual({
+      errors: {},
+      users: [1],
+    })
+  })
+
+  it('includes optional prop when requested on partial reload', async () => {
+    let sidebarCalls = 0
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+          'X-Inertia-Partial-Component': 'Users',
+          'X-Inertia-Partial-Data': 'sidebar',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        sidebar: partial.optional(() => {
+          sidebarCalls++
+          return 'ok'
+        }),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(sidebarCalls).toBe(1)
+    expect(result.body.props).toEqual({
+      errors: {},
+      sidebar: 'ok',
+    })
+  })
+
+  it('merges always props on partial reload', async () => {
+    let authCalls = 0
+    let usersCalls = 0
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+          'X-Inertia-Partial-Component': 'Users',
+          'X-Inertia-Partial-Data': 'users',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        auth: partial.always(() => {
+          authCalls++
+          return { id: 1 }
+        }),
+        users: partial.lazy(() => {
+          usersCalls++
+          return [9]
+        }),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(authCalls).toBe(1)
+    expect(usersCalls).toBe(1)
+    expect(result.body.props).toEqual({
+      errors: {},
+      auth: { id: 1 },
+      users: [9],
+    })
+  })
+
+  it('resolves async lazy props', async () => {
+    const result = await resolveInertia({
+      request: {
+        method: 'GET',
+        url: '/users',
+        headers: {
+          'X-Inertia': 'true',
+          'X-Inertia-Version': 'v1',
+        },
+      },
+      component: 'Users',
+      props: {
+        errors: {},
+        users: partial.lazy(async () => [1, 2]),
+      },
+      version: 'v1',
+      locationUrl: 'https://example.com/users',
+    })
+    expect(result.kind).toBe('success')
+    if (result.kind !== 'success' || result.format !== 'json') return
+    expect(result.body.props.users).toEqual([1, 2])
   })
 })

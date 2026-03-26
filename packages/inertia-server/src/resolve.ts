@@ -1,3 +1,4 @@
+import { resolveDeferredProps } from './deferred.js'
 import { filterPartialProps } from './partial.js'
 import type { InertiaPage, InertiaRequestLike, ResolveInertiaResult } from './types.js'
 import { getVersionMismatch } from './version.js'
@@ -7,7 +8,11 @@ import { isInertiaRequest } from './headers.js'
 export type ResolveInertiaInput = {
   request: InertiaRequestLike
   component: string
-  /** Merged route + shared props; should include `errors` (default `{}`). */
+  /**
+   * Merged route + shared props; should include `errors` (default `{}`).
+   * Use `partial.lazy`, `partial.optional`, and `partial.always` from this package for deferred evaluation
+   * after partial-reload filtering.
+   */
   props: Record<string, unknown>
   version: string | number
   /** Full URL for `X-Inertia-Location` on version mismatch (e.g. `https://host/path`). */
@@ -53,7 +58,13 @@ export async function resolveInertia(
   }
 
   const mergedProps = normalizeProps(input.props)
-  const props = filterPartialProps(input.request, input.component, mergedProps)
+  const filtered = filterPartialProps(input.request, input.component, mergedProps)
+  const props = await resolveDeferredProps(
+    input.request,
+    input.component,
+    mergedProps,
+    filtered,
+  )
 
   const page: InertiaPage = {
     component: input.component,

@@ -60,6 +60,31 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(body.props.fromRender).toContain('render()')
   })
 
+  it('serves /lazy-demo: full visit omits optional, includes lazy + always', async () => {
+    const res = await playgroundApp.request('http://localhost/lazy-demo', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'playground-1',
+        'Accept': 'application/json',
+      },
+    })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      component: string
+      props: {
+        lazyMain?: { label: string }
+        optionalChunk?: unknown
+        alwaysMeta?: { label: string }
+        appName?: string
+      }
+    }
+    expect(body.component).toBe('LazyDemo')
+    expect(body.props.lazyMain?.label).toBe('lazy()')
+    expect(body.props.optionalChunk).toBeUndefined()
+    expect(body.props.alwaysMeta?.label).toBe('always()')
+    expect(body.props.appName).toBe('Inertia Hono playground')
+  })
+
   it('should partially reload on /todos and return only todos (plus errors)', async () => {
     const res = await playgroundApp.request('http://localhost/todos', {
       headers: {

@@ -49,6 +49,11 @@ const count = ref(0)
             Shared props demo
           </Link>
         </li>
+        <li>
+          <Link href="/lazy-demo">
+            Deferred props (lazy / optional / always)
+          </Link>
+        </li>
       </ul>
     </nav>
   </div>
