@@ -28,12 +28,28 @@ const count = ref(0)
       Count is: {{ count }}
     </button>
     <nav>
-      <Link href="/about">
-        About
-      </Link>
-      <Link href="/todos">
-        Todos
-      </Link>
+      <ul>
+        <li>
+          <Link href="/">
+            Home
+          </Link>
+        </li>
+        <li>
+          <Link href="/about">
+            About
+          </Link>
+        </li>
+        <li>
+          <Link href="/todos">
+            Todos
+          </Link>
+        </li>
+        <li>
+          <Link href="/shared-demo">
+            Shared props demo
+          </Link>
+        </li>
+      </ul>
     </nav>
   </div>
 </template>

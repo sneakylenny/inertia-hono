@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { Hono } from 'hono'
-import { createInertia, type InertiaVariables } from './index.js'
+import {
+  createInertia,
+  share,
+  type InertiaVariables,
+} from './index.js'
 
 describe('createInertia', () => {
   it('returns HTML for first visit and JSON for Inertia request', async () => {
@@ -46,5 +50,36 @@ describe('createInertia', () => {
     })
     expect(res.status).toBe(409)
     expect(res.headers.get('x-inertia-location')).toBe('http://localhost/')
+  })
+
+  it('merges share() and inertia.share() into render props', async () => {
+    const { middleware } = createInertia({
+      version: 'v1',
+      share: async () => ({ fromOptions: true }),
+    })
+    const app = new Hono<{ Variables: InertiaVariables }>()
+    app.use(async (c, next) => {
+      share(c, { fromHelper: 'a' })
+      await next()
+    })
+    app.use(middleware)
+    app.get('/', c => {
+      c.var.inertia.share(c, { fromInstance: 1 })
+      return c.var.inertia.render(c, 'Home', { fromRender: 2 })
+    })
+
+    const res = await app.request('http://localhost/', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'v1',
+      },
+    })
+    const body = (await res.json()) as {
+      props: Record<string, unknown>
+    }
+    expect(body.props.fromOptions).toBe(true)
+    expect(body.props.fromHelper).toBe('a')
+    expect(body.props.fromInstance).toBe(1)
+    expect(body.props.fromRender).toBe(2)
   })
 })

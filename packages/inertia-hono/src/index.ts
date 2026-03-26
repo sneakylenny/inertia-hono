@@ -18,6 +18,8 @@ export type CreateInertiaOptions = {
 }
 
 export type InertiaInstance = {
+  /** Merge props into this request’s shared Inertia payload (same merge order as `share()`). */
+  share: (c: Context, props: Record<string, unknown>) => void
   render: (
     c: Context,
     component: string,
@@ -27,6 +29,28 @@ export type InertiaInstance = {
 
 export type InertiaVariables = {
   inertia: InertiaInstance
+  /** Populated by `share()` / `inertia.share()`; merged into page props on `render`. */
+  inertiaShared?: Record<string, unknown>
+}
+
+function mergeInertiaShared(c: Context, props: Record<string, unknown>): void {
+  const bag
+    = c.var.inertiaShared
+      ?? (() => {
+        const b: Record<string, unknown> = {}
+        c.set('inertiaShared', b)
+        return b
+      })()
+  Object.assign(bag, props)
+}
+
+/**
+ * Merge props into the current request’s shared Inertia payload. Call from any
+ * middleware or handler before `render` (works even if registered before the
+ * Inertia middleware — the bag is created on first use).
+ */
+export function share(c: Context, props: Record<string, unknown>): void {
+  mergeInertiaShared(c, props)
 }
 
 function resolveVersion(v: InertiaVersion): string | number {
@@ -93,10 +117,15 @@ export function createInertia(options: CreateInertiaOptions): {
   instance: InertiaInstance
 } {
   const inertia: InertiaInstance = {
+    share(c, props) {
+      mergeInertiaShared(c, props)
+    },
     async render(c, component, props = {}) {
-      const shared = options.share ? await options.share(c) : {}
+      const fromOptions = options.share ? await options.share(c) : {}
+      const fromCalls = c.var.inertiaShared ?? {}
       const merged: Record<string, unknown> = {
-        ...shared,
+        ...fromOptions,
+        ...fromCalls,
         ...props,
         errors: props.errors ?? {},
       }

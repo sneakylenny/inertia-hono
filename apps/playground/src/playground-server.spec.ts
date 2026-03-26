@@ -35,6 +35,31 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(body.props.section).toBe('demo')
   })
 
+  it('merges share() layers on /shared-demo', async () => {
+    const res = await playgroundApp.request('http://localhost/shared-demo', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'playground-1',
+        'Accept': 'application/json',
+      },
+    })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      component: string
+      props: {
+        appName?: string
+        sharedViaMiddleware?: string
+        sharedViaRouteHandler?: string
+        fromRender?: string
+      }
+    }
+    expect(body.component).toBe('SharedDemo')
+    expect(body.props.appName).toBe('Inertia Hono playground')
+    expect(body.props.sharedViaMiddleware).toContain('middleware')
+    expect(body.props.sharedViaRouteHandler).toContain('GET handler')
+    expect(body.props.fromRender).toContain('render()')
+  })
+
   it('should partially reload on /todos and return only todos (plus errors)', async () => {
     const res = await playgroundApp.request('http://localhost/todos', {
       headers: {

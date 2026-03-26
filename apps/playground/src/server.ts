@@ -1,8 +1,6 @@
 import { Hono } from 'hono'
-import {
-  createInertia,
-  type InertiaVariables,
-} from 'inertia-hono'
+import { createInertia, type InertiaVariables } from 'inertia-hono'
+import sharedDemoRouter from './app/shared-demo/shared-demo.router.js'
 import todoRouter from './app/todo/todo.router.js'
 import { createPlaygroundHtmlRenderer } from './inertia/playground-html.js'
 
@@ -33,4 +31,5 @@ playgroundApp.get('/about', c =>
   instance.render(c, 'About', { section: 'demo' }),
 )
 
+playgroundApp.route('/', sharedDemoRouter)
 playgroundApp.route('/', todoRouter)
