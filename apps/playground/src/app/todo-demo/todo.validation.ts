@@ -1,4 +1,5 @@
-import { pipe, object, string, trim, minLength, maxLength } from 'valibot'
+import type { BaseIssue } from 'valibot'
+import { getDotPath, maxLength, minLength, object, pipe, string, trim } from 'valibot'
 
 /** Max todos for this demo. */
 export const MAX_TODOS = 10
@@ -17,3 +18,27 @@ export const newTodoSchema = object({
     ),
   ),
 })
+
+/**
+ * Map Valibot issues to Inertia `errors` page props (one string per field; dotted keys for nested paths).
+ * @see https://inertiajs.com/docs/v3/the-basics/forms#form-errors
+ */
+export function inertiaFieldErrors(
+  issues: readonly BaseIssue<unknown>[],
+): Record<string, string> {
+  const errors: Record<string, string> = {}
+  const pathless: string[] = []
+  for (const issue of issues) {
+    const path = getDotPath(issue)
+    if (path === null || path === '') {
+      pathless.push(issue.message)
+    }
+    else if (!(path in errors)) {
+      errors[path] = issue.message
+    }
+  }
+  if (pathless.length && Object.keys(errors).length === 0) {
+    return { text: pathless[0] ?? 'Invalid input.' }
+  }
+  return errors
+}

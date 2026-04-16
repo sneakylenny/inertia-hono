@@ -6,7 +6,6 @@ import { MAX_TODO_TEXT_LENGTH, MAX_TODOS } from '../../app/todo-demo/todo.valida
 
 const props = defineProps<{
   todos: { id: number, text: string, done: boolean }[]
-  errors?: Record<string, string>
 }>()
 
 const atLimit = computed(() => props.todos.length >= MAX_TODOS)
@@ -71,9 +70,9 @@ function del(id: number) {
         {{ todos.length }} / {{ MAX_TODOS }} todos · up to {{ MAX_TODO_TEXT_LENGTH }} characters per todo
       </p>
       <span
-        v-if="errors?.text"
+        v-if="form.errors.text"
         class="text-sm text-error"
-      >{{ errors.text }}</span>
+      >{{ form.errors.text }}</span>
       <span
         v-else-if="atLimit"
         class="text-sm text-warning"

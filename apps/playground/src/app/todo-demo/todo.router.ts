@@ -1,7 +1,5 @@
 import { vValidator } from '@hono/valibot-validator'
-import type { Context } from 'hono'
-import { Hono } from 'hono'
-import { flatten } from 'valibot'
+import { Context, Hono } from 'hono'
 import { render, type InertiaVariables } from 'inertia-hono'
 import {
   addTodo,
@@ -10,28 +8,25 @@ import {
   removeTodo,
   toggleTodo,
 } from './todos.store.js'
-import { MAX_TODOS, newTodoSchema } from './todo.validation.js'
+import {
+  inertiaFieldErrors,
+  MAX_TODOS,
+  newTodoSchema,
+} from './todo.validation.js'
 
 const app = new Hono<{ Variables: InertiaVariables }>()
 
-app.get('/todos', c =>
-  render(c, 'Todos', { todos: listTodos() }),
-)
+app.get('/todos', c => render(c, 'Todos', { todos: listTodos() }))
 
 app.post(
   '/todos',
   vValidator('json', newTodoSchema, (result, c) => {
     if (result.success) return
-    const flat = flatten(result.issues)
-    const text
-      = flat.nested?.text?.[0]
-        ?? flat.root?.[0]
-        ?? flat.other?.[0]
-        ?? 'Invalid input.'
-    return render(c as Context<{ Variables: InertiaVariables }>, 'Todos', {
-      todos: listTodos(),
-      errors: { text },
-    })
+    return render(
+      c as Context<{ Variables: InertiaVariables }>,
+      'Todos',
+      { todos: listTodos(), errors: inertiaFieldErrors(result.issues) },
+    )
   }),
   (c) => {
     const { text } = c.req.valid('json')
