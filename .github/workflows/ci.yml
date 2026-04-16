@@ -16,7 +16,7 @@ jobs:
         with:
           bun-version: "1.2.20"
 
-      - uses: moonrepo/setup-toolchain@v0
+      - uses: moonrepo/setup-toolchain@v0.6.4
         with:
           auto-install: true
 

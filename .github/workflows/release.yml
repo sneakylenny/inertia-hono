@@ -25,7 +25,7 @@ jobs:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
-      - uses: moonrepo/setup-toolchain@v0
+      - uses: moonrepo/setup-toolchain@v0.6.4
         with:
           auto-install: true
 
