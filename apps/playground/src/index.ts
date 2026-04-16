@@ -9,6 +9,7 @@ export default {
 }
 
 console.log(`Playground: http://localhost:${port}`)
+
 if (process.env.NODE_ENV !== 'production') {
   console.log(
     `Vite dev: ${process.env.PLAYGROUND_VITE_ORIGIN ?? `http://localhost:${vitePort}`} (run \`bun run dev\` for HMR)`,
