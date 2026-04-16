@@ -30,9 +30,11 @@ playgroundApp.get('/', c =>
   }),
 )
 
-playgroundApp.get('/about', c =>
-  render(c, 'About', { section: 'demo' }),
-)
+playgroundApp.get('/about', async (c) => {
+  await new Promise(resolve => setTimeout(resolve, 1000))
+
+  return render(c, 'About', { section: 'This page is intentionally slow to simulate a slow server response.' })
+})
 
 playgroundApp.route('/', sharedDemoRouter)
 playgroundApp.route('/', todoRouter)
