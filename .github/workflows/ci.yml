@@ -25,3 +25,4 @@ jobs:
       - run: moon run :build
       - run: moon run :test
       - run: moon run :lint
+      - run: bunx eslint scripts --max-warnings 0

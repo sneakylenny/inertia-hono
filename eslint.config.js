@@ -26,6 +26,15 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    name: 'scripts/node',
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+  },
+  {
     name: 'typescript/files',
     files: ['**/*.{ts,mts,cts}'],
     languageOptions: {

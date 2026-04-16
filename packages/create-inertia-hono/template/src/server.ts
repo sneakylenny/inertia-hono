@@ -15,4 +15,4 @@ export const app = new Hono<{ Variables: InertiaVariables }>()
 
 app.use(middleware)
 
-app.get('/', (c) => render(c, 'Home', { greeting: 'Hello from Inertia + Hono!' }))
+app.get('/', c => render(c, 'Home', { greeting: 'Hello from Inertia + Hono!' }))

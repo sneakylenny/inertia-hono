@@ -3,23 +3,29 @@
   "private": true,
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
+    "ci": "bun install --frozen-lockfile && moon run :build && moon run :test && moon run :lint && bunx eslint scripts --max-warnings 0",
     "build": "moon run :build",
     "test": "moon run :test",
     "dev": "moon run playground:dev",
-    "lint": "eslint packages apps --max-warnings 0",
+    "lint": "eslint packages apps scripts --max-warnings 0",
     "lint:fix": "eslint packages apps --fix",
     "lint:inertia-server": "eslint packages/inertia-server --max-warnings 0",
     "lint:inertia-hono": "eslint packages/inertia-hono --max-warnings 0",
     "lint:playground": "eslint apps/playground --max-warnings 0",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "postinstall": "simple-git-hooks"
+  },
+  "simple-git-hooks": {
+    "pre-push": "node scripts/pre-push.mjs"
   },
   "type": "module",
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
+    "simple-git-hooks": "^2.13.1",
     "@types/bun": "latest",
     "eslint": "^10.1.0",
     "eslint-plugin-vue": "^10.8.0",
