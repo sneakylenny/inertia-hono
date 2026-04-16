@@ -4,6 +4,8 @@
 
 Build modern single-page apps with Vue, React, or Svelte **without building an API** -- Inertia gives you a full SPA experience while keeping routing and data on the server. This adapter brings first-class Inertia support to the Hono web framework.
 
+**Live demo:** [inertia-hono-playground.sneakylenny.com](https://inertia-hono-playground.sneakylenny.com/) — the [`apps/playground`](apps/playground/) app (Hono, Vue 3, Vite).
+
 > [!NOTE]
 > This monorepo also contains [`inertia-server`](packages/inertia-server/), a framework-agnostic library that implements the [Inertia v3 protocol](https://inertiajs.com/docs/v3/core-concepts/the-protocol). `inertia-hono` is built on top of it and re-exports its utilities, so you only need to install `inertia-hono`.
 
@@ -219,7 +221,7 @@ app.get("/posts", (c) => {
 
 ## Playground (Docker)
 
-The **Docker Playground** workflow is [manual-only](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) (`workflow_dispatch`). Run it from the Actions tab when you want an image pushed to **GitHub Container Registry**:
+The hosted demo above is built from this repo. The **Docker Playground** workflow is [manual-only](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) (`workflow_dispatch`). Run it from the Actions tab when you want an image pushed to **GitHub Container Registry**:
 
 `ghcr.io/<your-github-username>/inertia-hono-playground:latest`
 
