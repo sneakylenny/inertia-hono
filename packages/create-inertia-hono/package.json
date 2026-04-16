@@ -1,0 +1,21 @@
+{
+  "name": "create-inertia-hono",
+  "version": "0.1.0",
+  "description": "Scaffold a new Hono + Inertia.js + Vue 3 project",
+  "type": "module",
+  "bin": "./dist/index.js",
+  "files": ["dist", "template"],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm --banner \"#!/usr/bin/env node\"",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": ["inertia", "inertiajs", "hono", "vue", "create", "scaffold"],
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2"
+  }
+}
