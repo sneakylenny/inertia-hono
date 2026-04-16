@@ -10,10 +10,14 @@
     "lint:fix": "eslint packages apps --fix",
     "lint:inertia-server": "eslint packages/inertia-server --max-warnings 0",
     "lint:inertia-hono": "eslint packages/inertia-hono --max-warnings 0",
-    "lint:playground": "eslint apps/playground --max-warnings 0"
+    "lint:playground": "eslint apps/playground --max-warnings 0",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
   },
   "type": "module",
   "devDependencies": {
+    "@changesets/cli": "^2.30.0",
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/bun": "latest",

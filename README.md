@@ -1,89 +1,226 @@
-# Inertia + Hono monorepo
+# inertia-hono
 
-[Bun](https://bun.sh/) workspaces + [moon](https://moonrepo.dev/) + two publishable packages:
+[Inertia.js v3](https://inertiajs.com/) server-side adapter for [Hono](https://hono.dev/).
 
-| Package | Description |
-| --------|-------------|
-| [`inertia-server`](packages/inertia-server/) | Framework-agnostic [Inertia v3 protocol](https://inertiajs.com/docs/v3/core-concepts/the-protocol) (headers, partial reloads, asset version 409, HTML vs JSON). |
-| [`inertia-hono`](packages/inertia-hono/) | Thin Hono adapter that maps `Context` → `inertia-server` and returns `Response`. |
-| [`apps/playground`](apps/playground/) | Hono + **Vue 3** + `@inertiajs/vue3` + Vite: full-page HTML from the adapter, client modules from Vite (`bun run dev` runs both). Vitest covers the Vue page and a small Hono/Inertia integration spec. |
+Build modern single-page apps with Vue, React, or Svelte **without building an API** -- Inertia gives you a full SPA experience while keeping routing and data on the server. This adapter brings first-class Inertia support to the Hono web framework.
 
-## Prerequisites
+> [!NOTE]
+> This monorepo also contains [`inertia-server`](packages/inertia-server/), a framework-agnostic library that implements the [Inertia v3 protocol](https://inertiajs.com/docs/v3/core-concepts/the-protocol). `inertia-hono` is built on top of it and re-exports its utilities, so you only need to install `inertia-hono`.
 
-- [Bun](https://bun.sh/) 1.2+
-- [moon](https://moonrepo.dev/docs/install) (optional; this repo targets the **moon v1**-style project config: `layer`, not `type`)
-- A Git repo with **at least two commits** (moon may call `git` with `HEAD~1` for change detection). If you see that error once, run: `git commit --allow-empty -m "chore: base"`
+> [!WARNING]
+> This project is an early proof of concept and is not yet stable. The API may change between releases. There is plenty of room for improvement -- PRs are very welcome, as my time to work on this is limited.
 
-## Setup
+## Install
 
 ```bash
-bun install
+npm install inertia-hono hono
+# or
+bun add inertia-hono hono
 ```
 
-## Commands
-
-```bash
-# Lint (ESLint + @stylistic — see https://eslint.style/rules)
-bun run lint
-bun run lint:fix
-moon run :lint
-
-# Build libraries (via moon, if installed)
-moon run :build
-
-# Or build each package
-(cd packages/inertia-server && bun run build)
-(cd packages/inertia-hono && bun run build)
-
-# Tests
-moon run :test
-# Or
-(cd packages/inertia-server && bun run test)
-(cd packages/inertia-hono && bun run test)
-(cd apps/playground && bun run test)
-
-# Playground: Hono (3000) + Vite (5173) together — open http://localhost:3000
-moon run playground:dev
-# Or, after `bun install`:
-(cd apps/playground && bun run dev)
-
-# Optional: point the HTML shell at another Vite origin
-PLAYGROUND_VITE_ORIGIN=http://127.0.0.1:5173 bun run dev:server
-```
-
-## Publishing to npm
-
-1. Bump versions in `packages/inertia-server/package.json` and `packages/inertia-hono/package.json`.
-2. Ensure `inertia-hono` lists a matching semver for `inertia-server` in `dependencies`.
-3. Build and pack:
-
-```bash
-(cd packages/inertia-server && bun run build && npm pack)
-(cd packages/inertia-hono && bun run build && npm pack)
-```
-
-4. Publish **`inertia-server` first**, then **`inertia-hono`**.
-
-```bash
-(cd packages/inertia-server && npm publish --access public)
-(cd packages/inertia-hono && npm publish --access public)
-```
-
-## Hono usage sketch
+## Quick Start
 
 ```ts
-import { Hono } from 'hono'
-import { createInertia, render, type InertiaVariables } from 'inertia-hono'
+import { Hono } from "hono";
+import { createInertia, render, type InertiaVariables } from "inertia-hono";
 
 const { middleware } = createInertia({
-  version: process.env.ASSET_VERSION ?? '1',
-  share: async (c) => ({ requestId: c.req.header('x-request-id') }),
-})
+  version: "1",
+});
 
-const app = new Hono<{ Variables: InertiaVariables }>()
-app.use(middleware)
+const app = new Hono<{ Variables: InertiaVariables }>();
 
-app.get('/', (c) => render(c, 'Home', { user: { name: 'Ada' } }))
+app.use(middleware);
+
+app.get("/", (c) => render(c, "Home", { user: { name: "Ada" } }));
+
+export default app;
 ```
 
-Use `c.var.inertia.render(...)` / `c.var.inertia.share(...)` when you want the context-bound helpers (no leading `c` on those methods).
+On the first visit, the server returns a full HTML page with the Inertia page object embedded. Subsequent navigation happens over XHR -- Inertia swaps components client-side without full page reloads.
+
+## Features
+
+### Shared Data
+
+Pass data that every response should include (auth state, flash messages, etc.) via `createInertia` or the `share` helper.
+
+Global shared data via `createInertia`:
+
+```ts
+const { middleware } = createInertia({
+  version: "1",
+  share: async (c) => ({
+    appName: "My App",
+    auth: { user: getUser(c) },
+  }),
+});
+```
+
+Route-scoped sharing from middleware or handlers with `share(c, props)`:
+
+```ts
+import { share } from "inertia-hono";
+
+const authMiddleware: MiddlewareHandler = async (c, next) => {
+  share(c, { user: await getUser(c) });
+  await next();
+};
+```
+
+Props merge in order: `createInertia share` -> `share()` calls -> `render()` props, with later values winning on key conflicts.
+
+See [Shared data](https://inertiajs.com/shared-data) in the Inertia docs.
+
+### Deferred Props
+
+Heavy data that shouldn't block the first paint can be deferred. The client receives the page immediately, then Inertia fetches deferred props in follow-up requests.
+
+```ts
+import { defer, render } from "inertia-hono";
+
+app.get("/dashboard", (c) =>
+  render(c, "Dashboard", {
+    summary: { revenue: 1000 },
+
+    // Loaded after first paint in a follow-up request
+    recentOrders: defer(async () => {
+      return await db.orders.recent();
+    }),
+
+    // Group related props into a single follow-up request
+    analytics: defer(() => fetchAnalytics(), "stats"),
+    trends: defer(() => fetchTrends(), "stats"),
+  }),
+);
+```
+
+See [Deferred props](https://inertiajs.com/deferred-props) in the Inertia docs.
+
+### Partial Reloads
+
+Control which props are evaluated during [partial reloads](https://inertiajs.com/partial-reloads) using `partial.lazy`, `partial.optional`, and `partial.always`:
+
+```ts
+import { partial, render } from "inertia-hono";
+
+app.get("/users", (c) =>
+  render(c, "Users", {
+    // Only evaluated when the key survives partial-reload filtering
+    users: partial.lazy(() => db.users.list()),
+
+    // Omitted on full visits, included only when explicitly requested
+    filters: partial.optional(() => getAvailableFilters()),
+
+    // Always included, even on narrow partial reloads
+    permissions: partial.always(() => getPermissions()),
+  }),
+);
+```
+
+See [Partial reloads](https://inertiajs.com/partial-reloads) in the Inertia docs.
+
+### External Redirects
+
+Use `location` for redirects that should trigger a full page visit (external URLs or routes outside the SPA):
+
+```ts
+import { location } from "inertia-hono";
+
+app.get("/leave", (c) => location(c, "https://example.com"));
+```
+
+On Inertia requests this returns a `409` with `X-Inertia-Location` so the client does a full `window.location` navigation. On regular requests it performs a standard HTTP redirect.
+
+See [External redirects](https://inertiajs.com/redirects#external-redirects) in the Inertia docs.
+
+### Custom HTML Shell
+
+By default, first-visit responses use a minimal HTML document. Override it with `renderHtml` to integrate with Vite, inject stylesheets, or add meta tags:
+
+```ts
+const { middleware } = createInertia({
+  version: "1",
+  renderHtml: async ({ page, pageJson, rootElementId }) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>${page.component}</title>
+      <script type="module" src="/src/main.ts"></script>
+    </head>
+    <body>
+      <script data-page="app" type="application/json">${pageJson}</script>
+      <div id="${rootElementId}"></div>
+    </body>
+    </html>
+  `,
+});
+```
+
+### History Encryption & Clearing
+
+Control the Inertia [history encryption](https://inertiajs.com/history-encryption) behavior:
+
+```ts
+const { middleware } = createInertia({
+  version: "1",
+  encryptHistory: true, // Encrypt page data in browser history
+  clearHistory: true, // Clear history state on this response
+});
+```
+
+## API Reference
+
+### `createInertia(options)`
+
+Creates the Inertia middleware. Returns `{ middleware }`.
+
+| Option             | Type                                           | Description                                                                |
+| ------------------ | ---------------------------------------------- | -------------------------------------------------------------------------- |
+| `version`          | `string \| number \| (() => string \| number)` | Asset version for [cache busting](https://inertiajs.com/asset-versioning). |
+| `share`            | `(c: Context) => Record<string, unknown>`      | Global shared props resolved on every request.                             |
+| `renderHtml`       | `(ctx) => string \| Promise<string>`           | Custom HTML document for first visits.                                     |
+| `rootElementId`    | `string`                                       | Root element ID (default: `"app"`).                                        |
+| `encryptHistory`   | `boolean`                                      | Enable history encryption.                                                 |
+| `clearHistory`     | `boolean`                                      | Clear history on response.                                                 |
+| `preserveFragment` | `boolean`                                      | Preserve URL fragment on navigation.                                       |
+
+### `render(c, component, props?)`
+
+Render an Inertia page. Returns a `Response`.
+
+### `share(c, props)`
+
+Merge props into the current request's shared data. Can be called from any middleware or handler before `render`.
+
+### `location(c, url, status?)`
+
+Trigger an [external redirect](https://inertiajs.com/redirects#external-redirects). Defaults to `302`.
+
+### `defer(fn, group?)`
+
+Mark a prop for [deferred loading](https://inertiajs.com/deferred-props) after first paint. Props in the same `group` are fetched together.
+
+### `partial.lazy(fn)` / `partial.optional(fn)` / `partial.always(fn)`
+
+Control prop evaluation during [partial reloads](https://inertiajs.com/partial-reloads).
+
+## Context-Bound API
+
+As an alternative to the standalone `render` and `share` functions, you can use the context-bound versions available on `c.var.inertia`:
+
+```ts
+app.get("/posts", (c) => {
+  c.var.inertia.share({ user: getUser(c) });
+  return c.var.inertia.render("Posts", { posts: [] });
+});
+```
+
+## Disclaimer
+
+This project was built with the assistance of AI.
+
+## License
+
+MIT
