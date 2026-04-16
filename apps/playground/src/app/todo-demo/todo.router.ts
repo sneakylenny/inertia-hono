@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { render, type InertiaVariables } from 'inertia-hono'
 import {
+  MAX_TODOS,
   addTodo,
   listTodos,
   pushBackgroundTodo,
@@ -10,8 +11,10 @@ import {
 
 const app = new Hono<{ Variables: InertiaVariables }>()
 
+const todosPageProps = () => ({ todos: listTodos() })
+
 app.get('/todos', c =>
-  render(c, 'Todos', { todos: listTodos() }),
+  render(c, 'Todos', todosPageProps()),
 )
 
 app.post('/todos', async (c) => {
@@ -19,12 +22,15 @@ app.post('/todos', async (c) => {
   const text = ct.includes('application/json')
     ? String(((await c.req.json()) as Record<string, unknown>).text ?? '')
     : String((await c.req.parseBody()).text ?? '')
-  const todo = addTodo(text)
-  if (!todo) {
-    return render(c, 'Todos', {
-      todos: listTodos(),
-      errors: { text: 'Add some text for the todo.' },
-    })
+  const result = addTodo(text)
+  if (!result.ok) {
+    const errors
+      = result.error === 'empty'
+        ? { text: 'Add some text for the todo.' }
+        : {
+            text: `You can only have up to ${MAX_TODOS} todos. Remove one to add another.`,
+          }
+    return render(c, 'Todos', { ...todosPageProps(), errors })
   }
   return c.redirect('/todos', 303)
 })
@@ -43,7 +49,8 @@ app.delete('/todos/:id', async (c) => {
 })
 
 app.post('/api/todos/push', (c) => {
-  pushBackgroundTodo()
+  const todo = pushBackgroundTodo()
+  if (!todo) return c.json({ ok: false as const, error: 'limit' as const })
   return c.json({ ok: true as const })
 })
 

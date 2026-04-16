@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { Head, router, useForm } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
-defineProps<{
+/** Keep in sync with `MAX_TODOS` in `todos.store.ts`. */
+const MAX_TODOS = 10
+
+const props = defineProps<{
   todos: { id: number, text: string, done: boolean }[]
   errors?: Record<string, string>
 }>()
+
+const atLimit = computed(() => props.todos.length >= MAX_TODOS)
 
 const form = useForm({ text: '' })
 
@@ -51,19 +57,27 @@ function del(id: number) {
           type="text"
           name="text"
           placeholder="What needs doing?"
+          :disabled="atLimit || form.processing"
         >
         <button
           type="submit"
           class="btn btn-primary join-item"
-          :disabled="form.processing"
+          :disabled="atLimit || form.processing"
         >
           Add
         </button>
       </div>
+      <p class="text-sm text-base-content/70">
+        {{ todos.length }} / {{ MAX_TODOS }} todos
+      </p>
       <span
         v-if="errors?.text"
         class="text-sm text-error"
       >{{ errors.text }}</span>
+      <span
+        v-else-if="atLimit"
+        class="text-sm text-warning"
+      >Todo limit reached — delete one to add more.</span>
     </form>
     <div class="mt-6 overflow-x-auto rounded-box border border-base-300 bg-base-100">
       <table class="table">

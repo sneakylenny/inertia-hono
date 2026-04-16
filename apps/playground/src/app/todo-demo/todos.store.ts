@@ -1,8 +1,15 @@
+/** Max todos for this demo (mirrored in `Todos.vue`). */
+export const MAX_TODOS = 10
+
 export type Todo = {
   id: number
   text: string
   done: boolean
 }
+
+export type AddTodoResult
+  = | { ok: true, todo: Todo }
+    | { ok: false, error: 'empty' | 'limit' }
 
 const state = {
   nextId: 4,
@@ -18,12 +25,13 @@ export function listTodos(): Todo[] {
   return state.items.map(t => ({ ...t }))
 }
 
-export function addTodo(text: string): Todo | null {
+export function addTodo(text: string): AddTodoResult {
   const trimmed = text.trim()
-  if (!trimmed) return null
+  if (!trimmed) return { ok: false, error: 'empty' }
+  if (state.items.length >= MAX_TODOS) return { ok: false, error: 'limit' }
   const todo: Todo = { id: state.nextId++, text: trimmed, done: false }
   state.items.push(todo)
-  return todo
+  return { ok: true, todo }
 }
 
 export function removeTodo(id: number): void {
@@ -37,6 +45,7 @@ export function toggleTodo(id: number): void {
 }
 
 /** For demos: pretend something outside Inertia wrote to the "database". */
-export function pushBackgroundTodo(): Todo {
-  return addTodo(`Background update at ${new Date().toLocaleTimeString()}`)!
+export function pushBackgroundTodo(): Todo | null {
+  const result = addTodo(`Background update at ${new Date().toLocaleTimeString()}`)
+  return result.ok ? result.todo : null
 }
