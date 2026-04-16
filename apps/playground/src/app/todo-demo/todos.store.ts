@@ -1,5 +1,4 @@
-/** Max todos for this demo (mirrored in `Todos.vue`). */
-export const MAX_TODOS = 10
+import { MAX_TODOS } from './todo.validation.js'
 
 export type Todo = {
   id: number

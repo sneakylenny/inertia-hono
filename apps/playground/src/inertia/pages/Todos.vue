@@ -2,8 +2,7 @@
 import { Head, router, useForm } from '@inertiajs/vue3'
 import { computed } from 'vue'
 
-/** Keep in sync with `MAX_TODOS` in `todos.store.ts`. */
-const MAX_TODOS = 10
+import { MAX_TODO_TEXT_LENGTH, MAX_TODOS } from '../../app/todo-demo/todo.validation'
 
 const props = defineProps<{
   todos: { id: number, text: string, done: boolean }[]
@@ -57,6 +56,7 @@ function del(id: number) {
           type="text"
           name="text"
           placeholder="What needs doing?"
+          :maxlength="MAX_TODO_TEXT_LENGTH"
           :disabled="atLimit || form.processing"
         >
         <button
@@ -68,7 +68,7 @@ function del(id: number) {
         </button>
       </div>
       <p class="text-sm text-base-content/70">
-        {{ todos.length }} / {{ MAX_TODOS }} todos
+        {{ todos.length }} / {{ MAX_TODOS }} todos · up to {{ MAX_TODO_TEXT_LENGTH }} characters per todo
       </p>
       <span
         v-if="errors?.text"
