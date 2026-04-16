@@ -54,7 +54,7 @@ export function createPlaygroundHtmlRenderer(options: PlaygroundHtmlOptions) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${title}</title>
+<title data-inertia="">${title}</title>
 </head>
 <body class="min-h-screen bg-base-200">
 <script data-page="${dataPage}" type="application/json">${safeJson}</script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Deferred, Link, router } from '@inertiajs/vue3'
+import { Deferred, Head, Link, router } from '@inertiajs/vue3'
 
 defineProps<{
   intro?: string
@@ -39,6 +39,7 @@ function reloadSecondaryOnly() {
 </script>
 
 <template>
+  <Head title="Deferred props" />
   <div class="container mx-auto max-w-2xl px-4 py-10">
     <h1 class="text-2xl font-bold">
       Deferred props (<kbd class="kbd kbd-sm">defer()</kbd>)

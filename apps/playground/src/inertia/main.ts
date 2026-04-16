@@ -9,6 +9,7 @@ const pages = import.meta.glob<{ default: DefineComponent }>('./pages/**/*.vue')
 
 createInertiaApp({
   layout: () => Default,
+  title: title => title ? `Playground - ${title}` : 'Playground',
   resolve: async (name) => {
     const path = `./pages/${name}.vue`
     const load = pages[path]

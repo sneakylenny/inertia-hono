@@ -108,7 +108,7 @@ describe('playground Hono + Inertia HTML shell', () => {
         appName?: string
       }
     }
-    expect(body.component).toBe('LazyDemo')
+    expect(body.component).toBe('PartialDemo')
     expect(body.props.lazyMain?.label).toBe('lazy()')
     expect(body.props.optionalChunk).toBeUndefined()
     expect(body.props.alwaysMeta?.label).toBe('always()')

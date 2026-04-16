@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 
 defineProps<{
   section?: string
@@ -7,6 +7,7 @@ defineProps<{
 </script>
 
 <template>
+  <Head title="About" />
   <div class="container mx-auto max-w-3xl px-4 py-10">
     <h1 class="text-2xl font-bold">
       About

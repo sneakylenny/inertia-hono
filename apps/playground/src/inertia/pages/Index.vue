@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Head } from '@inertiajs/vue3'
 import { ref } from 'vue'
 
 defineProps<{
@@ -10,6 +11,7 @@ const count = ref(0)
 </script>
 
 <template>
+  <Head title="Home" />
   <div class="container mx-auto max-w-3xl px-4 py-10">
     <p
       v-if="appName"

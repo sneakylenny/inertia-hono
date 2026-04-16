@@ -5,6 +5,7 @@ import Index from './Index.vue'
 describe('Index.vue', () => {
   it('increments count when the button is clicked', async () => {
     const wrapper = mount(Index, {
+      shallow: true,
       props: {
         hint: 'test hint',
         appName: 'Test app',
