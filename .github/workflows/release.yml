@@ -3,6 +3,13 @@ name: Release
 on:
   push:
     branches: [main]
+    paths:
+      # Changesets drive version PRs and publishes; ignore playground, Docker, CI-only, etc.
+      - '.changeset/**'
+      - 'packages/inertia-server/**'
+      - 'packages/inertia-hono/**'
+      - 'packages/create-inertia-hono/**'
+      - 'package.json'
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
