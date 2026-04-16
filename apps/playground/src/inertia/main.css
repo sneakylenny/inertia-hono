@@ -1,2 +1,18 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin 'daisyui';
+
+[data-theme="light"] {
+  --color-primary: oklch(0.65 0.18 45.56);
+  .menu-active {
+    --menu-active-fg: var(--color-primary);
+    --menu-active-bg: var(--color-base-300);
+  }
+}
+
+[data-theme="dark"] {
+  --color-primary: oklch(0.65 0.18 45.56);
+  .menu-active {
+    --menu-active-fg: var(--color-primary);
+    --menu-active-bg: var(--color-base-100);
+  }
+}

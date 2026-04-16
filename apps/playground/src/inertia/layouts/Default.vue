@@ -1,5 +1,6 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
+import DarkModeToggle from '../components/DarkModeToggle.vue'
 </script>
 
 <template>
@@ -7,8 +8,11 @@ import { Link } from '@inertiajs/vue3'
     <aside
       class="sticky top-0 flex h-screen w-64 shrink-0 flex-col gap-4 overflow-y-auto border-r border-base-300 bg-base-200/50 p-4"
     >
-      <div class="px-2 text-sm font-semibold uppercase tracking-wide text-base-content/70">
-        Demos
+      <div class="flex items-center justify-between gap-2 px-2">
+        <div class="text-sm font-semibold uppercase tracking-wide text-base-content/70">
+          Demos
+        </div>
+        <DarkModeToggle />
       </div>
       <nav class="flex-1">
         <ul class="menu menu-vertical w-full rounded-box bg-base-200 p-2">

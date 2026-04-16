@@ -26,12 +26,12 @@ playgroundApp.use(middleware)
 
 playgroundApp.get('/', c =>
   render(c, 'Index', {
-    hint: `Run \`bun run dev\` so Vite serves the Vue app on port ${vitePort}.`,
+    hint: `Welcome to the Inertia Hono playground! Use the navigation above to explore example features. Start the Vite dev server with \`bun run dev\` if you plan to make frontend changes.`,
   }),
 )
 
 playgroundApp.get('/about', async (c) => {
-  await new Promise(resolve => setTimeout(resolve, 1000))
+  await new Promise(resolve => setTimeout(resolve, 500))
 
   return render(c, 'About', { section: 'This page is intentionally slow to simulate a slow server response.' })
 })
