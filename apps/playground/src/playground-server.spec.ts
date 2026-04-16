@@ -32,7 +32,7 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(res.headers.get('x-inertia')).toBe('true')
     const body = (await res.json()) as { component: string, props: { section?: string } }
     expect(body.component).toBe('About')
-    expect(body.props.section).toBe('demo')
+    expect(body.props.section).toBe('This page is intentionally slow to simulate a slow server response.')
   })
 
   it('merges share() layers on /shared-demo', async () => {
