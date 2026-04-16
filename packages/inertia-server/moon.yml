@@ -1,5 +1,6 @@
 $schema: 'https://moonrepo.dev/schemas/project.json'
 
+id: 'inertia-server'
 language: typescript
 layer: library
 stack: backend

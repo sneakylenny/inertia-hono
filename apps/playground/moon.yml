@@ -1,5 +1,6 @@
 $schema: 'https://moonrepo.dev/schemas/project.json'
 
+id: 'playground'
 language: typescript
 layer: application
 stack: backend
