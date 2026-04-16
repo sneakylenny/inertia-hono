@@ -12,7 +12,7 @@ app.get('/redirect-internal-test', (c) => {
 })
 
 app.get('/redirect-external-test', (c) => {
-  return location(c, 'https://www.google.com')
+  return location(c, 'https://www.duckduckgo.com')
 })
 
 export default app
