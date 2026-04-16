@@ -9,6 +9,19 @@ dependsOn:
   - 'inertia-hono'
 
 tasks:
+  build:
+    command: 'bun run build'
+    deps:
+      - 'inertia-hono:build'
+    inputs:
+      - 'src/**/*'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'package.json'
+      - 'project://inertia-hono'
+    outputs:
+      - 'dist'
+
   dev:
     options:
       envFile: '/.env'

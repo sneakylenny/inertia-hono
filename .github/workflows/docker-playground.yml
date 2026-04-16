@@ -1,0 +1,59 @@
+name: Docker Playground
+
+on:
+  # Manual only — playground image is optional; avoids CI minutes on every main push.
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - 'apps/playground/**'
+  #     - 'packages/inertia-hono/**'
+  #     - 'packages/inertia-server/**'
+  #     - 'Dockerfile'
+  #     - '.dockerignore'
+  #     - '.github/workflows/docker-playground.yml'
+  #     - 'package.json'
+  #     - 'bun.lock'
+
+concurrency:
+  group: docker-playground-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker:
+    name: Build and push image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/inertia-hono-playground
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

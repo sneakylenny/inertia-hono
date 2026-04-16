@@ -9,7 +9,8 @@
     "start": "bun run src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build:client": "vite build"
+    "build:client": "vite build",
+    "build": "vite build"
   },
   "dependencies": {
     "@inertiajs/vue3": "^3.0.0",

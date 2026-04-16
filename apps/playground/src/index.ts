@@ -8,7 +8,9 @@ export default {
   fetch: playgroundApp.fetch,
 }
 
-console.log(`Playground API: http://localhost:${port}`)
-console.log(
-  `Vite client:    ${process.env.PLAYGROUND_VITE_ORIGIN ?? `http://localhost:${vitePort}`} (must be running in dev)`,
-)
+console.log(`Playground: http://localhost:${port}`)
+if (process.env.NODE_ENV !== 'production') {
+  console.log(
+    `Vite dev: ${process.env.PLAYGROUND_VITE_ORIGIN ?? `http://localhost:${vitePort}`} (run \`bun run dev\` for HMR)`,
+  )
+}

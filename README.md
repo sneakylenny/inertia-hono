@@ -217,6 +217,21 @@ app.get("/posts", (c) => {
 });
 ```
 
+## Playground (Docker)
+
+The **Docker Playground** workflow is [manual-only](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) (`workflow_dispatch`). Run it from the Actions tab when you want an image pushed to **GitHub Container Registry**:
+
+`ghcr.io/<your-github-username>/inertia-hono-playground:latest`
+
+You can also build locally from the repository root:
+
+```bash
+docker build -t inertia-hono-playground .
+docker run --rm -p 3000:3000 inertia-hono-playground
+```
+
+Set `PLAYGROUND_PORT` if you need a different port inside the container (default `3000`). The app runs with `NODE_ENV=production` and serves the Vite-built client from the same server.
+
 ## Disclaimer
 
 This project was built with the assistance of AI.

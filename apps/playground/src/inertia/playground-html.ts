@@ -24,8 +24,10 @@ export type PlaygroundHtmlOptions = {
   viteOrigin: string
   /** When true, inject @vite/client + main entry for HMR. When false, use built asset path. */
   dev: boolean
-  /** Production entry path, e.g. /assets/main-xxxxx.js (set after `vite build`) */
+  /** Production entry path, e.g. /assets/index-xxxxx.js (set after `vite build`) */
   prodScriptSrc?: string
+  /** Production stylesheet, e.g. /assets/index-xxxxx.css */
+  prodStyleHref?: string | null
 }
 
 /**
@@ -45,9 +47,12 @@ export function createPlaygroundHtmlRenderer(options: PlaygroundHtmlOptions) {
     const title = escapeHtml(page.component)
 
     const viteOrigin = options.viteOrigin.replace(/\/$/, '')
+    const prodStyle = !options.dev && options.prodStyleHref
+      ? `<link rel="stylesheet" crossorigin href="${escapeAttr(options.prodStyleHref)}">\n`
+      : ''
     const clientScripts = options.dev
       ? `\n<script type="module" src="${viteOrigin}/@vite/client"></script>\n<script type="module" src="${viteOrigin}/src/inertia/main.ts"></script>\n`
-      : `\n<script type="module" src="${options.prodScriptSrc ?? '/assets/main.js'}"></script>\n`
+      : `\n<script type="module" crossorigin src="${escapeAttr(options.prodScriptSrc ?? '/assets/main.js')}"></script>\n`
 
     return `<!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -55,7 +60,7 @@ export function createPlaygroundHtmlRenderer(options: PlaygroundHtmlOptions) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-inertia="">${title}</title>
-</head>
+${prodStyle}</head>
 <body class="min-h-screen bg-base-200">
 <script data-page="${dataPage}" type="application/json">${safeJson}</script>
 <div id="${rootId}"></div>${clientScripts}
