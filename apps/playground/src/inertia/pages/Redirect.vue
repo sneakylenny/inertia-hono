@@ -25,14 +25,5 @@ import { Head, Link } from '@inertiajs/vue3'
         Redirect external test
       </Link>
     </div>
-
-    <div class="mt-8">
-      <Link
-        class="btn btn-link px-0"
-        href="/"
-      >
-        Back home
-      </Link>
-    </div>
   </div>
 </template>

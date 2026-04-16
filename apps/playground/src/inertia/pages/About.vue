@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3'
+import { Head } from '@inertiajs/vue3'
 
 defineProps<{
   section?: string
@@ -18,11 +18,5 @@ defineProps<{
     >
       Section: {{ section }}
     </p>
-    <Link
-      class="btn btn-link px-0 mt-8"
-      href="/"
-    >
-      Back home
-    </Link>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Deferred, Head, Link, router } from '@inertiajs/vue3'
+import { Deferred, Head, router } from '@inertiajs/vue3'
 
 defineProps<{
   intro?: string
@@ -201,14 +201,5 @@ function reloadSecondaryOnly() {
         Reload secondary group only
       </button>
     </div>
-
-    <nav class="mt-10">
-      <Link
-        class="btn btn-link px-0"
-        href="/"
-      >
-        Home
-      </Link>
-    </nav>
   </div>
 </template>

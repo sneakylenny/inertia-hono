@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, router, useForm } from '@inertiajs/vue3'
+import { Head, router, useForm } from '@inertiajs/vue3'
 
 defineProps<{
   todos: { id: number, text: string, done: boolean }[]
@@ -116,11 +116,5 @@ function del(id: number) {
         partial reload
       </button>
     </p>
-    <Link
-      class="btn btn-link px-0 mt-8"
-      href="/"
-    >
-      Home
-    </Link>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3'
+import { Head } from '@inertiajs/vue3'
 
 defineProps<{
   appName?: string
@@ -50,13 +50,5 @@ defineProps<{
         </tbody>
       </table>
     </div>
-    <nav class="mt-10">
-      <Link
-        class="btn btn-link px-0"
-        href="/"
-      >
-        Back home
-      </Link>
-    </nav>
   </div>
 </template>

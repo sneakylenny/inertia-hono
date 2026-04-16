@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 
 defineProps<{
   lazyMain?: {
@@ -128,14 +128,5 @@ function visit(opts: { only?: string[] }) {
         Full visit
       </button>
     </div>
-
-    <nav class="mt-10">
-      <Link
-        class="btn btn-link px-0"
-        href="/"
-      >
-        Home
-      </Link>
-    </nav>
   </div>
 </template>
