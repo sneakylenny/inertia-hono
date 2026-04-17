@@ -1,3 +1,6 @@
+> [!WARNING]
+> This project is an early proof of concept and is not yet stable or. The API may change between releases. There is plenty of room for improvement -- PRs are very welcome, as my time to work on this is limited.
+
 # inertia-hono
 
 [![npm](https://img.shields.io/npm/v/inertia-hono.svg?style=for-the-badge)](https://www.npmjs.com/package/inertia-hono)
@@ -13,9 +16,6 @@ Build modern single-page apps with Vue, React, or Svelte **without building an A
 
 > [!NOTE]
 > This monorepo also contains [`inertia-server`](packages/inertia-server/), a framework-agnostic library that implements the [Inertia v3 protocol](https://inertiajs.com/docs/v3/core-concepts/the-protocol). `inertia-hono` is built on top of it and re-exports its utilities, so you only need to install `inertia-hono`.
-
-> [!WARNING]
-> This project is an early proof of concept and is not yet stable. The API may change between releases. There is plenty of room for improvement -- PRs are very welcome, as my time to work on this is limited.
 
 ## Install
 
@@ -202,14 +202,18 @@ Then use `back()` from handlers and validator hooks:
 ```ts
 import { back } from "inertia-hono";
 
-app.post("/todos", sValidator("json", schema, (result, c) => {
-  if (result.success) return;
-  return back(c, { errors: toInertiaErrors(result.error) });
-}), (c) => {
-  const result = addTodo(c.req.valid("json").text);
-  if (!result.ok) return back(c, { errors: { text: "At the limit." } });
-  return c.redirect("/todos", 303);
-});
+app.post(
+  "/todos",
+  sValidator("json", schema, (result, c) => {
+    if (result.success) return;
+    return back(c, { errors: toInertiaErrors(result.error) });
+  }),
+  (c) => {
+    const result = addTodo(c.req.valid("json").text);
+    if (!result.ok) return back(c, { errors: { text: "At the limit." } });
+    return c.redirect("/todos", 303);
+  },
+);
 ```
 
 Notes:
