@@ -1,11 +1,6 @@
-import { sValidator } from '@hono/standard-validator'
 import { Hono } from 'hono'
-import {
-  back,
-  render,
-  toInertiaErrors,
-  type InertiaVariables,
-} from 'inertia-hono'
+import { back, render, type InertiaVariables } from 'inertia-hono'
+import { inertiaValidator } from 'inertia-hono/validator'
 import {
   addTodo,
   listTodos,
@@ -21,11 +16,8 @@ app.get('/todos', c => render(c, 'Todos', { todos: listTodos() }))
 
 app.post(
   '/todos',
-  sValidator('json', newTodoSchema, (result, c) => {
-    if (result.success) return
-    return back(c, {
-      errors: toInertiaErrors(result.error, { fallbackKey: 'text' }),
-    })
+  inertiaValidator('json', newTodoSchema, {
+    errors: { fallbackKey: 'text' },
   }),
   (c) => {
     const { text } = c.req.valid('json')

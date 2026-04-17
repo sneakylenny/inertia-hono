@@ -13,10 +13,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./validator": {
+      "types": "./dist/validator.d.ts",
+      "import": "./dist/validator.js"
     }
   },
   "scripts": {
-    "build": "bun run --cwd ../inertia-server build && rm -rf dist && bun build ./src/index.ts --outdir ./dist --format esm --sourcemap --target node --external hono --external inertia-server && tsc -p tsconfig.build.json",
+    "build": "bun run --cwd ../inertia-server build && rm -rf dist && bun build ./src/index.ts ./src/validator.ts --outdir ./dist --format esm --sourcemap --target node --external hono --external inertia-server --external @hono/standard-validator && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "prepublishOnly": "bun run build"
   },
@@ -27,15 +31,23 @@
   ],
   "license": "MIT",
   "peerDependencies": {
+    "@hono/standard-validator": ">=0.1.0",
     "hono": "^4.7.0"
+  },
+  "peerDependenciesMeta": {
+    "@hono/standard-validator": {
+      "optional": true
+    }
   },
   "dependencies": {
     "inertia-server": "^0.1.0"
   },
   "devDependencies": {
+    "@hono/standard-validator": "^0.1.5",
     "@types/node": "^22.13.10",
     "hono": "^4.7.4",
     "typescript": "^5.8.2",
+    "valibot": "^1.0.0",
     "vitest": "^3.0.9"
   }
 }

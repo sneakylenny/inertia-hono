@@ -61,19 +61,25 @@
     },
     "packages/inertia-hono": {
       "name": "inertia-hono",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dependencies": {
         "inertia-server": "^0.1.0",
       },
       "devDependencies": {
+        "@hono/standard-validator": "^0.1.5",
         "@types/node": "^22.13.10",
         "hono": "^4.7.4",
         "typescript": "^5.8.2",
+        "valibot": "^1.0.0",
         "vitest": "^3.0.9",
       },
       "peerDependencies": {
+        "@hono/standard-validator": ">=0.1.0",
         "hono": "^4.7.0",
       },
+      "optionalPeers": [
+        "@hono/standard-validator",
+      ],
     },
     "packages/inertia-server": {
       "name": "inertia-server",

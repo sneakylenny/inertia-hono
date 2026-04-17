@@ -143,16 +143,31 @@ See [Partial reloads](https://inertiajs.com/partial-reloads) in the Inertia docs
 
 ### Form Validation Errors
 
-`toInertiaErrors` converts [Standard Schema](https://standardschema.dev/) issues (Valibot, Zod v3+, ArkType, Effect Schema, ...) into Inertia's [`errors` page prop](https://inertiajs.com/docs/v3/the-basics/forms#form-errors), keyed by dotted path (e.g. `items.0.name`). It pairs well with [`@hono/standard-validator`](https://github.com/honojs/middleware/tree/main/packages/standard-validator):
+Two options, same validator engine under the hood — pick the one that fits the route:
+
+**Zero-config: `inertiaValidator`** (recommended for the common case). Wraps [`@hono/standard-validator`](https://github.com/honojs/middleware/tree/main/packages/standard-validator) and auto-flashes failures through [`back()`](#redirect-back-with-flashed-errors) so `page.props.errors` Just Works. Import it from the `inertia-hono/validator` subpath (keeps the main bundle free of validator code):
 
 ```ts
-import { sValidator } from "@hono/standard-validator";
-import { back, toInertiaErrors } from "inertia-hono";
+import { inertiaValidator } from "inertia-hono/validator";
 import * as v from "valibot";
 
 const schema = v.object({
   text: v.pipe(v.string(), v.minLength(1, "Add some text.")),
 });
+
+app.post("/todos", inertiaValidator("json", schema), (c) => {
+  const { text } = c.req.valid("json"); // fully typed
+  // ...
+});
+```
+
+Options flow through to the helpers: `inertiaValidator(target, schema, { errors: { fallbackKey: "text" }, back: { fallback: "/todos" } })`. Requires `createInertia({ flashSecret })` and `@hono/standard-validator` as a peer dep.
+
+**Full control: `toInertiaErrors`**. If you need custom failure handling (e.g. rendering the same page with extra context), map Standard Schema issues (Valibot, Zod v3+, ArkType, Effect Schema, ...) into Inertia's [`errors` page prop](https://inertiajs.com/docs/v3/the-basics/forms#form-errors) yourself. Keys are dotted paths (e.g. `items.0.name`), first issue per path wins.
+
+```ts
+import { sValidator } from "@hono/standard-validator";
+import { back, toInertiaErrors } from "inertia-hono";
 
 app.post(
   "/todos",
@@ -167,7 +182,7 @@ app.post(
 );
 ```
 
-The first issue per path wins. When every issue is pathless (e.g. the body isn't even an object), the message lands under a single `form` key — override with `toInertiaErrors(issues, { fallbackKey: "text" })`.
+When every issue is pathless (e.g. the body isn't even an object), the message lands under a single `form` key — override with `toInertiaErrors(issues, { fallbackKey: "text" })`.
 
 ### Redirect Back with Flashed Errors
 
@@ -323,6 +338,10 @@ Control prop evaluation during [partial reloads](https://inertiajs.com/partial-r
 ### `toInertiaErrors(issues, options?)`
 
 Map [Standard Schema](https://standardschema.dev/) issues to Inertia's `errors` page prop (`Record<string, string>`, dot-notated keys). See [Form Validation Errors](#form-validation-errors).
+
+### `inertiaValidator(target, schema, options?)`
+
+Imported from `inertia-hono/validator`. Zero-config Standard Schema validator that auto-calls `back()` with flashed `errors` on failure. `options.errors` forwards to `toInertiaErrors`; `options.back` forwards to `back()`. See [Form Validation Errors](#form-validation-errors).
 
 ## Context-Bound API
 
