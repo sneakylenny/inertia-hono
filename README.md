@@ -141,6 +141,37 @@ app.get("/users", (c) =>
 
 See [Partial reloads](https://inertiajs.com/partial-reloads) in the Inertia docs.
 
+### Form Validation Errors
+
+`toInertiaErrors` converts [Standard Schema](https://standardschema.dev/) issues (Valibot, Zod v3+, ArkType, Effect Schema, ...) into Inertia's [`errors` page prop](https://inertiajs.com/docs/v3/the-basics/forms#form-errors), keyed by dotted path (e.g. `items.0.name`). It pairs well with [`@hono/standard-validator`](https://github.com/honojs/middleware/tree/main/packages/standard-validator):
+
+```ts
+import { sValidator } from "@hono/standard-validator";
+import { render, toInertiaErrors } from "inertia-hono";
+import * as v from "valibot";
+
+const schema = v.object({
+  text: v.pipe(v.string(), v.minLength(1, "Add some text.")),
+});
+
+app.post(
+  "/todos",
+  sValidator("json", schema, (result, c) => {
+    if (result.success) return;
+    return render(c, "Todos", {
+      todos: listTodos(),
+      errors: toInertiaErrors(result.error),
+    });
+  }),
+  (c) => {
+    const { text } = c.req.valid("json");
+    // ...
+  },
+);
+```
+
+The first issue per path wins. When every issue is pathless (e.g. the body isn't even an object), the message lands under a single `form` key — override with `toInertiaErrors(issues, { fallbackKey: "text" })`.
+
 ### External Redirects
 
 Use `location` for redirects that should trigger a full page visit (external URLs or routes outside the SPA):
@@ -250,6 +281,10 @@ Mark a prop for [deferred loading](https://inertiajs.com/deferred-props) after f
 ### `partial.lazy(fn)` / `partial.optional(fn)` / `partial.always(fn)`
 
 Control prop evaluation during [partial reloads](https://inertiajs.com/partial-reloads).
+
+### `toInertiaErrors(issues, options?)`
+
+Map [Standard Schema](https://standardschema.dev/) issues to Inertia's `errors` page prop (`Record<string, string>`, dot-notated keys). See [Form Validation Errors](#form-validation-errors).
 
 ## Context-Bound API
 

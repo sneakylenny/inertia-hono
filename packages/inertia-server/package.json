@@ -20,6 +20,9 @@
   },
   "keywords": ["inertia", "inertiajs", "protocol"],
   "license": "MIT",
+  "dependencies": {
+    "@standard-schema/spec": "^1.0.0"
+  },
   "devDependencies": {
     "@types/node": "^22.13.10",
     "typescript": "^5.8.2",

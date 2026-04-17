@@ -21,3 +21,9 @@ export { filterPartialProps, isPartialDataReload } from './partial.js'
 export { getVersionMismatch } from './version.js'
 export { defaultHtmlShell, escapeForScriptJson } from './html.js'
 export { resolveInertia, type ResolveInertiaInput } from './resolve.js'
+export {
+  issueDotPath,
+  toInertiaErrors,
+  type InertiaErrors,
+  type ToInertiaErrorsOptions,
+} from './validation.js'

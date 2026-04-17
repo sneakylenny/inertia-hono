@@ -200,14 +200,18 @@ export {
   isInertiaDeferProp,
   isInertiaDeferred,
   isInertiaRequest,
+  issueDotPath,
   partial,
   resolveInertia,
+  toInertiaErrors,
   type InertiaDeferProp,
   type InertiaDeferredProp,
+  type InertiaErrors,
   type InertiaPage,
   type InertiaRequestLike,
   type ResolveInertiaInput,
   type ResolveInertiaResult,
+  type ToInertiaErrorsOptions,
 } from 'inertia-server'
 
 export {

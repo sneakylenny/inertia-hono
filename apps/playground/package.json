@@ -13,7 +13,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@hono/valibot-validator": "^0.6.1",
+    "@hono/standard-validator": "^0.1.5",
     "@inertiajs/vue3": "^3.0.0",
     "@vueuse/core": "^14.2.1",
     "hono": "^4.7.4",
