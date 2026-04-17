@@ -8,11 +8,11 @@ import {
 } from 'inertia-hono'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import deferredDemoRouter from './app/deferred-demo/deferred-demo.router.js'
-import lazyDemoRouter from './app/partial-demo/partial-demo.router.js'
-import sharedDemoRouter from './app/shared-demo/shared-demo.router.js'
-import todoRouter from './app/todo-demo/todo.router.js'
-import redirectDemoRouter from './app/redirect-demo/redirect-demo.router.js'
+import deferredDemoRouter from './app/demos/deferred/deferred.router.js'
+import lazyDemoRouter from './app/demos/partial/partial.router.js'
+import sharedDemoRouter from './app/demos/shared/shared.router.js'
+import todoRouter from './app/demos/todo/todo.router.js'
+import redirectDemoRouter from './app/demos/redirect/redirect.router.js'
 
 const vitePort = process.env.VITE_PORT ? Number(process.env.VITE_PORT) : 5173
 const viteOrigin = process.env.PLAYGROUND_VITE_ORIGIN ?? `http://localhost:${vitePort}`

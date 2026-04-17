@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { render, share, type InertiaVariables } from 'inertia-hono'
-import { sharedDemoShareMiddleware } from './shared-demo.middleware.js'
+import { sharedDemoShareMiddleware } from './shared.middleware.js'
 
 const app = new Hono<{ Variables: InertiaVariables }>()
 

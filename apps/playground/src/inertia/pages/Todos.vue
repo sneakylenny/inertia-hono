@@ -2,7 +2,7 @@
 import { Head, router, useForm } from '@inertiajs/vue3'
 import { computed } from 'vue'
 
-import { MAX_TODO_TEXT_LENGTH, MAX_TODOS } from '../../app/todo-demo/todo.validation'
+import { MAX_TODO_TEXT_LENGTH, MAX_TODOS } from '../../app/demos/todo/todo.validation'
 
 const props = defineProps<{
   todos: { id: number, text: string, done: boolean }[]
