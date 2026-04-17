@@ -9,11 +9,19 @@ const TEMPLATE_DIR = join(__dirname, '..', 'template')
 const orange = (text: string) => `\x1b[38;2;227;96;2m${text}\x1b[39m`
 const bold = (text: string) => `\x1b[1m${text}\x1b[22m`
 
+const RUNTIMES = ['node', 'bun'] as const
+type Runtime = typeof RUNTIMES[number]
+
+type CliArgs = {
+  projectName?: string
+  runtime?: Runtime
+}
+
 function isEmptyDir(path: string): boolean {
   return readdirSync(path).length === 0
 }
 
-function detectPackageManager(): string {
+function detectPackageManager(): 'npm' | 'pnpm' | 'yarn' | 'bun' {
   const ua = process.env.npm_config_user_agent
   if (ua) {
     if (ua.startsWith('bun')) return 'bun'
@@ -23,10 +31,38 @@ function detectPackageManager(): string {
   return 'npm'
 }
 
+function parseArgs(argv: string[]): CliArgs {
+  const args: CliArgs = {}
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i]
+    if (arg === '--runtime' || arg === '-r') {
+      const value = argv[++i]
+      if (!value || !(RUNTIMES as readonly string[]).includes(value)) {
+        p.cancel(`--runtime must be one of: ${RUNTIMES.join(', ')}`)
+        process.exit(1)
+      }
+      args.runtime = value as Runtime
+    }
+    else if (arg.startsWith('--runtime=')) {
+      const value = arg.slice('--runtime='.length)
+      if (!(RUNTIMES as readonly string[]).includes(value)) {
+        p.cancel(`--runtime must be one of: ${RUNTIMES.join(', ')}`)
+        process.exit(1)
+      }
+      args.runtime = value as Runtime
+    }
+    else if (!arg.startsWith('-') && args.projectName === undefined) {
+      args.projectName = arg
+    }
+  }
+  return args
+}
+
 async function main() {
   p.intro(orange(bold('create-inertia-hono')))
 
-  const argDir = process.argv[2]
+  const { projectName: argDir, runtime: argRuntime } = parseArgs(process.argv.slice(2))
+  const pm = detectPackageManager()
 
   const projectName = argDir ?? await p.text({
     message: 'Project name',
@@ -41,6 +77,20 @@ async function main() {
     process.exit(0)
   }
 
+  const runtime: Runtime = argRuntime ?? (await p.select({
+    message: 'Runtime',
+    options: [
+      { value: 'node', label: 'Node.js', hint: '@hono/node-server + tsx' },
+      { value: 'bun', label: 'Bun', hint: 'Bun.serve via default export' },
+    ],
+    initialValue: pm === 'bun' ? 'bun' : 'node',
+  })) as Runtime
+
+  if (p.isCancel(runtime)) {
+    p.cancel('Cancelled.')
+    process.exit(0)
+  }
+
   const targetDir = resolve(String(projectName))
   const dirName = basename(targetDir)
 
@@ -50,7 +100,7 @@ async function main() {
   }
 
   const confirm = await p.confirm({
-    message: `Scaffold into ${orange(targetDir)}?`,
+    message: `Scaffold ${orange(runtime)} project into ${orange(targetDir)}?`,
     initialValue: true,
   })
 
@@ -63,7 +113,8 @@ async function main() {
   spinner.start(orange('Scaffolding project...'))
 
   mkdirSync(targetDir, { recursive: true })
-  cpSync(TEMPLATE_DIR, targetDir, { recursive: true })
+  cpSync(join(TEMPLATE_DIR, 'base'), targetDir, { recursive: true })
+  cpSync(join(TEMPLATE_DIR, runtime), targetDir, { recursive: true })
 
   const pkgPath = join(targetDir, 'package.json')
   const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
@@ -72,10 +123,9 @@ async function main() {
 
   spinner.stop(orange('Project scaffolded.'))
 
-  const pm = detectPackageManager()
-
+  const installPm = runtime === 'bun' ? 'bun' : pm
   p.note(
-    `cd ${dirName}\n${pm} install\n${pm} run dev`,
+    `cd ${dirName}\n${installPm} install\n${installPm} run dev`,
     orange('Next steps'),
   )
 

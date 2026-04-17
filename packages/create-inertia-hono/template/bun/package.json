@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.0",
+    "@types/bun": "^1.2.0",
     "@vitejs/plugin-vue": "^5.2.0",
     "concurrently": "^9.1.0",
     "tailwindcss": "^4.2.0",

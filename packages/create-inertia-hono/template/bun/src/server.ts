@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { serveStatic } from 'hono/bun'
 import {
   createInertia,
   createViteHtmlRenderer,
@@ -14,9 +15,8 @@ const distRoot = resolve(join(fileURLToPath(new URL('.', import.meta.url)), '..'
 
 export const app = new Hono<{ Variables: InertiaVariables }>()
 
-if (!isDev && typeof Bun !== 'undefined') {
-  const { serveStatic } = await import('hono/bun')
-  app.use('/assets/*', serveStatic({ root: distRoot }))
+if (!isDev) {
+  app.use('/assets/*', serveStatic({ root: './dist' }))
 }
 
 const { middleware } = createInertia({
