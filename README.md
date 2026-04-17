@@ -1,5 +1,10 @@
 # inertia-hono
 
+[![npm](https://img.shields.io/npm/v/inertia-hono.svg?style=for-the-badge)](https://www.npmjs.com/package/inertia-hono)
+[![CI](https://img.shields.io/github/actions/workflow/status/sneakylenny/inertia-hono/ci.yml?style=for-the-badge&branch=main&label=CI)](https://github.com/sneakylenny/inertia-hono/actions/workflows/ci.yml?query=branch%3Amain)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
 [Inertia.js v3](https://inertiajs.com/) server-side adapter for [Hono](https://hono.dev/).
 
 Build modern single-page apps with Vue, React, or Svelte **without building an API** -- Inertia gives you a full SPA experience while keeping routing and data on the server. This adapter brings first-class Inertia support to the Hono web framework.
@@ -150,9 +155,33 @@ On Inertia requests this returns a `409` with `X-Inertia-Location` so the client
 
 See [External redirects](https://inertiajs.com/redirects#external-redirects) in the Inertia docs.
 
-### Custom HTML Shell
+### HTML Shell
 
-By default, first-visit responses use a minimal HTML document. Override it with `renderHtml` to integrate with Vite, inject stylesheets, or add meta tags:
+By default, first-visit responses use a minimal HTML document. Override it with `renderHtml` to integrate with Vite, inject stylesheets, or add meta tags.
+
+**Vite:** `inertia-hono` exports `createViteHtmlRenderer` and `readViteManifest` (see `packages/inertia-hono/src/vite.ts`) so you do not have to hand-write the shell. The helper wires `@vite/client` and your entry in development, and in production reads Vite’s [`build.manifest`](https://vite.dev/config/build-options.html#build-manifest) (via `readViteManifest(distDir)`) to emit the right `<script>` / `<link>` tags. It is implemented with Hono’s [`html`](https://hono.dev/docs/helpers/html) tag helper and escapes embedded page JSON safely.
+
+```ts
+import {
+  createInertia,
+  createViteHtmlRenderer,
+  readViteManifest,
+} from "inertia-hono";
+
+const isDev = process.env.NODE_ENV !== "production";
+const manifest = isDev ? null : await readViteManifest("./dist");
+
+const { middleware } = createInertia({
+  version: "1",
+  renderHtml: createViteHtmlRenderer({
+    dev: isDev,
+    entry: "src/main.ts",
+    manifest,
+  }),
+});
+```
+
+For full control, you can still return your own HTML string from `renderHtml`:
 
 ```ts
 const { middleware } = createInertia({
