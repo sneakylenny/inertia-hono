@@ -7,8 +7,7 @@ const port = process.env.VITE_PORT ? Number(process.env.VITE_PORT) : 5173
 
 export default defineConfig({
   plugins: [tailwindcss(), vue()],
-  appType: 'spa',
-  root: resolve(import.meta.dirname),
+  appType: 'custom',
   server: {
     port,
     strictPort: true,
@@ -18,8 +17,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    manifest: true,
     rollupOptions: {
-      input: resolve(import.meta.dirname, 'index.html'),
+      input: resolve(import.meta.dirname, 'src/inertia/main.ts'),
     },
   },
 })

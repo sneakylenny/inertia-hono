@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "concurrently -k -n server,vite -c blue,green \"bun run dev:server\" \"bun run dev:vite\"",
     "dev:server": "bun --watch run src/index.ts",
-    "dev:vite": "vite"
+    "dev:vite": "vite",
+    "build": "vite build",
+    "start": "NODE_ENV=production bun run src/index.ts"
   },
   "dependencies": {
     "@inertiajs/vue3": "^3.0.0",

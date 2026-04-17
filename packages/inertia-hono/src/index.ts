@@ -209,3 +209,13 @@ export {
   type ResolveInertiaInput,
   type ResolveInertiaResult,
 } from 'inertia-server'
+
+export {
+  createViteHtmlRenderer,
+  readViteManifest,
+  VITE_MANIFEST_PATH,
+  type ViteHtmlRenderer,
+  type ViteHtmlRendererOptions,
+  type ViteManifest,
+  type ViteManifestEntry,
+} from './vite.js'

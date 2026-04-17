@@ -15,7 +15,6 @@ tasks:
       - 'inertia-hono:build'
     inputs:
       - 'src/**/*'
-      - 'index.html'
       - 'vite.config.ts'
       - 'package.json'
       - 'project://inertia-hono'
@@ -31,7 +30,6 @@ tasks:
       - 'inertia-hono:build'
     inputs:
       - 'src/**/*'
-      - 'index.html'
       - 'vite.config.ts'
       - 'package.json'
 
@@ -50,7 +48,6 @@ tasks:
     inputs:
       - 'src/**/*'
       - 'src/**/*.vue'
-      - 'index.html'
       - 'vite.config.ts'
       - '/eslint.config.js'
       - 'package.json'

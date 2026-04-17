@@ -1,17 +1,32 @@
 import { Hono } from 'hono'
-import { createInertia, render, type InertiaVariables } from 'inertia-hono'
-import { createHtmlRenderer } from './html.js'
+import {
+  createInertia,
+  createViteHtmlRenderer,
+  readViteManifest,
+  render,
+  type InertiaVariables,
+} from 'inertia-hono'
+import { join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const vitePort = process.env.VITE_PORT ? Number(process.env.VITE_PORT) : 5173
-const viteOrigin = process.env.VITE_ORIGIN ?? `http://localhost:${vitePort}`
 const isDev = process.env.NODE_ENV !== 'production'
+const distRoot = resolve(join(fileURLToPath(new URL('.', import.meta.url)), '..', 'dist'))
+
+export const app = new Hono<{ Variables: InertiaVariables }>()
+
+if (!isDev && typeof Bun !== 'undefined') {
+  const { serveStatic } = await import('hono/bun')
+  app.use('/assets/*', serveStatic({ root: distRoot }))
+}
 
 const { middleware } = createInertia({
   version: '1',
-  renderHtml: createHtmlRenderer({ viteOrigin, dev: isDev }),
+  renderHtml: createViteHtmlRenderer({
+    dev: isDev,
+    entry: 'src/inertia/main.ts',
+    manifest: isDev ? null : await readViteManifest(distRoot),
+  }),
 })
-
-export const app = new Hono<{ Variables: InertiaVariables }>()
 
 app.use(middleware)
 

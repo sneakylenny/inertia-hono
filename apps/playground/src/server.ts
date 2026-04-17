@@ -1,5 +1,11 @@
 import { Hono } from 'hono'
-import { createInertia, render, type InertiaVariables } from 'inertia-hono'
+import {
+  createInertia,
+  createViteHtmlRenderer,
+  readViteManifest,
+  render,
+  type InertiaVariables,
+} from 'inertia-hono'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import deferredDemoRouter from './app/deferred-demo/deferred-demo.router.js'
@@ -7,15 +13,13 @@ import lazyDemoRouter from './app/partial-demo/partial-demo.router.js'
 import sharedDemoRouter from './app/shared-demo/shared-demo.router.js'
 import todoRouter from './app/todo-demo/todo.router.js'
 import redirectDemoRouter from './app/redirect-demo/redirect-demo.router.js'
-import { createPlaygroundHtmlRenderer } from './inertia/playground-html.js'
-import { readProdClientAssets } from './prod-client-assets.js'
 
 const vitePort = process.env.VITE_PORT ? Number(process.env.VITE_PORT) : 5173
 const viteOrigin = process.env.PLAYGROUND_VITE_ORIGIN ?? `http://localhost:${vitePort}`
 const isDev = process.env.NODE_ENV !== 'production'
 
 const distRoot = resolve(join(fileURLToPath(new URL('.', import.meta.url)), '..', 'dist'))
-const prodAssets = !isDev ? readProdClientAssets(distRoot) : null
+const manifest = isDev ? null : await readViteManifest(distRoot)
 
 export const playgroundApp = new Hono<{ Variables: InertiaVariables }>()
 
@@ -27,11 +31,13 @@ if (!isDev && typeof Bun !== 'undefined') {
 const { middleware } = createInertia({
   version: 'playground-1',
   share: async () => ({ appName: 'Inertia Hono playground' }),
-  renderHtml: createPlaygroundHtmlRenderer({
-    viteOrigin,
+  renderHtml: createViteHtmlRenderer({
     dev: isDev,
-    prodScriptSrc: prodAssets?.scriptSrc,
-    prodStyleHref: prodAssets?.styleHref,
+    viteOrigin,
+    entry: 'src/inertia/main.ts',
+    manifest,
+    htmlAttrs: { 'data-theme': 'light' },
+    bodyClass: 'min-h-screen bg-base-200',
   }),
 })
 
