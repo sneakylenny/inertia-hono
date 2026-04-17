@@ -1,19 +1,17 @@
 name: Docker Playground
 
 on:
-  # Manual only — playground image is optional; avoids CI minutes on every main push.
-  workflow_dispatch:
-  # push:
-  #   branches: [main]
-  #   paths:
-  #     - 'apps/playground/**'
-  #     - 'packages/inertia-hono/**'
-  #     - 'packages/inertia-server/**'
-  #     - 'Dockerfile'
-  #     - '.dockerignore'
-  #     - '.github/workflows/docker-playground.yml'
-  #     - 'package.json'
-  #     - 'bun.lock'
+  push:
+    branches: [ main ]
+    paths:
+      - "apps/playground/**"
+      - "packages/inertia-hono/**"
+      - "packages/inertia-server/**"
+      - "Dockerfile"
+      - ".dockerignore"
+      - ".github/workflows/docker-playground.yml"
+      - "package.json"
+      - "bun.lock"
 
 concurrency:
   group: docker-playground-${{ github.ref }}
