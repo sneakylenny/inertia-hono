@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Hono } from 'hono'
+import { Hono, type Env } from 'hono'
 import {
   createInertia,
   createViteHtmlRenderer,
@@ -8,7 +8,7 @@ import {
   type ViteManifest,
 } from './index.js'
 
-async function firstVisit(app: Hono, path = '/hello') {
+async function firstVisit<E extends Env>(app: Hono<E>, path = '/hello') {
   const res = await app.request(`http://localhost${path}`, {
     headers: { Accept: 'text/html' },
   })
