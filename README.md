@@ -147,7 +147,7 @@ See [Partial reloads](https://inertiajs.com/partial-reloads) in the Inertia docs
 
 ```ts
 import { sValidator } from "@hono/standard-validator";
-import { render, toInertiaErrors } from "inertia-hono";
+import { back, toInertiaErrors } from "inertia-hono";
 import * as v from "valibot";
 
 const schema = v.object({
@@ -158,10 +158,7 @@ app.post(
   "/todos",
   sValidator("json", schema, (result, c) => {
     if (result.success) return;
-    return render(c, "Todos", {
-      todos: listTodos(),
-      errors: toInertiaErrors(result.error),
-    });
+    return back(c, { errors: toInertiaErrors(result.error) });
   }),
   (c) => {
     const { text } = c.req.valid("json");
@@ -171,6 +168,41 @@ app.post(
 ```
 
 The first issue per path wins. When every issue is pathless (e.g. the body isn't even an object), the message lands under a single `form` key — override with `toInertiaErrors(issues, { fallbackKey: "text" })`.
+
+### Redirect Back with Flashed Errors
+
+`back(c, { errors, flash })` implements Inertia's canonical [Post/Redirect/Get flow](https://inertiajs.com/redirects): it stashes a one-shot payload in a signed cookie and redirects (303) to the `Referer`. On the next request, the middleware consumes the cookie and exposes `errors` / `flash` as shared props automatically, so any page you land on already has them available without re-rendering by hand.
+
+Enable it by passing a `flashSecret` to `createInertia`:
+
+```ts
+const { middleware } = createInertia({
+  version: "1",
+  flashSecret: process.env.FLASH_SECRET!,
+});
+```
+
+Then use `back()` from handlers and validator hooks:
+
+```ts
+import { back } from "inertia-hono";
+
+app.post("/todos", sValidator("json", schema, (result, c) => {
+  if (result.success) return;
+  return back(c, { errors: toInertiaErrors(result.error) });
+}), (c) => {
+  const result = addTodo(c.req.valid("json").text);
+  if (!result.ok) return back(c, { errors: { text: "At the limit." } });
+  return c.redirect("/todos", 303);
+});
+```
+
+Notes:
+
+- Uses `303 See Other` by default so browsers and `@inertiajs/vue3`/`react`/`svelte` follow with a `GET`.
+- Falls back to `options.fallback` (default `/`) when `Referer` is missing or points to a different origin — no open-redirect risk.
+- `flash` is available for generic one-shot messages (toasts, etc.) and surfaces as `page.props.flash`.
+- The cookie is HMAC-signed with your `flashSecret` (via Hono's [`setSignedCookie`](https://hono.dev/docs/helpers/cookie#signed-cookies)), so tampered payloads are silently discarded.
 
 ### External Redirects
 
@@ -261,6 +293,8 @@ Creates the Inertia middleware. Returns `{ middleware }`.
 | `encryptHistory`   | `boolean`                                      | Enable history encryption.                                                 |
 | `clearHistory`     | `boolean`                                      | Clear history on response.                                                 |
 | `preserveFragment` | `boolean`                                      | Preserve URL fragment on navigation.                                       |
+| `flashSecret`      | `string`                                       | Secret used to sign the flash cookie powering `back()`.                    |
+| `flashCookie`      | `InertiaFlashCookieOptions`                    | Override flash cookie attributes (path, sameSite, secure, ...).            |
 
 ### `render(c, component, props?)`
 
@@ -273,6 +307,10 @@ Merge props into the current request's shared data. Can be called from any middl
 ### `location(c, url, status?)`
 
 Trigger an [external redirect](https://inertiajs.com/redirects#external-redirects). Defaults to `302`.
+
+### `back(c, payload?, options?)`
+
+Redirect back to the `Referer` (`303` by default) with an optional `{ errors, flash }` payload flashed into a signed cookie. Surfaces as shared props on the next request. See [Redirect Back with Flashed Errors](#redirect-back-with-flashed-errors). Requires `createInertia({ flashSecret })`.
 
 ### `defer(fn, group?)`
 

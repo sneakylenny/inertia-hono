@@ -6,6 +6,13 @@ import {
   resolveInertia,
   type ResolveInertiaInput,
 } from 'inertia-server'
+import {
+  hasFlashContent,
+  readInertiaFlash,
+  writeInertiaFlash,
+  type InertiaFlashCookieOptions,
+  type InertiaFlashPayload,
+} from './flash.js'
 
 export type InertiaVersion = string | number | (() => string | number)
 
@@ -20,6 +27,14 @@ export type CreateInertiaOptions = {
   clearHistory?: boolean
   preserveFragment?: boolean
   renderHtml?: ResolveInertiaInput['renderHtml']
+  /**
+   * Secret used to sign the one-shot flash cookie that powers {@link back}.
+   * Omit to disable flash support (`inertia.flash` / `back()` will throw if called).
+   * @see https://inertiajs.com/redirects
+   */
+  flashSecret?: string
+  /** Override cookie attributes used for the flash cookie (path, sameSite, secure, …). */
+  flashCookie?: InertiaFlashCookieOptions
 }
 
 export type InertiaInstance = {
@@ -29,6 +44,11 @@ export type InertiaInstance = {
     component: string,
     props?: Record<string, unknown>,
   ) => Promise<Response>
+  /**
+   * Flash a one-shot payload (typically `{ errors }`) into a signed cookie so it
+   * surfaces as shared props on the next request. Requires `createInertia({ flashSecret })`.
+   */
+  flash: (payload: InertiaFlashPayload) => Promise<void>
 }
 
 export type InertiaVariables = {
@@ -118,6 +138,50 @@ function toInertiaRequest(c: Context) {
   }
 }
 
+export type BackOptions = {
+  /** Redirect status code. Defaults to `303` per the Inertia protocol. */
+  status?: RedirectStatusCode
+  /** URL used when `Referer` is missing or cross-origin. Defaults to `'/'`. */
+  fallback?: string
+}
+
+/**
+ * [Redirect back](https://inertiajs.com/redirects) to the `Referer` with an optional
+ * flashed payload (`errors`, `flash`) carried in a signed cookie. The next request's
+ * middleware surfaces the payload as shared props, so any page you land on already has
+ * `errors` and `flash` available — no need to re-render the current view by hand.
+ *
+ * Uses status `303 See Other` by default so browsers and the Inertia client follow the
+ * redirect with a `GET`, completing the Post/Redirect/Get pattern. Falls back to
+ * `options.fallback` (default `'/'`) when `Referer` is missing or points to a different
+ * origin.
+ */
+export async function back(
+  c: Context,
+  payload?: InertiaFlashPayload,
+  options: BackOptions = {},
+): Promise<Response> {
+  if (payload && hasFlashContent(payload)) {
+    await getInertia(c).flash(payload)
+  }
+  const { status = 303, fallback = '/' } = options
+  const target = sameOriginReferer(c) ?? fallback
+  return c.redirect(target, status)
+}
+
+function sameOriginReferer(c: Context): string | null {
+  const referer = c.req.header('referer')
+  if (!referer) return null
+  try {
+    const refUrl = new URL(referer)
+    const reqUrl = new URL(c.req.url)
+    return refUrl.origin === reqUrl.origin ? referer : null
+  }
+  catch {
+    return null
+  }
+}
+
 /**
  * [External / full-page redirect](https://inertiajs.com/redirects#external-redirects):
  * Inertia XHR requests receive `409` + `X-Inertia-Location` so the client performs a
@@ -131,33 +195,23 @@ export function location(
 ): Response {
   const href = typeof url === 'string' ? url : url.href
   if (isInertiaRequest(toInertiaRequest(c))) {
-    return new Response(null, {
-      status: 409,
-      headers: { 'X-Inertia-Location': href },
-    })
+    return c.body(null, 409, { 'X-Inertia-Location': href })
   }
   return c.redirect(href, redirectStatus)
 }
 
-function inertiaResponse(result: Awaited<ReturnType<typeof resolveInertia>>): Response {
+function inertiaResponse(
+  c: Context,
+  result: Awaited<ReturnType<typeof resolveInertia>>,
+): Response {
   if (result.kind === 'version-mismatch') {
-    return new Response(null, {
-      status: result.status,
-      headers: result.headers,
-    })
+    return c.body(null, result.status, result.headers)
   }
-
-  if (typeof result.body === 'string') {
-    return new Response(result.body, {
-      status: result.status,
-      headers: result.headers,
-    })
-  }
-
-  return new Response(JSON.stringify(result.body), {
-    status: result.status,
-    headers: result.headers,
-  })
+  const body
+    = typeof result.body === 'string'
+      ? result.body
+      : JSON.stringify(result.body)
+  return c.body(body, result.status, result.headers)
 }
 
 /**
@@ -175,10 +229,10 @@ export function createInertia(options: CreateInertiaOptions): {
     const fromOptions = options.share ? await options.share(c) : {}
     const fromCalls = c.var.inertiaShared ?? {}
     const merged: Record<string, unknown> = {
+      errors: {},
       ...fromOptions,
       ...fromCalls,
       ...props,
-      errors: props.errors ?? {},
     }
 
     const result = await resolveInertia({
@@ -195,14 +249,37 @@ export function createInertia(options: CreateInertiaOptions): {
       renderHtml: options.renderHtml,
     })
 
-    return inertiaResponse(result)
+    return inertiaResponse(c, result)
   }
 
+  const { flashSecret, flashCookie } = options
+
   const middleware = createMiddleware(async (c, next) => {
+    if (flashSecret) {
+      const incoming = await readInertiaFlash(c, flashSecret, flashCookie)
+      if (incoming) {
+        if (incoming.errors && Object.keys(incoming.errors).length > 0) {
+          mergeInertiaShared(c, { errors: incoming.errors })
+        }
+        if (incoming.flash && Object.keys(incoming.flash).length > 0) {
+          mergeInertiaShared(c, { flash: incoming.flash })
+        }
+      }
+    }
+
     const inertia: InertiaInstance = {
       share: props => mergeInertiaShared(c, props),
       render: (component, props) =>
         renderForContext(c, component, props ?? {}),
+      flash: async (payload) => {
+        if (!flashSecret) {
+          throw new Error(
+            'inertia-hono: flash requires `createInertia({ flashSecret })`. '
+            + 'Provide a secret to enable `back()` and `inertia.flash`.',
+          )
+        }
+        await writeInertiaFlash(c, payload, flashSecret, flashCookie)
+      },
     }
     c.set('inertia', inertia)
     await next()
@@ -239,3 +316,11 @@ export {
   type ViteManifest,
   type ViteManifestEntry,
 } from './vite.js'
+
+export {
+  INERTIA_FLASH_COOKIE,
+  readInertiaFlash,
+  writeInertiaFlash,
+  type InertiaFlashCookieOptions,
+  type InertiaFlashPayload,
+} from './flash.js'

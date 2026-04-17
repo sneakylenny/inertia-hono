@@ -28,8 +28,19 @@ if (!isDev && typeof Bun !== 'undefined') {
   playgroundApp.use('/assets/*', serveStatic({ root: distRoot }))
 }
 
+const flashSecret
+  = process.env.PLAYGROUND_FLASH_SECRET
+    ?? (isDev ? 'playground-dev-flash-secret' : undefined)
+
+if (!flashSecret) {
+  throw new Error(
+    'PLAYGROUND_FLASH_SECRET is required in production to sign Inertia flash cookies.',
+  )
+}
+
 const { middleware } = createInertia({
   version: 'playground-1',
+  flashSecret,
   share: async () => ({ appName: 'Inertia Hono playground' }),
   renderHtml: createViteHtmlRenderer({
     dev: isDev,

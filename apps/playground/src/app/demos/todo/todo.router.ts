@@ -1,6 +1,7 @@
 import { sValidator } from '@hono/standard-validator'
 import { Hono } from 'hono'
 import {
+  back,
   render,
   toInertiaErrors,
   type InertiaVariables,
@@ -22,8 +23,7 @@ app.post(
   '/todos',
   sValidator('json', newTodoSchema, (result, c) => {
     if (result.success) return
-    return render(c, 'Todos', {
-      todos: listTodos(),
+    return back(c, {
       errors: toInertiaErrors(result.error, { fallbackKey: 'text' }),
     })
   }),
@@ -31,13 +31,14 @@ app.post(
     const { text } = c.req.valid('json')
     const result = addTodo(text)
     if (!result.ok) {
-      const errors
-        = result.error === 'empty'
-          ? { text: 'Add some text for the todo.' }
-          : {
-              text: `You can only have up to ${MAX_TODOS} todos. Remove one to add another.`,
-            }
-      return render(c, 'Todos', { todos: listTodos(), errors })
+      return back(c, {
+        errors: {
+          text:
+            result.error === 'empty'
+              ? 'Add some text for the todo.'
+              : `You can only have up to ${MAX_TODOS} todos. Remove one to add another.`,
+        },
+      })
     }
     return c.redirect('/todos', 303)
   },
