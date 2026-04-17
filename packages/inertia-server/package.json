@@ -4,7 +4,9 @@
   "description": "Framework-agnostic Inertia.js v3 protocol helpers for JavaScript servers",
   "type": "module",
   "sideEffects": false,
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -18,7 +20,11 @@
     "test": "vitest run",
     "prepublishOnly": "bun run build"
   },
-  "keywords": ["inertia", "inertiajs", "protocol"],
+  "keywords": [
+    "inertia",
+    "inertiajs",
+    "protocol"
+  ],
   "license": "MIT",
   "dependencies": {
     "@standard-schema/spec": "^1.0.0"

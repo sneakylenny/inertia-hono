@@ -40,13 +40,29 @@ export type InertiaVariables = {
 /**
  * Render an Inertia page. Same contract as `share(c, props)` — `c` first, then payload.
  * Delegates to `c.var.inertia` (requires Inertia middleware on the route).
+ *
+ * Accepts any Hono `Context` so it can be called from validator hooks and generic
+ * middleware without casting. Users can still opt into fully-typed variables by
+ * declaring `Hono<{ Variables: InertiaVariables }>` or augmenting Hono's
+ * `ContextVariableMap`.
  */
 export function render(
-  c: Context<{ Variables: InertiaVariables }>,
+  c: Context,
   component: string,
   props?: Record<string, unknown>,
 ): Promise<Response> {
-  return c.var.inertia.render(component, props)
+  return getInertia(c).render(component, props)
+}
+
+function getInertia(c: Context): InertiaInstance {
+  const inertia = (c.var as { inertia?: InertiaInstance }).inertia
+  if (!inertia) {
+    throw new Error(
+      'inertia-hono: no inertia instance on this request. '
+      + 'Did you forget to register `createInertia().middleware` before the route?',
+    )
+  }
+  return inertia
 }
 
 function mergeInertiaShared(c: Context, props: Record<string, unknown>): void {
