@@ -227,7 +227,7 @@ export function createViteHtmlRenderer(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${title}</title>
+<title data-inertia="">${title}</title>
 ${headExtra}
 </head>
 <body${bodyClass}${bodyAttrs}>

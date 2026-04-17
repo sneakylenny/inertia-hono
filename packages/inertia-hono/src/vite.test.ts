@@ -61,7 +61,7 @@ describe('createViteHtmlRenderer — dev mode', () => {
     expect(html).toContain('https://vite.example.com:4173/src/main.ts')
     expect(html).toContain('data-theme="dark"')
     expect(html).toContain('class="min-h-screen bg-base-200"')
-    expect(html).toContain('<title>Hello · MyApp</title>')
+    expect(html).toContain('<title data-inertia="">Hello · MyApp</title>')
   })
 
   it('injects the React refresh preamble when requested', async () => {

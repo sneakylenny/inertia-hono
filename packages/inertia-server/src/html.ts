@@ -29,7 +29,7 @@ export function defaultHtmlShell(input: {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeAttr(title)}</title>
+<title data-inertia="">${escapeAttr(title)}</title>
 </head>
 <body>
 <script data-page="${dataPage}" type="application/json">${safeJson}</script>
