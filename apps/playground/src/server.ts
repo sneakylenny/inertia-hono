@@ -56,7 +56,7 @@ playgroundApp.use(middleware)
 
 playgroundApp.get('/', c =>
   render(c, 'Index', {
-    hint: `Welcome to the Inertia Hono playground! Use the navigation above to explore example features. Start the Vite dev server with \`bun run dev\` if you plan to make frontend changes.`,
+    hint: `Welcome to the Inertia Hono playground! Use the navigation on the left to explore example features. Start the Vite dev server with \`bun run dev\` if you plan to make frontend changes.`,
   }),
 )
 
