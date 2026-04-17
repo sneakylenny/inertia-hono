@@ -6,7 +6,7 @@
     "dev": "concurrently -k -n server,vite -c blue,green \"bun run dev:server\" \"bun run dev:vite\"",
     "dev:server": "bun --watch --no-clear-screen run src/index.ts",
     "dev:vite": "vite",
-    "start": "bun run src/index.ts",
+    "start": "NODE_ENV=production bun run src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "build:client": "vite build",

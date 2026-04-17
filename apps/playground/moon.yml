@@ -21,6 +21,17 @@ tasks:
     outputs:
       - 'dist'
 
+  start:
+    command: 'bun run start'
+    options:
+      envFile: '/.env'
+    deps:
+      - 'build'
+    inputs:
+      - 'src/**/*'
+      - 'vite.config.ts'
+      - 'package.json'
+
   dev:
     options:
       envFile: '/.env'
