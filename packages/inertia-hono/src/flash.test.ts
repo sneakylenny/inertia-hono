@@ -71,6 +71,39 @@ describe('back()', () => {
     expect(res.headers.get('location')).toBe('/safe')
   })
 
+  it('redirects to an https Referer even when the app sits behind a TLS-terminating proxy', async () => {
+    const app = makeApp()
+    app.post('/submit', c => back(c))
+
+    const res = await app.request('http://app.internal/submit', {
+      method: 'POST',
+      headers: {
+        referer: 'https://app.example.com/form',
+        host: 'app.example.com',
+      },
+    })
+
+    expect(res.status).toBe(303)
+    expect(res.headers.get('location')).toBe('https://app.example.com/form')
+  })
+
+  it('honors `x-forwarded-host` from a reverse proxy when matching the Referer', async () => {
+    const app = makeApp()
+    app.post('/submit', c => back(c))
+
+    const res = await app.request('http://internal-container:3000/submit', {
+      method: 'POST',
+      headers: {
+        'referer': 'https://public.example.com/form',
+        'x-forwarded-host': 'public.example.com',
+        'x-forwarded-proto': 'https',
+      },
+    })
+
+    expect(res.status).toBe(303)
+    expect(res.headers.get('location')).toBe('https://public.example.com/form')
+  })
+
   it('honors a custom status code', async () => {
     const app = makeApp()
     app.post('/submit', c => back(c, undefined, { status: 302 }))

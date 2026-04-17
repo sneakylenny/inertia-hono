@@ -169,13 +169,38 @@ export async function back(
   return c.redirect(target, status)
 }
 
+/**
+ * Resolve the host the client used to reach us, preferring `X-Forwarded-Host`
+ * (set by reverse proxies) over `Host`, and finally falling back to whatever
+ * host the runtime parsed into `c.req.url`. Returns `null` if none is available.
+ *
+ * Browsers never send `X-Forwarded-Host`, so honoring it does not open a
+ * Referer-based open-redirect against real users.
+ */
+function currentRequestHost(c: Context): string | null {
+  const forwarded = c.req.header('x-forwarded-host')
+  if (forwarded) {
+    const first = forwarded.split(',')[0]?.trim()
+    if (first) return first.toLowerCase()
+  }
+  const host = c.req.header('host')
+  if (host) return host.toLowerCase()
+  try {
+    return new URL(c.req.url).host.toLowerCase()
+  }
+  catch {
+    return null
+  }
+}
+
 function sameOriginReferer(c: Context): string | null {
   const referer = c.req.header('referer')
   if (!referer) return null
   try {
-    const refUrl = new URL(referer)
-    const reqUrl = new URL(c.req.url)
-    return refUrl.origin === reqUrl.origin ? referer : null
+    const refHost = new URL(referer).host.toLowerCase()
+    const current = currentRequestHost(c)
+    if (!current) return null
+    return refHost === current ? referer : null
   }
   catch {
     return null
