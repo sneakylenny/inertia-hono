@@ -20,6 +20,20 @@ npm install inertia-hono hono
 bun add inertia-hono hono
 ```
 
+## Scaffolding
+
+Scaffold a new app with **Hono**, **Inertia.js v3**, **Vue 3**, **Vite**, and **Tailwind CSS** using [`create-inertia-hono`](packages/create-inertia-hono/):
+
+```bash
+npm create inertia-hono@latest
+# or
+bun create inertia-hono
+# or
+pnpm create inertia-hono
+```
+
+Pass the target directory as the first argument, or run the command without arguments and enter a project name when prompted. The CLI copies the template, sets `package.json` `name` to the folder name, then suggests `install` and `dev` using your detected package manager.
+
 ## Quick Start
 
 ```ts
@@ -219,20 +233,17 @@ app.get("/posts", (c) => {
 });
 ```
 
-## Playground (Docker)
+## Playground
 
-The hosted demo above is built from this repo. The **Docker Playground** workflow is [manual-only](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) (`workflow_dispatch`). Run it from the Actions tab when you want an image pushed to **GitHub Container Registry**:
-
-`ghcr.io/<your-github-username>/inertia-hono-playground:latest`
-
-You can also build locally from the repository root:
+The hosted demo above is built from this repo. You can run the playground app locally from the repository root:
 
 ```bash
-docker build -t inertia-hono-playground .
-docker run --rm -p 3000:3000 inertia-hono-playground
+cd apps/playground
+bun install        # or npm install / pnpm install
+bun dev            # or npm run dev / pnpm dev
 ```
 
-Set `PLAYGROUND_PORT` if you need a different port inside the container (default `3000`). The app runs with `NODE_ENV=production` and serves the Vite-built client from the same server.
+The app runs with `NODE_ENV=production` when built, and serves the Vite-built client from the same server. You can also set `PLAYGROUND_PORT` if you need a different port (default is `3000`).
 
 ## Disclaimer
 
