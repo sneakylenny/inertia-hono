@@ -185,17 +185,17 @@ function reloadSecondaryOnly() {
         rel="noreferrer"
       >reloading indicator</a>). Resolver run counts should increase.
     </p>
-    <div class="mt-4 flex flex-wrap gap-2">
+    <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
       <button
         type="button"
-        class="btn btn-outline btn-sm"
+        class="btn btn-outline btn-sm w-full sm:w-auto"
         @click="reloadAllDeferred"
       >
         Reload all deferred props
       </button>
       <button
         type="button"
-        class="btn btn-outline btn-sm"
+        class="btn btn-outline btn-sm w-full sm:w-auto"
         @click="reloadSecondaryOnly"
       >
         Reload secondary group only

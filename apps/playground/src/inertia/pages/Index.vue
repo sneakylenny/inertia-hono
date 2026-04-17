@@ -22,7 +22,7 @@ const count = ref(0)
     <div
       v-if="hint"
       role="alert"
-      class="alert mt-2"
+      class="alert alert-vertical mt-2 sm:alert-horizontal"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

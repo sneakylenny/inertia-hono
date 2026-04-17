@@ -43,7 +43,7 @@ function del(id: number) {
       class="mt-6 flex flex-col gap-2"
       @submit.prevent="submit"
     >
-      <div class="join w-full max-w-xl">
+      <div class="join join-vertical w-full max-w-xl sm:join-horizontal">
         <label
           class="sr-only"
           for="todo-text"
@@ -51,7 +51,7 @@ function del(id: number) {
         <input
           id="todo-text"
           v-model="form.text"
-          class="input input-bordered join-item flex-1"
+          class="input input-bordered join-item min-h-11 w-full flex-1 sm:min-h-0"
           type="text"
           name="text"
           placeholder="What needs doing?"
@@ -60,7 +60,7 @@ function del(id: number) {
         >
         <button
           type="submit"
-          class="btn btn-primary join-item"
+          class="btn btn-primary join-item min-h-11 shrink-0 sm:min-h-0"
           :disabled="atLimit || form.processing"
         >
           Add
@@ -113,17 +113,17 @@ function del(id: number) {
         </tbody>
       </table>
     </div>
-    <p class="mt-6 flex flex-wrap gap-2">
+    <p class="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
       <button
         type="button"
-        class="btn btn-outline btn-sm"
+        class="btn btn-outline btn-sm w-full sm:w-auto"
         @click="simulateDbWrite"
       >
         + row (fetch)
       </button>
       <button
         type="button"
-        class="btn btn-outline btn-sm"
+        class="btn btn-outline btn-sm w-full sm:w-auto"
         @click="partialReloadTodos"
       >
         partial reload

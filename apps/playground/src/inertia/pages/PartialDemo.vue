@@ -98,31 +98,31 @@ function visit(opts: { only?: string[] }) {
       </div>
     </div>
 
-    <div class="mt-8 flex flex-wrap gap-2">
+    <div class="mt-8 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
       <button
         type="button"
-        class="btn btn-outline btn-sm"
+        class="btn btn-outline btn-sm w-full sm:w-auto"
         @click="visit({ only: ['lazyMain'] })"
       >
         Partial: only lazyMain
       </button>
       <button
         type="button"
-        class="btn btn-outline btn-sm"
+        class="btn btn-outline btn-sm w-full sm:w-auto"
         @click="visit({ only: ['optionalChunk'] })"
       >
         Partial: only optionalChunk
       </button>
       <button
         type="button"
-        class="btn btn-outline btn-sm"
+        class="btn btn-outline btn-sm w-full sm:w-auto"
         @click="visit({ only: ['lazyMain', 'optionalChunk'] })"
       >
         Partial: lazyMain + optionalChunk
       </button>
       <button
         type="button"
-        class="btn btn-primary btn-sm"
+        class="btn btn-primary btn-sm w-full sm:w-auto"
         @click="router.visit('/lazy-demo')"
       >
         Full visit
