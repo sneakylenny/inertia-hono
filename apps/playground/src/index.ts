@@ -6,6 +6,8 @@ const vitePort = process.env.VITE_PORT ? Number(process.env.VITE_PORT) : 5173
 export default {
   port,
   fetch: playgroundApp.fetch,
+  // // Bun defaults to a 10s request idle timeout, which could be too short for SSE.
+  // idleTimeout: 255,
 }
 
 console.log(`Playground: http://localhost:${port}`)

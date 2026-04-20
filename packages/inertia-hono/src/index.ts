@@ -1,6 +1,8 @@
 import type { Context, MiddlewareHandler } from 'hono'
 import { createMiddleware } from 'hono/factory'
 import type { RedirectStatusCode } from 'hono/utils/http-status'
+import type { InertiaSSEOptions, InertiaSSESend, SSEStreamingApi } from './sse.js'
+import { sse as openSSE } from './sse.js'
 import {
   isInertiaRequest,
   resolveInertia,
@@ -44,6 +46,14 @@ export type InertiaInstance = {
     component: string,
     props?: Record<string, unknown>,
   ) => Promise<Response>
+  /**
+   * Open a Server-Sent Events response using the current request context.
+   * This is useful for live dashboards, notifications, and progress updates.
+   */
+  sse: (
+    handler: (send: InertiaSSESend, stream: SSEStreamingApi) => void | Promise<void>,
+    options?: InertiaSSEOptions,
+  ) => Response
   /**
    * Flash a one-shot payload (typically `{ errors }`) into a signed cookie so it
    * surfaces as shared props on the next request. Requires `createInertia({ flashSecret })`.
@@ -103,6 +113,18 @@ function mergeInertiaShared(c: Context, props: Record<string, unknown>): void {
  */
 export function share(c: Context, props: Record<string, unknown>): void {
   mergeInertiaShared(c, props)
+}
+
+/**
+ * Open a Server-Sent Events response. Same contract as `render(c, ...)` — `c` first,
+ * then the streaming handler. Non-string payloads are JSON-encoded automatically.
+ */
+export function sse(
+  c: Context,
+  handler: (send: InertiaSSESend, stream: SSEStreamingApi) => void | Promise<void>,
+  options?: InertiaSSEOptions,
+): Response {
+  return openSSE(c, handler, options)
 }
 
 function resolveVersion(v: InertiaVersion): string | number {
@@ -296,6 +318,7 @@ export function createInertia(options: CreateInertiaOptions): {
       share: props => mergeInertiaShared(c, props),
       render: (component, props) =>
         renderForContext(c, component, props ?? {}),
+      sse: (handler, sseOptions) => openSSE(c, handler, sseOptions),
       flash: async (payload) => {
         if (!flashSecret) {
           throw new Error(
@@ -341,6 +364,14 @@ export {
   type ViteManifest,
   type ViteManifestEntry,
 } from './vite.js'
+
+export type {
+  InertiaSSEHeartbeatOptions,
+  InertiaSSEMessageInit,
+  InertiaSSEOptions,
+  InertiaSSESend,
+  SSEStreamingApi,
+} from './sse.js'
 
 export {
   INERTIA_FLASH_COOKIE,

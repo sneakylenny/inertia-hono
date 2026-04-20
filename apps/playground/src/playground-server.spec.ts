@@ -133,4 +133,18 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(body.props.errors).toEqual({})
     expect(body.props.appName).toBeUndefined()
   })
+
+  it('serves a live events SSE snapshot for button presses', async () => {
+    const res = await playgroundApp.request('http://localhost/api/live-events/stream?once=1', {
+      headers: { Accept: 'text/event-stream' },
+    })
+
+    expect(res.status).toBe(200)
+    expect(res.headers.get('content-type')).toContain('text/event-stream')
+
+    const text = await res.text()
+    expect(text).toContain('event: ready')
+    expect(text).toContain('"connected":true')
+    expect(text).toContain('"events":[')
+  })
 })

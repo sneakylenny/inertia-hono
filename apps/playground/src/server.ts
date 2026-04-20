@@ -9,6 +9,7 @@ import {
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import deferredDemoRouter from './app/demos/deferred/deferred.router.js'
+import liveDemoRouter from './app/demos/live/live.router.js'
 import lazyDemoRouter from './app/demos/partial/partial.router.js'
 import sharedDemoRouter from './app/demos/shared/shared.router.js'
 import todoRouter from './app/demos/todo/todo.router.js'
@@ -68,6 +69,7 @@ playgroundApp.get('/about', async (c) => {
 
 playgroundApp.route('/', sharedDemoRouter)
 playgroundApp.route('/', todoRouter)
+playgroundApp.route('/', liveDemoRouter)
 playgroundApp.route('/', lazyDemoRouter)
 playgroundApp.route('/', deferredDemoRouter)
 playgroundApp.route('/', redirectDemoRouter)

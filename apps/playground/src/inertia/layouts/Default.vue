@@ -106,6 +106,14 @@ watch(
             </li>
             <li>
               <Link
+                href="/live-events"
+                :class="{ 'menu-active': $page.url === '/live-events' }"
+              >
+                Live events (SSE)
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/shared-demo"
                 :class="{ 'menu-active': $page.url === '/shared-demo' }"
               >

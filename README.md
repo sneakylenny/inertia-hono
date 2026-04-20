@@ -118,6 +118,23 @@ app.get("/dashboard", (c) =>
 
 See [Deferred props](https://inertiajs.com/deferred-props) in the Inertia docs.
 
+### Server-Sent Events (SSE)
+
+For live dashboards, notifications, or progress updates, open an SSE response from a normal Hono route. The helper keeps the API request-scoped and JSON-friendly:
+
+```ts
+import { sse } from "inertia-hono";
+
+app.get("/events", (c) =>
+  sse(c, async (send) => {
+    await send({ status: "connected" }, { event: "status" });
+    await send("ready");
+  }),
+);
+```
+
+You can also call `c.var.inertia.sse(...)` after the middleware has been registered.
+
 ### Partial Reloads
 
 Control which props are evaluated during [partial reloads](https://inertiajs.com/partial-reloads) using `partial.lazy`, `partial.optional`, and `partial.always`:
