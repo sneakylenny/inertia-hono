@@ -28,7 +28,7 @@ const { middleware } = createInertia({
 const app = new Hono<{ Variables: InertiaVariables }>()
 app.use(middleware)
 
-app.get('/posts', c => render(c, 'Posts/Index', { posts: [] }))
+app.get('/posts', (c) => render(c, 'Posts/Index', { posts: [] }))
 ```
 
 - **`share(c, props)`** and **`render(c, component, props?)`** — same shape: context first, then payload (mirrors Hono patterns).
@@ -48,7 +48,7 @@ Non-string payloads are JSON-encoded automatically.
 ```ts
 import { sse } from 'inertia-hono'
 
-app.get('/events', c =>
+app.get('/events', (c) =>
   sse(
     c,
     async (send) => {

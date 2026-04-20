@@ -42,20 +42,20 @@ Pass the target directory as the first argument, or run the command without argu
 ## Quick Start
 
 ```ts
-import { Hono } from "hono";
-import { createInertia, render, type InertiaVariables } from "inertia-hono";
+import { Hono } from 'hono'
+import { createInertia, render, type InertiaVariables } from 'inertia-hono'
 
 const { middleware } = createInertia({
-  version: "1",
-});
+  version: '1',
+})
 
-const app = new Hono<{ Variables: InertiaVariables }>();
+const app = new Hono<{ Variables: InertiaVariables }>()
 
-app.use(middleware);
+app.use(middleware)
 
-app.get("/", (c) => render(c, "Home", { user: { name: "Ada" } }));
+app.get('/', (c) => render(c, 'Home', { user: { name: 'Ada' } }))
 
-export default app;
+export default app
 ```
 
 On the first visit, the server returns a full HTML page with the Inertia page object embedded. Subsequent navigation happens over XHR -- Inertia swaps components client-side without full page reloads.
@@ -70,23 +70,23 @@ Global shared data via `createInertia`:
 
 ```ts
 const { middleware } = createInertia({
-  version: "1",
+  version: '1',
   share: async (c) => ({
-    appName: "My App",
+    appName: 'My App',
     auth: { user: getUser(c) },
   }),
-});
+})
 ```
 
 Route-scoped sharing from middleware or handlers with `share(c, props)`:
 
 ```ts
-import { share } from "inertia-hono";
+import { share } from 'inertia-hono'
 
 const authMiddleware: MiddlewareHandler = async (c, next) => {
-  share(c, { user: await getUser(c) });
-  await next();
-};
+  share(c, { user: await getUser(c) })
+  await next()
+}
 ```
 
 Props merge in order: `createInertia share` -> `share()` calls -> `render()` props, with later values winning on key conflicts.
@@ -98,22 +98,22 @@ See [Shared data](https://inertiajs.com/shared-data) in the Inertia docs.
 Heavy data that shouldn't block the first paint can be deferred. The client receives the page immediately, then Inertia fetches deferred props in follow-up requests.
 
 ```ts
-import { defer, render } from "inertia-hono";
+import { defer, render } from 'inertia-hono'
 
-app.get("/dashboard", (c) =>
-  render(c, "Dashboard", {
+app.get('/dashboard', (c) =>
+  render(c, 'Dashboard', {
     summary: { revenue: 1000 },
 
     // Loaded after first paint in a follow-up request
     recentOrders: defer(async () => {
-      return await db.orders.recent();
+      return await db.orders.recent()
     }),
 
     // Group related props into a single follow-up request
-    analytics: defer(() => fetchAnalytics(), "stats"),
-    trends: defer(() => fetchTrends(), "stats"),
+    analytics: defer(() => fetchAnalytics(), 'stats'),
+    trends: defer(() => fetchTrends(), 'stats'),
   }),
-);
+)
 ```
 
 See [Deferred props](https://inertiajs.com/deferred-props) in the Inertia docs.
@@ -123,14 +123,14 @@ See [Deferred props](https://inertiajs.com/deferred-props) in the Inertia docs.
 For live dashboards, notifications, or progress updates, open an SSE response from a normal Hono route. The helper keeps the API request-scoped and JSON-friendly:
 
 ```ts
-import { sse } from "inertia-hono";
+import { sse } from 'inertia-hono'
 
-app.get("/events", (c) =>
+app.get('/events', (c) =>
   sse(c, async (send) => {
-    await send({ status: "connected" }, { event: "status" });
-    await send("ready");
+    await send({ status: 'connected' }, { event: 'status' })
+    await send('ready')
   }),
-);
+)
 ```
 
 You can also call `c.var.inertia.sse(...)` after the middleware has been registered.
@@ -140,10 +140,10 @@ You can also call `c.var.inertia.sse(...)` after the middleware has been registe
 Control which props are evaluated during [partial reloads](https://inertiajs.com/partial-reloads) using `partial.lazy`, `partial.optional`, and `partial.always`:
 
 ```ts
-import { partial, render } from "inertia-hono";
+import { partial, render } from 'inertia-hono'
 
-app.get("/users", (c) =>
-  render(c, "Users", {
+app.get('/users', (c) =>
+  render(c, 'Users', {
     // Only evaluated when the key survives partial-reload filtering
     users: partial.lazy(() => db.users.list()),
 
@@ -153,7 +153,7 @@ app.get("/users", (c) =>
     // Always included, even on narrow partial reloads
     permissions: partial.always(() => getPermissions()),
   }),
-);
+)
 ```
 
 See [Partial reloads](https://inertiajs.com/partial-reloads) in the Inertia docs.
@@ -165,17 +165,17 @@ Two options, same validator engine under the hood — pick the one that fits the
 **Zero-config: `inertiaValidator`** (recommended for the common case). Wraps [`@hono/standard-validator`](https://github.com/honojs/middleware/tree/main/packages/standard-validator) and auto-flashes failures through [`back()`](#redirect-back-with-flashed-errors) so `page.props.errors` Just Works. Import it from the `inertia-hono/validator` subpath (keeps the main bundle free of validator code):
 
 ```ts
-import { inertiaValidator } from "inertia-hono/validator";
-import * as v from "valibot";
+import { inertiaValidator } from 'inertia-hono/validator'
+import * as v from 'valibot'
 
 const schema = v.object({
-  text: v.pipe(v.string(), v.minLength(1, "Add some text.")),
-});
+  text: v.pipe(v.string(), v.minLength(1, 'Add some text.')),
+})
 
-app.post("/todos", inertiaValidator("json", schema), (c) => {
-  const { text } = c.req.valid("json"); // fully typed
+app.post('/todos', inertiaValidator('json', schema), (c) => {
+  const { text } = c.req.valid('json') // fully typed
   // ...
-});
+})
 ```
 
 Options flow through to the helpers: `inertiaValidator(target, schema, { errors: { fallbackKey: "text" }, back: { fallback: "/todos" } })`. Requires `createInertia({ flashSecret })` and `@hono/standard-validator` as a peer dep.
@@ -183,20 +183,20 @@ Options flow through to the helpers: `inertiaValidator(target, schema, { errors:
 **Full control: `toInertiaErrors`**. If you need custom failure handling (e.g. rendering the same page with extra context), map Standard Schema issues (Valibot, Zod v3+, ArkType, Effect Schema, ...) into Inertia's [`errors` page prop](https://inertiajs.com/docs/v3/the-basics/forms#form-errors) yourself. Keys are dotted paths (e.g. `items.0.name`), first issue per path wins.
 
 ```ts
-import { sValidator } from "@hono/standard-validator";
-import { back, toInertiaErrors } from "inertia-hono";
+import { sValidator } from '@hono/standard-validator'
+import { back, toInertiaErrors } from 'inertia-hono'
 
 app.post(
-  "/todos",
-  sValidator("json", schema, (result, c) => {
-    if (result.success) return;
-    return back(c, { errors: toInertiaErrors(result.error) });
+  '/todos',
+  sValidator('json', schema, (result, c) => {
+    if (result.success) return
+    return back(c, { errors: toInertiaErrors(result.error) })
   }),
   (c) => {
-    const { text } = c.req.valid("json");
+    const { text } = c.req.valid('json')
     // ...
   },
-);
+)
 ```
 
 When every issue is pathless (e.g. the body isn't even an object), the message lands under a single `form` key — override with `toInertiaErrors(issues, { fallbackKey: "text" })`.
@@ -209,28 +209,28 @@ Enable it by passing a `flashSecret` to `createInertia`:
 
 ```ts
 const { middleware } = createInertia({
-  version: "1",
+  version: '1',
   flashSecret: process.env.FLASH_SECRET!,
-});
+})
 ```
 
 Then use `back()` from handlers and validator hooks:
 
 ```ts
-import { back } from "inertia-hono";
+import { back } from 'inertia-hono'
 
 app.post(
-  "/todos",
-  sValidator("json", schema, (result, c) => {
-    if (result.success) return;
-    return back(c, { errors: toInertiaErrors(result.error) });
+  '/todos',
+  sValidator('json', schema, (result, c) => {
+    if (result.success) return
+    return back(c, { errors: toInertiaErrors(result.error) })
   }),
   (c) => {
-    const result = addTodo(c.req.valid("json").text);
-    if (!result.ok) return back(c, { errors: { text: "At the limit." } });
-    return c.redirect("/todos", 303);
+    const result = addTodo(c.req.valid('json').text)
+    if (!result.ok) return back(c, { errors: { text: 'At the limit.' } })
+    return c.redirect('/todos', 303)
   },
-);
+)
 ```
 
 Notes:
@@ -245,9 +245,9 @@ Notes:
 Use `location` for redirects that should trigger a full page visit (external URLs or routes outside the SPA):
 
 ```ts
-import { location } from "inertia-hono";
+import { location } from 'inertia-hono'
 
-app.get("/leave", (c) => location(c, "https://example.com"));
+app.get('/leave', (c) => location(c, 'https://example.com'))
 ```
 
 On Inertia requests this returns a `409` with `X-Inertia-Location` so the client does a full `window.location` navigation. On regular requests it performs a standard HTTP redirect.
@@ -265,26 +265,26 @@ import {
   createInertia,
   createViteHtmlRenderer,
   readViteManifest,
-} from "inertia-hono";
+} from 'inertia-hono'
 
-const isDev = process.env.NODE_ENV !== "production";
-const manifest = isDev ? null : await readViteManifest("./dist");
+const isDev = process.env.NODE_ENV !== 'production'
+const manifest = isDev ? null : await readViteManifest('./dist')
 
 const { middleware } = createInertia({
-  version: "1",
+  version: '1',
   renderHtml: createViteHtmlRenderer({
     dev: isDev,
-    entry: "src/main.ts",
+    entry: 'src/main.ts',
     manifest,
   }),
-});
+})
 ```
 
 For full control, you can still return your own HTML string from `renderHtml`:
 
 ```ts
 const { middleware } = createInertia({
-  version: "1",
+  version: '1',
   renderHtml: async ({ page, pageJson, rootElementId }) => `
     <!DOCTYPE html>
     <html>
@@ -299,7 +299,7 @@ const { middleware } = createInertia({
     </body>
     </html>
   `,
-});
+})
 ```
 
 ### History Encryption & Clearing
@@ -308,10 +308,10 @@ Control the Inertia [history encryption](https://inertiajs.com/history-encryptio
 
 ```ts
 const { middleware } = createInertia({
-  version: "1",
+  version: '1',
   encryptHistory: true, // Encrypt page data in browser history
   clearHistory: true, // Clear history state on this response
-});
+})
 ```
 
 ## API Reference
@@ -369,10 +369,10 @@ Imported from `inertia-hono/validator`. Zero-config Standard Schema validator th
 As an alternative to the standalone `render` and `share` functions, you can use the context-bound versions available on `c.var.inertia`:
 
 ```ts
-app.get("/posts", (c) => {
-  c.var.inertia.share({ user: getUser(c) });
-  return c.var.inertia.render("Posts", { posts: [] });
-});
+app.get('/posts', (c) => {
+  c.var.inertia.share({ user: getUser(c) })
+  return c.var.inertia.render('Posts', { posts: [] })
+})
 ```
 
 ## Playground
