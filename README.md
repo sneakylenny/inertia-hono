@@ -1,5 +1,5 @@
 > [!WARNING]
-> This project is an early proof of concept and is not yet stable or. The API may change between releases. There is plenty of room for improvement -- PRs are very welcome, as my time to work on this is limited.
+> This project is an early proof of concept and is not yet stable. It will soon be published, but the API is not production-ready and may change significantly between releases. There is plenty of room for improvement — PRs are very welcome, as my time to work on this is limited.
 
 # inertia-hono
 
@@ -313,6 +313,10 @@ const { middleware } = createInertia({
   clearHistory: true, // Clear history state on this response
 })
 ```
+
+### SSR
+
+I don't plan to support SSR as I think trying to make SSR work with Inertia is cumbersome already, trying to make it work with this 3rd party plugin would be even worse. Unless someone can show me a DX friendly way of implementing SSR into this repo, I'm not convinced it belongs here. If your project requires SSR I suggest looking at frameworks like [Next](https://nextjs.org/), [Nuxt](https://nuxt.com/) or [SvelteKit](https://svelte.dev/docs/kit/introduction) as alternative options.
 
 ## API Reference
 
