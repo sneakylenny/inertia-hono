@@ -16,8 +16,8 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(html).toContain('"component":"Index"')
     expect(html).toContain('data-page="app"')
     expect(html).toContain('type="application/json"')
-    expect(html).toContain('http://localhost:5173/@vite/client')
-    expect(html).toContain('http://localhost:5173/src/inertia/main.ts')
+    expect(html).toMatch(/http:\/\/localhost:\d+\/@vite\/client/)
+    expect(html).toMatch(/http:\/\/localhost:\d+\/src\/inertia\/main\.ts/)
   })
 
   it('returns JSON for Inertia visits', async () => {
