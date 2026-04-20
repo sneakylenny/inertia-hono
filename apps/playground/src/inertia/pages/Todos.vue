@@ -4,8 +4,10 @@ import { computed } from 'vue'
 
 import { MAX_TODO_TEXT_LENGTH, MAX_TODOS } from '../../app/demos/todo/todo.validation'
 
+type PageTodo = { id: number, text: string, done: boolean }
+
 const props = defineProps<{
-  todos: { id: number, text: string, done: boolean }[]
+  todos: PageTodo[]
 }>()
 
 const atLimit = computed(() => props.todos.length >= MAX_TODOS)
@@ -67,7 +69,7 @@ function del(id: number) {
         </button>
       </div>
       <p class="text-sm text-base-content/70">
-        {{ todos.length }} / {{ MAX_TODOS }} todos · up to {{ MAX_TODO_TEXT_LENGTH }} characters per todo
+        {{ props.todos.length }} / {{ MAX_TODOS }} todos · up to {{ MAX_TODO_TEXT_LENGTH }} characters per todo
       </p>
       <span
         v-if="form.errors.text"
@@ -82,7 +84,7 @@ function del(id: number) {
       <table class="table">
         <tbody>
           <tr
-            v-for="todo in todos"
+            v-for="todo in props.todos"
             :key="todo.id"
           >
             <td class="w-12">
@@ -119,7 +121,7 @@ function del(id: number) {
         class="btn btn-outline btn-sm w-full sm:w-auto"
         @click="simulateDbWrite"
       >
-        + row (fetch)
+        + row (background write)
       </button>
       <button
         type="button"
