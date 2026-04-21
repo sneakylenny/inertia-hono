@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { render, sse, type InertiaVariables } from 'inertia-hono'
+import { render, sse, type InertiaVariables } from '@sneakylenny/inertia-hono'
 import {
   listPressEvents,
   recordButtonPress,

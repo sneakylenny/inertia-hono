@@ -27,9 +27,9 @@
       "dependencies": {
         "@hono/standard-validator": "^0.1.5",
         "@inertiajs/vue3": "^3.0.0",
+        "@sneakylenny/inertia-hono": "workspace:*",
         "@vueuse/core": "^14.2.1",
         "hono": "^4.7.4",
-        "inertia-hono": "workspace:*",
         "valibot": "^1.3.1",
         "vue": "^3.5.13",
       },
@@ -48,8 +48,8 @@
       },
     },
     "packages/create-inertia-hono": {
-      "name": "create-inertia-hono",
-      "version": "0.1.1",
+      "name": "@sneakylenny/create-inertia-hono",
+      "version": "0.2.0",
       "bin": "./dist/index.js",
       "dependencies": {
         "@clack/prompts": "^1.2.0",
@@ -60,10 +60,10 @@
       },
     },
     "packages/inertia-hono": {
-      "name": "inertia-hono",
-      "version": "0.1.1",
+      "name": "@sneakylenny/inertia-hono",
+      "version": "0.2.0",
       "dependencies": {
-        "inertia-server": "^0.1.0",
+        "@sneakylenny/inertia-server": "^0.2.0",
       },
       "devDependencies": {
         "@hono/standard-validator": "^0.1.5",
@@ -82,8 +82,8 @@
       ],
     },
     "packages/inertia-server": {
-      "name": "inertia-server",
-      "version": "0.1.0",
+      "name": "@sneakylenny/inertia-server",
+      "version": "0.2.0",
       "dependencies": {
         "@standard-schema/spec": "^1.0.0",
       },
@@ -303,6 +303,12 @@
 
     "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.60.0", "", { "os": "win32", "cpu": "x64" }, "sha512-PrsWNQ8BuE00O3Xsx3ALh2Df8fAj9+cvvX9AIA6o4KpATR98c9mud4XtDWVvsEuyia5U4tVSTKygawyJkjm60w=="],
 
+    "@sneakylenny/create-inertia-hono": ["@sneakylenny/create-inertia-hono@workspace:packages/create-inertia-hono"],
+
+    "@sneakylenny/inertia-hono": ["@sneakylenny/inertia-hono@workspace:packages/inertia-hono"],
+
+    "@sneakylenny/inertia-server": ["@sneakylenny/inertia-server@workspace:packages/inertia-server"],
+
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 
     "@stylistic/eslint-plugin": ["@stylistic/eslint-plugin@5.10.0", "", { "dependencies": { "@eslint-community/eslint-utils": "^4.9.1", "@typescript-eslint/types": "^8.56.0", "eslint-visitor-keys": "^4.2.1", "espree": "^10.4.0", "estraverse": "^5.3.0", "picomatch": "^4.0.3" }, "peerDependencies": { "eslint": "^9.0.0 || ^10.0.0" } }, "sha512-nPK52ZHvot8Ju/0A4ucSX1dcPV2/1clx0kLcH5wDmrE4naKso7TUC/voUyU1O9OTKTrR6MYip6LP0ogEMQ9jPQ=="],
@@ -469,8 +475,6 @@
 
     "config-chain": ["config-chain@1.1.13", "", { "dependencies": { "ini": "^1.3.4", "proto-list": "~1.2.1" } }, "sha512-qj+f8APARXHrM0hraqXYb2/bOVSV4PvJQlNZ/DVj0QrmNM2q2euizkeuVckQ57J+W0mRH6Hvi+k50M4Jul2VRQ=="],
 
-    "create-inertia-hono": ["create-inertia-hono@workspace:packages/create-inertia-hono"],
-
     "cross-spawn": ["cross-spawn@7.0.6", "", { "dependencies": { "path-key": "^3.1.0", "shebang-command": "^2.0.0", "which": "^2.0.1" } }, "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA=="],
 
     "cssesc": ["cssesc@3.0.0", "", { "bin": { "cssesc": "bin/cssesc" } }, "sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg=="],
@@ -598,10 +602,6 @@
     "ignore": ["ignore@5.3.2", "", {}, "sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g=="],
 
     "imurmurhash": ["imurmurhash@0.1.4", "", {}, "sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA=="],
-
-    "inertia-hono": ["inertia-hono@workspace:packages/inertia-hono"],
-
-    "inertia-server": ["inertia-server@workspace:packages/inertia-server"],
 
     "ini": ["ini@1.3.8", "", {}, "sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew=="],
 

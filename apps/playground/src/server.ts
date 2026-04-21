@@ -5,7 +5,7 @@ import {
   readViteManifest,
   render,
   type InertiaVariables,
-} from 'inertia-hono'
+} from '@sneakylenny/inertia-hono'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import deferredDemoRouter from './app/demos/deferred/deferred.router.js'

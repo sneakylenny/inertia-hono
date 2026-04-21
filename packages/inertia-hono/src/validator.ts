@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import type { Env, Input, MiddlewareHandler, ValidationTargets } from 'hono'
 import { sValidator } from '@hono/standard-validator'
-import { toInertiaErrors, type ToInertiaErrorsOptions } from 'inertia-server'
+import { toInertiaErrors, type ToInertiaErrorsOptions } from '@sneakylenny/inertia-server'
 import { back, type BackOptions } from './index.js'
 
 export type InertiaValidatorOptions = {

@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
-import { back, render, type InertiaVariables } from 'inertia-hono'
-import { inertiaValidator } from 'inertia-hono/validator'
+import { back, render, type InertiaVariables } from '@sneakylenny/inertia-hono'
+import { inertiaValidator } from '@sneakylenny/inertia-hono/validator'
 import {
   addTodo,
   listTodos,

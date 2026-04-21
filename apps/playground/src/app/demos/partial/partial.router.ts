@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { partial, render, type InertiaVariables } from 'inertia-hono'
+import { partial, render, type InertiaVariables } from '@sneakylenny/inertia-hono'
 
 /** Server-side counters — increment when each deferred resolver runs (check logs / UI). */
 let lazyMainRuns = 0

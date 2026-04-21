@@ -1,5 +1,5 @@
 {
-  "name": "create-inertia-hono",
+  "name": "@sneakylenny/create-inertia-hono",
   "version": "0.2.0",
   "description": "Scaffold a new Hono + Inertia.js + Vue 3 project",
   "type": "module",

@@ -7,7 +7,7 @@ import {
   isInertiaRequest,
   resolveInertia,
   type ResolveInertiaInput,
-} from 'inertia-server'
+} from '@sneakylenny/inertia-server'
 import {
   hasFlashContent,
   readInertiaFlash,
@@ -353,7 +353,7 @@ export {
   type ResolveInertiaInput,
   type ResolveInertiaResult,
   type ToInertiaErrorsOptions,
-} from 'inertia-server'
+} from '@sneakylenny/inertia-server'
 
 export {
   createViteHtmlRenderer,

@@ -3,7 +3,7 @@
 
 # inertia-hono
 
-[![npm](https://img.shields.io/npm/v/inertia-hono.svg?style=for-the-badge)](https://www.npmjs.com/package/inertia-hono)
+[![npm](https://img.shields.io/npm/v/@sneakylenny/inertia-hono.svg?style=for-the-badge)](https://www.npmjs.com/package/@sneakylenny/inertia-hono)
 [![CI](https://img.shields.io/github/actions/workflow/status/sneakylenny/inertia-hono/ci.yml?style=for-the-badge&branch=main&label=CI)](https://github.com/sneakylenny/inertia-hono/actions/workflows/ci.yml?query=branch%3Amain)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -15,26 +15,26 @@ Build modern single-page apps with Vue, React, or Svelte **without building an A
 **Live demo:** [inertia-hono-playground.sneakylenny.com](https://inertia-hono-playground.sneakylenny.com/) — the [`apps/playground`](apps/playground/) app (Hono, Vue 3, Vite).
 
 > [!NOTE]
-> This monorepo also contains [`inertia-server`](packages/inertia-server/), a framework-agnostic library that implements the [Inertia v3 protocol](https://inertiajs.com/docs/v3/core-concepts/the-protocol). `inertia-hono` is built on top of it and re-exports its utilities, so you only need to install `inertia-hono`.
+> This monorepo also contains [`@sneakylenny/inertia-server`](packages/inertia-server/), a framework-agnostic library that implements the [Inertia v3 protocol](https://inertiajs.com/docs/v3/core-concepts/the-protocol). `@sneakylenny/inertia-hono` is built on top of it and re-exports its utilities, so you only need to install `@sneakylenny/inertia-hono`.
 
 ## Install
 
 ```bash
-npm install inertia-hono hono
+npm install @sneakylenny/inertia-hono hono
 # or
-bun add inertia-hono hono
+bun add @sneakylenny/inertia-hono hono
 ```
 
 ## Scaffolding
 
-Scaffold a new app with **Hono**, **Inertia.js v3**, **Vue 3**, **Vite**, and **Tailwind CSS** using [`create-inertia-hono`](packages/create-inertia-hono/):
+Scaffold a new app with **Hono**, **Inertia.js v3**, **Vue 3**, **Vite**, and **Tailwind CSS** using [`@sneakylenny/create-inertia-hono`](packages/create-inertia-hono/):
 
 ```bash
-npm create inertia-hono@latest
+npm create @sneakylenny/inertia-hono@latest
 # or
-bun create inertia-hono
+bun create @sneakylenny/inertia-hono
 # or
-pnpm create inertia-hono
+pnpm create @sneakylenny/inertia-hono
 ```
 
 Pass the target directory as the first argument, or run the command without arguments and enter a project name when prompted. The CLI copies the template, sets `package.json` `name` to the folder name, then suggests `install` and `dev` using your detected package manager.
@@ -43,7 +43,11 @@ Pass the target directory as the first argument, or run the command without argu
 
 ```ts
 import { Hono } from 'hono'
-import { createInertia, render, type InertiaVariables } from 'inertia-hono'
+import {
+  createInertia,
+  render,
+  type InertiaVariables,
+} from '@sneakylenny/inertia-hono'
 
 const { middleware } = createInertia({
   version: '1',
@@ -81,7 +85,7 @@ const { middleware } = createInertia({
 Route-scoped sharing from middleware or handlers with `share(c, props)`:
 
 ```ts
-import { share } from 'inertia-hono'
+import { share } from '@sneakylenny/inertia-hono'
 
 const authMiddleware: MiddlewareHandler = async (c, next) => {
   share(c, { user: await getUser(c) })
@@ -98,7 +102,7 @@ See [Shared data](https://inertiajs.com/shared-data) in the Inertia docs.
 Heavy data that shouldn't block the first paint can be deferred. The client receives the page immediately, then Inertia fetches deferred props in follow-up requests.
 
 ```ts
-import { defer, render } from 'inertia-hono'
+import { defer, render } from '@sneakylenny/inertia-hono'
 
 app.get('/dashboard', (c) =>
   render(c, 'Dashboard', {
@@ -123,7 +127,7 @@ See [Deferred props](https://inertiajs.com/deferred-props) in the Inertia docs.
 For live dashboards, notifications, or progress updates, open an SSE response from a normal Hono route. The helper keeps the API request-scoped and JSON-friendly:
 
 ```ts
-import { sse } from 'inertia-hono'
+import { sse } from '@sneakylenny/inertia-hono'
 
 app.get('/events', (c) =>
   sse(c, async (send) => {
@@ -140,7 +144,7 @@ You can also call `c.var.inertia.sse(...)` after the middleware has been registe
 Control which props are evaluated during [partial reloads](https://inertiajs.com/partial-reloads) using `partial.lazy`, `partial.optional`, and `partial.always`:
 
 ```ts
-import { partial, render } from 'inertia-hono'
+import { partial, render } from '@sneakylenny/inertia-hono'
 
 app.get('/users', (c) =>
   render(c, 'Users', {
@@ -165,7 +169,7 @@ Two options, same validator engine under the hood — pick the one that fits the
 **Zero-config: `inertiaValidator`** (recommended for the common case). Wraps [`@hono/standard-validator`](https://github.com/honojs/middleware/tree/main/packages/standard-validator) and auto-flashes failures through [`back()`](#redirect-back-with-flashed-errors) so `page.props.errors` Just Works. Import it from the `inertia-hono/validator` subpath (keeps the main bundle free of validator code):
 
 ```ts
-import { inertiaValidator } from 'inertia-hono/validator'
+import { inertiaValidator } from '@sneakylenny/inertia-hono/validator'
 import * as v from 'valibot'
 
 const schema = v.object({
@@ -184,7 +188,7 @@ Options flow through to the helpers: `inertiaValidator(target, schema, { errors:
 
 ```ts
 import { sValidator } from '@hono/standard-validator'
-import { back, toInertiaErrors } from 'inertia-hono'
+import { back, toInertiaErrors } from '@sneakylenny/inertia-hono'
 
 app.post(
   '/todos',
@@ -245,7 +249,7 @@ Notes:
 Use `location` for redirects that should trigger a full page visit (external URLs or routes outside the SPA):
 
 ```ts
-import { location } from 'inertia-hono'
+import { location } from '@sneakylenny/inertia-hono'
 
 app.get('/leave', (c) => location(c, 'https://example.com'))
 ```
@@ -258,14 +262,14 @@ See [External redirects](https://inertiajs.com/redirects#external-redirects) in 
 
 By default, first-visit responses use a minimal HTML document. Override it with `renderHtml` to integrate with Vite, inject stylesheets, or add meta tags.
 
-**Vite:** `inertia-hono` exports `createViteHtmlRenderer` and `readViteManifest` (see `packages/inertia-hono/src/vite.ts`) so you do not have to hand-write the shell. The helper wires `@vite/client` and your entry in development, and in production reads Vite’s [`build.manifest`](https://vite.dev/config/build-options.html#build-manifest) (via `readViteManifest(distDir)`) to emit the right `<script>` / `<link>` tags. It is implemented with Hono’s [`html`](https://hono.dev/docs/helpers/html) tag helper and escapes embedded page JSON safely.
+**Vite:** `@sneakylenny/inertia-hono` exports `createViteHtmlRenderer` and `readViteManifest` (see `packages/inertia-hono/src/vite.ts`) (see `packages/inertia-hono/src/vite.ts`) so you do not have to hand-write the shell. The helper wires `@vite/client` and your entry in development, and in production reads Vite’s [`build.manifest`](https://vite.dev/config/build-options.html#build-manifest) (via `readViteManifest(distDir)`) to emit the right `<script>` / `<link>` tags. It is implemented with Hono’s [`html`](https://hono.dev/docs/helpers/html) tag helper and escapes embedded page JSON safely.
 
 ```ts
 import {
   createInertia,
   createViteHtmlRenderer,
   readViteManifest,
-} from 'inertia-hono'
+} from '@sneakylenny/inertia-hono'
 
 const isDev = process.env.NODE_ENV !== 'production'
 const manifest = isDev ? null : await readViteManifest('./dist')
@@ -366,7 +370,7 @@ Map [Standard Schema](https://standardschema.dev/) issues to Inertia's `errors` 
 
 ### `inertiaValidator(target, schema, options?)`
 
-Imported from `inertia-hono/validator`. Zero-config Standard Schema validator that auto-calls `back()` with flashed `errors` on failure. `options.errors` forwards to `toInertiaErrors`; `options.back` forwards to `back()`. See [Form Validation Errors](#form-validation-errors).
+Imported from `@sneakylenny/inertia-hono/validator`. Zero-config Standard Schema validator that auto-calls `back()` with flashed `errors` on failure. `options.errors` forwards to `toInertiaErrors`; `options.back` forwards to `back()`. See [Form Validation Errors](#form-validation-errors).
 
 ## Context-Bound API
 

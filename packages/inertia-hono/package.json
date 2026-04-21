@@ -1,5 +1,5 @@
 {
-  "name": "inertia-hono",
+  "name": "@sneakylenny/inertia-hono",
   "version": "0.2.0",
   "description": "Inertia.js v3 adapter for Hono",
   "type": "module",
@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "build": "bun run --cwd ../inertia-server build && rm -rf dist && bun build ./src/index.ts ./src/validator.ts --outdir ./dist --format esm --sourcemap --target node --external hono --external inertia-server --external @hono/standard-validator && tsc -p tsconfig.build.json",
+    "build": "bun run --cwd ../inertia-server build && rm -rf dist && bun build ./src/index.ts ./src/validator.ts --outdir ./dist --format esm --sourcemap --target node --external hono --external @sneakylenny/inertia-server --external @hono/standard-validator && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "prepublishOnly": "bun run build"
   },
@@ -40,7 +40,7 @@
     }
   },
   "dependencies": {
-    "inertia-server": "^0.2.0"
+    "@sneakylenny/inertia-server": "^0.2.0"
   },
   "devDependencies": {
     "@hono/standard-validator": "^0.1.5",

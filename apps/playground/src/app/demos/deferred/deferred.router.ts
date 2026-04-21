@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { defer, render, type InertiaVariables } from 'inertia-hono'
+import { defer, render, type InertiaVariables } from '@sneakylenny/inertia-hono'
 
 /** Count how often each defer callback runs (see Network tab / UI). */
 let primaryRuns = 0

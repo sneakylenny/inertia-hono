@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { location, render, type InertiaVariables } from 'inertia-hono'
+import { location, render, type InertiaVariables } from '@sneakylenny/inertia-hono'
 
 const app = new Hono<{ Variables: InertiaVariables }>()
 

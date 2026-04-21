@@ -1,6 +1,6 @@
 import { html, raw } from 'hono/html'
 import type { HtmlEscapedString } from 'hono/utils/html'
-import type { InertiaPage, ResolveInertiaInput } from 'inertia-server'
+import type { InertiaPage, ResolveInertiaInput } from '@sneakylenny/inertia-server'
 
 /** Entry of a Vite build manifest (`dist/.vite/manifest.json`). */
 export type ViteManifestEntry = {
