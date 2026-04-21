@@ -1,6 +1,6 @@
 {
   "name": "@sneakylenny/inertia-hono",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Inertia.js v3 adapter for Hono",
   "type": "module",
   "sideEffects": false,
@@ -40,7 +40,7 @@
     }
   },
   "dependencies": {
-    "@sneakylenny/inertia-server": "^0.2.0"
+    "@sneakylenny/inertia-server": "^0.3.0"
   },
   "devDependencies": {
     "@hono/standard-validator": "^0.1.5",
