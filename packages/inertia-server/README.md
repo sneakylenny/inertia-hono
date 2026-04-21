@@ -1,13 +1,13 @@
-# inertia-server
+# @sneakylenny/inertia-server
 
 Framework-agnostic helpers for implementing the [Inertia.js v3 protocol](https://inertiajs.com/docs/v3/core-concepts/the-protocol) on any JavaScript HTTP stack.
 
 ## Install
 
 ```bash
-bun add inertia-server
+bun add @sneakylenny/inertia-server
 # or
-npm install inertia-server
+npm install @sneakylenny/inertia-server
 ```
 
 ## API
@@ -17,4 +17,4 @@ npm install inertia-server
 
 Map your framework’s request to `InertiaRequestLike` (`method`, `url` as path + query, `headers`), then convert the result to your framework’s response type.
 
-See [`inertia-hono`](../inertia-hono/) for a Hono integration.
+See [`@sneakylenny/inertia-hono`](../inertia-hono/) for a Hono integration.
