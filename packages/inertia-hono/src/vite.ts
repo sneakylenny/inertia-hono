@@ -189,7 +189,7 @@ async function resolveHead(
  *
  * @example
  * ```ts
- * import { readViteManifest, createViteHtmlRenderer } from 'inertia-hono'
+ * import { readViteManifest, createViteHtmlRenderer } from '@sneakylenny/inertia-hono'
  *
  * const isDev = process.env.NODE_ENV !== 'production'
  * createInertia({

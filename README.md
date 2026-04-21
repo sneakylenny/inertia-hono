@@ -221,7 +221,7 @@ const { middleware } = createInertia({
 Then use `back()` from handlers and validator hooks:
 
 ```ts
-import { back } from 'inertia-hono'
+import { back } from '@sneakylenny/inertia-hono'
 
 app.post(
   '/todos',
