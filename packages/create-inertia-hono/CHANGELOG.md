@@ -1,5 +1,12 @@
 # create-inertia-hono
 
+## 0.3.1
+
+### Patch Changes
+
+- 45c9a6a: Apply the correct (recently updated) package names
+- 6a7988a: Include README.md in the published npm package.
+
 ## 0.3.0
 
 ### Minor Changes
