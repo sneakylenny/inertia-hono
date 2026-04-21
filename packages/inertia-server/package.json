@@ -1,6 +1,6 @@
 {
   "name": "@sneakylenny/inertia-server",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Framework-agnostic Inertia.js v3 protocol helpers for JavaScript servers",
   "type": "module",
   "sideEffects": false,

@@ -1,5 +1,11 @@
 # inertia-server
 
+## 0.3.1
+
+### Patch Changes
+
+- 6a7988a: Include README.md in the published npm package.
+
 ## 0.3.0
 
 ### Minor Changes
