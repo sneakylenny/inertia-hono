@@ -1,5 +1,11 @@
 # create-inertia-hono
 
+## 0.3.2
+
+### Patch Changes
+
+- 3fd8ff5: Fix package scope rename issues
+
 ## 0.3.1
 
 ### Patch Changes
