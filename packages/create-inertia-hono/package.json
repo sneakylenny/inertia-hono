@@ -1,6 +1,6 @@
 {
   "name": "create-inertia-hono",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Scaffold a new Hono + Inertia.js + Vue 3 project",
   "type": "module",
   "bin": "./dist/index.js",
