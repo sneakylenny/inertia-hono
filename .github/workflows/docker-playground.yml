@@ -24,6 +24,8 @@ permissions:
 jobs:
   docker:
     name: Build and push image
+    # Skip version-bump-only commits produced by the Changesets release PR.
+    if: "!startsWith(github.event.head_commit.message, 'Version Packages')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

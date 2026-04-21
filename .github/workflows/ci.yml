@@ -8,6 +8,11 @@ on:
 jobs:
   ci:
     name: Build, Test & Lint
+    # Skip the Changesets version PR and the commit that merges it.
+    # Release workflow handles publishing on that merge; re-running CI adds no value.
+    if: |
+      (github.event_name == 'pull_request' && github.head_ref != 'changeset-release/main') ||
+      (github.event_name == 'push' && !startsWith(github.event.head_commit.message, 'Version Packages'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
