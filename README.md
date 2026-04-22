@@ -413,10 +413,10 @@ Imported from `@sneakylenny/inertia-hono/validator`. Wraps [`@hono/standard-vali
 
 **Options:**
 
-| Option   | Type                                     | Description                                                                |
-| -------- | ---------------------------------------- | -------------------------------------------------------------------------- |
-| `errors` | `{ fallbackKey?: string }`               | Forwarded to [`toInertiaErrors()`](#toinertiaerrorsisues-options) options. |
-| `back`   | `{ fallback?: string, status?: number }` | Forwarded to [`back()`](#backc-payload-options) options.                   |
+| Option   | Type                                     | Description                                                                 |
+| -------- | ---------------------------------------- | --------------------------------------------------------------------------- |
+| `errors` | `{ fallbackKey?: string }`               | Forwarded to [`toInertiaErrors()`](#toinertiaerrorsissues-options) options. |
+| `back`   | `{ fallback?: string, status?: number }` | Forwarded to [`back()`](#backc-payload-options) options.                    |
 
 ## Context-Bound API
 
