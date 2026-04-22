@@ -26,7 +26,7 @@ type HasUndefined<T> = undefined extends T ? true : false
  *
  * @example
  * ```ts
- * import { inertiaValidator } from 'inertia-hono/validator'
+ * import { inertiaValidator } from '@sneakylenny/inertia-hono/validator'
  * import * as v from 'valibot'
  *
  * const schema = v.object({ text: v.pipe(v.string(), v.minLength(1)) })
