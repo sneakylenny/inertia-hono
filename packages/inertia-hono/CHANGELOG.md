@@ -1,5 +1,11 @@
 # inertia-hono
 
+## 0.3.4
+
+### Patch Changes
+
+- 5db5d99: Fix a typo of a link in the docs
+
 ## 0.3.3
 
 ### Patch Changes
