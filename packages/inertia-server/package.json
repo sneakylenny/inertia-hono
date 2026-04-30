@@ -6,6 +6,10 @@
     "type": "git",
     "url": "git+https://github.com/sneakylenny/inertia-hono.git"
   },
+  "author": {
+    "name": "SneakyLenny",
+    "url": "https://github.com/sneakylenny"
+  },
   "type": "module",
   "sideEffects": false,
   "files": [
