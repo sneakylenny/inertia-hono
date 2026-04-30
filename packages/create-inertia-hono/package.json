@@ -2,6 +2,10 @@
   "name": "@sneakylenny/create-inertia-hono",
   "version": "0.3.2",
   "description": "Scaffold a new Hono + Inertia.js + Vue 3 project",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sneakylenny/inertia-hono.git"
+  },
   "type": "module",
   "bin": "./dist/index.js",
   "files": [
