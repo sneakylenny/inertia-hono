@@ -4,6 +4,7 @@
   "description": "Scaffold a new Hono + Inertia.js + Vue 3 project",
   "repository": {
     "type": "git",
+    "email": "theownerof@sneakylenny.com",
     "url": "git+https://github.com/sneakylenny/inertia-hono.git"
   },
   "author": {
