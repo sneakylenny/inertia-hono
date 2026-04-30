@@ -21,7 +21,7 @@
     "create",
     "scaffold"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@clack/prompts": "^1.2.0"
   },

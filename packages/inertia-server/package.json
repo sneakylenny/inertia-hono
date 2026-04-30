@@ -26,7 +26,7 @@
     "inertiajs",
     "protocol"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@standard-schema/spec": "^1.0.0"
   },

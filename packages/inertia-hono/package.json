@@ -32,7 +32,7 @@
     "inertiajs",
     "hono"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "peerDependencies": {
     "@hono/standard-validator": ">=0.1.0",
     "hono": "^4.7.0"
