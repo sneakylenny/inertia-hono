@@ -431,12 +431,20 @@ app.get('/posts', (c) => {
 
 ## Playground
 
-The hosted demo above is built from this repo. You can run the playground app locally from the repository root:
+The hosted demo above is built from this repo. This repository uses [Bun](https://bun.sh/) as its runtime and package manager — Bun is **required**. [Moon](https://moonrepo.dev/moon) and [Proto](https://moonrepo.dev/proto) are **strongly recommended** for task orchestration and toolchain management.
+
+With Moon installed, run the playground from the repository root:
+
+```bash
+moon run playground:dev
+```
+
+Without Moon, you can run it directly with Bun:
 
 ```bash
 cd apps/playground
-bun install        # or npm install / pnpm install
-bun dev            # or npm run dev / pnpm dev
+bun install
+bun dev
 ```
 
 The app runs with `NODE_ENV=production` when built, and serves the Vite-built client from the same server. You can also set `PLAYGROUND_PORT` if you need a different port (default is `3000`).
