@@ -12,6 +12,22 @@ export type InertiaSSESend = (
   init?: InertiaSSEMessageInit,
 ) => Promise<void>
 
+export type InertiaSSEYieldMessage = InertiaSSEMessageInit & {
+  data: unknown
+}
+
+export type InertiaSSEYield = unknown | InertiaSSEYieldMessage
+
+export type InertiaSSEHandlerResult
+  = | void
+    | Iterable<InertiaSSEYield>
+    | AsyncIterable<InertiaSSEYield>
+
+export type InertiaSSEHandler = (
+  send: InertiaSSESend,
+  stream: SSEStreamingApi,
+) => InertiaSSEHandlerResult | Promise<InertiaSSEHandlerResult>
+
 export type InertiaSSEHeartbeatOptions = {
   /** Interval between heartbeat messages in milliseconds. Defaults to 15000. */
   intervalMs?: number
@@ -64,16 +80,46 @@ function normalizeHeartbeat(
   }
 }
 
+function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
+  return typeof value === 'object'
+    && value !== null
+    && typeof (value as { [Symbol.asyncIterator]?: unknown })[Symbol.asyncIterator] === 'function'
+}
+
+function isIterable<T>(value: unknown): value is Iterable<T> {
+  return typeof value === 'object'
+    && value !== null
+    && typeof (value as { [Symbol.iterator]?: unknown })[Symbol.iterator] === 'function'
+}
+
+function isStructuredYieldMessage(value: unknown): value is InertiaSSEYieldMessage {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false
+  const record = value as Record<string, unknown>
+  if (!Object.hasOwn(record, 'data')) return false
+
+  const allowed = new Set(['data', 'event', 'id', 'retry'])
+  return Object.keys(record).every(key => allowed.has(key))
+}
+
+async function writeYielded(send: InertiaSSESend, yielded: InertiaSSEYield): Promise<void> {
+  if (isStructuredYieldMessage(yielded)) {
+    await send(yielded.data, {
+      event: yielded.event,
+      id: yielded.id,
+      retry: yielded.retry,
+    })
+    return
+  }
+  await send(yielded)
+}
+
 /**
  * Open a Server-Sent Events response with a small, JSON-friendly writer helper.
  * Mirrors the request-first ergonomics used by `render()` and `share()`.
  */
 export function sse(
   c: Context,
-  handler: (
-    send: InertiaSSESend,
-    stream: SSEStreamingApi,
-  ) => void | Promise<void>,
+  handler: InertiaSSEHandler,
   options: InertiaSSEOptions = {},
 ): Response {
   const response = streamSSE(
@@ -99,7 +145,12 @@ export function sse(
         : null
 
       try {
-        await handler(send, stream)
+        const result = await handler(send, stream)
+        if (isAsyncIterable<InertiaSSEYield>(result) || isIterable<InertiaSSEYield>(result)) {
+          for await (const yielded of result) {
+            await writeYielded(send, yielded)
+          }
+        }
       }
       finally {
         if (timer) clearInterval(timer)

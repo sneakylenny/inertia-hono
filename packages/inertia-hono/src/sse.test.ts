@@ -94,4 +94,47 @@ describe('sse()', () => {
     expect(res.headers.get('cache-control')).toBe('private, max-age=0')
     expect(res.headers.get('x-accel-buffering')).toBe('no')
   })
+
+  it('supports async-generator handlers that yield structured SSE messages', async () => {
+    const app = makeApp()
+    app.get('/yielded', c =>
+      sse(c, async function* () {
+        yield {
+          data: { ok: true },
+          event: 'status',
+          id: '42',
+          retry: 3000,
+        }
+        yield 'ready'
+      }))
+
+    const res = await app.request('http://localhost/yielded')
+
+    expect(res.status).toBe(200)
+
+    const text = await res.text()
+    expect(text).toContain('event: status')
+    expect(text).toContain('id: 42')
+    expect(text).toContain('retry: 3000')
+    expect(text).toContain('data: {"ok":true}')
+    expect(text).toContain('data: ready')
+  })
+
+  it('treats yielded objects with extra fields as payloads, not SSE envelopes', async () => {
+    const app = makeApp()
+    app.get('/yielded-payload', c =>
+      sse(c, async function* () {
+        yield {
+          data: 'payload-data',
+          extra: true,
+        }
+      }))
+
+    const res = await app.request('http://localhost/yielded-payload')
+
+    expect(res.status).toBe(200)
+
+    const text = await res.text()
+    expect(text).toContain('data: {"data":"payload-data","extra":true}')
+  })
 })

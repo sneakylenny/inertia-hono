@@ -1,7 +1,7 @@
 import type { Context, MiddlewareHandler } from 'hono'
 import { createMiddleware } from 'hono/factory'
 import type { RedirectStatusCode } from 'hono/utils/http-status'
-import type { InertiaSSEOptions, InertiaSSESend, SSEStreamingApi } from './sse.js'
+import type { InertiaSSEHandler, InertiaSSEOptions } from './sse.js'
 import { sse as openSSE } from './sse.js'
 import {
   isInertiaRequest,
@@ -51,7 +51,7 @@ export type InertiaInstance = {
    * This is useful for live dashboards, notifications, and progress updates.
    */
   sse: (
-    handler: (send: InertiaSSESend, stream: SSEStreamingApi) => void | Promise<void>,
+    handler: InertiaSSEHandler,
     options?: InertiaSSEOptions,
   ) => Response
   /**
@@ -121,7 +121,7 @@ export function share(c: Context, props: Record<string, unknown>): void {
  */
 export function sse(
   c: Context,
-  handler: (send: InertiaSSESend, stream: SSEStreamingApi) => void | Promise<void>,
+  handler: InertiaSSEHandler,
   options?: InertiaSSEOptions,
 ): Response {
   return openSSE(c, handler, options)
@@ -366,10 +366,14 @@ export {
 } from './vite.js'
 
 export type {
+  InertiaSSEHandler,
+  InertiaSSEHandlerResult,
   InertiaSSEHeartbeatOptions,
   InertiaSSEMessageInit,
   InertiaSSEOptions,
   InertiaSSESend,
+  InertiaSSEYield,
+  InertiaSSEYieldMessage,
   SSEStreamingApi,
 } from './sse.js'
 

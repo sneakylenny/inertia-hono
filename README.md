@@ -131,6 +131,10 @@ Useful for live dashboards, notifications, or progress updates. Open an SSE resp
 > [!NOTE]
 > This feature is specific to `@sneakylenny/inertia-hono` and is not part of the core Inertia.js protocol.
 
+Two handler styles are supported:
+
+**Callback** — call `send(data, init?)` imperatively. Useful when events are pushed from external sources (subscriptions, event emitters):
+
 ```ts
 import { sse } from '@sneakylenny/inertia-hono'
 
@@ -142,7 +146,30 @@ app.get('/events', (c) =>
 )
 ```
 
-You can also call `c.var.inertia.sse(...)` after the middleware has been registered.
+**Async generator** — `yield` structured SSE envelopes. Each yielded value is either a plain payload (JSON-encoded automatically) or a structured object with `data`, `event`, `id`, and/or `retry` fields:
+
+```ts
+app.get('/events', (c) =>
+  sse(c, async function* () {
+    // structured envelope — event name, id, and retry are optional
+    yield {
+      data: { status: 'connected' },
+      event: 'status',
+      id: '1',
+      retry: 5000,
+    }
+    // plain payload — serialized as: data: ready
+    yield 'ready'
+  }),
+)
+```
+
+> [!NOTE]
+> Objects with a `data` key and **only** the fields `data`, `event`, `id`, `retry` are treated as SSE envelopes. Any object with additional fields is serialized as a plain JSON payload.
+
+Both styles accept an optional `options` argument and work with `c.var.inertia.sse(handler, options)`.
+
+See [`sse(c, handler, options?)`](#ssec-handler-options) in the API reference for the full option set.
 
 ### Partial Reloads
 
