@@ -1,5 +1,12 @@
 # inertia-hono
 
+## 0.3.4
+
+### Patch Changes
+
+- 5db5d99: Fix a typo of a link in the docs
+- a1d01dc: Add async-generator support to `sse()`. Handlers can now `yield` structured SSE envelopes (`{ data, event?, id?, retry? }`) or plain values in addition to the existing `await send(...)` callback style.
+
 ## 0.3.3
 
 ### Patch Changes
