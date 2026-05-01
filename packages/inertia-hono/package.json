@@ -30,7 +30,7 @@
     }
   },
   "scripts": {
-    "build": "bun run --cwd ../inertia-server build && rm -rf dist && bun build ./src/index.ts ./src/validator.ts --outdir ./dist --format esm --sourcemap --target node --external hono --external @sneakylenny/inertia-server --external @hono/standard-validator && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && bun build ./src/index.ts ./src/validator.ts --outdir ./dist --format esm --sourcemap --target node --external hono --external @sneakylenny/inertia-server --external @hono/standard-validator && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "prepack": "cp ../../README.md ./README.md",
     "postpack": "rm -f ./README.md",
