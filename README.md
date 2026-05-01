@@ -482,4 +482,4 @@ This project was built with the assistance of AI.
 
 ## License
 
-MIT
+APACHE 2.0
