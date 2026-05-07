@@ -1,5 +1,11 @@
 # inertia-hono
 
+## 0.3.5
+
+### Patch Changes
+
+- dfb247d: Update documentation
+
 ## 0.3.4
 
 ### Patch Changes
