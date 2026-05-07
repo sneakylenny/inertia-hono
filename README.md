@@ -101,8 +101,6 @@ See [Shared data](https://inertiajs.com/shared-data) in the Inertia docs.
 
 Long-running queries or expensive computations can be deferred to avoid blocking the response. The client receives the page right away, then Inertia loads deferred props in follow-up requests. Props in the same group are batched into a single request for efficiency.
 
-See [Deferred props](https://inertiajs.com/deferred-props) in the Inertia docs for more details.
-
 ```ts
 import { defer, render } from '@sneakylenny/inertia-hono'
 
