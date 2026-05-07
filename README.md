@@ -7,6 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/sneakylenny/inertia-hono/ci.yml?style=for-the-badge&branch=main&label=CI)](https://github.com/sneakylenny/inertia-hono/actions/workflows/ci.yml?query=branch%3Amain)
 [![License: Apache-2.0](https://img.shields.io/github/license/sneakylenny/inertia-hono?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![GitHub Stars](https://img.shields.io/github/stars/sneakylenny/inertia-hono?style=for-the-badge)](https://github.com/sneakylenny/inertia-hono)
 
 [Inertia.js v3](https://inertiajs.com/) server-side adapter for [Hono](https://hono.dev/).
 
