@@ -1,6 +1,6 @@
 {
   "name": "@sneakylenny/inertia-hono",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Inertia.js v3 adapter for Hono",
   "repository": {
     "type": "git",
