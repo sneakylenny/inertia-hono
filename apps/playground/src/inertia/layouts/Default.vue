@@ -146,6 +146,14 @@ watch(
             </li>
             <li>
               <Link
+                href="/scroll-demo"
+                :class="{ 'menu-active': $page.url.startsWith('/scroll-demo') }"
+              >
+                Infinite scroll (merge props)
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/redirect-demo"
                 :class="{ 'menu-active': $page.url === '/redirect-internal-test' }"
               >

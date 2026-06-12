@@ -171,6 +171,77 @@ availableRoles: once(() => db.roles.all()).as('roles'),
 
 See [Once props](https://inertiajs.com/docs/v3/data-props/once-props) in the Inertia docs.
 
+### Merge Props
+
+By default a prop is replaced on every visit. Wrap it in `merge()` (or `deepMerge()`) and on [partial reloads](https://inertiajs.com/partial-reloads) the client **combines** the incoming value with what it already holds — arrays are appended, objects merged — instead of replacing it.
+
+```ts
+import { merge, deepMerge, render } from '@sneakylenny/inertia-hono'
+
+app.get('/feed', c =>
+  render(c, 'Feed', {
+    // Append new rows to the existing list
+    posts: merge(loadNextPosts()),
+
+    // Prepend instead of append
+    activity: merge(loadActivity()).prepend(),
+
+    // Match existing items by a field and update them in place (no duplicates)
+    notifications: merge(loadNotifications()).match('id'),
+
+    // Merge a nested array inside a paginator-shaped object (`page.data`)
+    page: merge(loadPage()).at('data').match('id'),
+
+    // Recursively merge nested objects/arrays
+    settings: deepMerge(loadSettings()),
+  }),
+)
+```
+
+Merging only applies on partial reloads — a full page visit always replaces the prop. The value may be a plain value or a (possibly async) thunk that runs only when the prop survives partial filtering.
+
+See [Merging props](https://inertiajs.com/docs/v3/data-props/merging-props) in the Inertia docs.
+
+### Infinite Scroll
+
+`scroll(items, metadata)` drives Inertia's [`<InfiniteScroll>`](https://inertiajs.com/docs/v3/data-props/infinite-scroll) component. Because Hono has no `Model::paginate()`, you supply the pagination metadata yourself — the framework-agnostic `offsetPaginate()` and `cursorPaginate()` helpers build it from any data source (an array, SQL `LIMIT/OFFSET`, a cursor query, anything). No ORM integration required.
+
+```ts
+import { scroll, offsetPaginate, cursorPaginate, render } from '@sneakylenny/inertia-hono'
+
+// Offset / page-number pagination
+app.get('/users', (c) => {
+  const page = Number(c.req.query('page') ?? '1')
+  const perPage = 20
+  const rows = db.users.list({ limit: perPage, offset: (page - 1) * perPage })
+  const total = db.users.count()
+
+  return render(c, 'Users', {
+    users: scroll(rows, offsetPaginate({ page, perPage, total })).match('id'),
+  })
+})
+
+// Cursor pagination (over-fetch one row to detect the next page)
+app.get('/feed', (c) => {
+  const cursor = c.req.query('cursor')
+  const perPage = 20
+  const rows = db.posts.after(cursor, perPage + 1)
+  const { items, metadata } = cursorPaginate({
+    items: rows,
+    perPage,
+    getCursor: r => r.id,
+    hasPrevious: Boolean(cursor),
+    currentCursor: cursor ?? null,
+  })
+
+  return render(c, 'Feed', { posts: scroll(items, metadata).match('id') })
+})
+```
+
+On the client, wrap the list in `<InfiniteScroll data="users">`. As the user scrolls, the component issues a partial reload for that prop with a merge-intent header; `scroll()` reads it to append (next page) or prepend (previous page), and emits the `scrollProps` metadata the component needs to know when to stop. Chain `.match(field)` to de-duplicate by key and `.resetWhen(condition)` to tell the client to drop accumulated data (e.g. after a filter change). Try the **Infinite scroll** demo in the [playground](apps/playground/).
+
+See [Infinite scroll](https://inertiajs.com/docs/v3/data-props/infinite-scroll) in the Inertia docs.
+
 ### Server-Sent Events (SSE)
 
 Useful for live dashboards, notifications, or progress updates. Open an SSE response from any Hono route with a request-scoped, JSON-friendly API.
