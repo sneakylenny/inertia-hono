@@ -53,7 +53,8 @@ function activityBefore(beforeId: number, count: number) {
   const idx = ACTIVITY.findIndex(item => item.id === beforeId)
   if (idx < 0 || idx >= ACTIVITY.length - 1) return []
   // ACTIVITY is newest-first; older events sit at higher indices.
-  return ACTIVITY.slice(idx + 1, idx + 1 + count)
+  // Reverse so the batch is oldest-first — prepend then keeps chronological order.
+  return ACTIVITY.slice(idx + 1, idx + 1 + count).reverse()
 }
 
 function readInt(query: string | undefined, fallback: number) {
@@ -85,7 +86,8 @@ app.get('/merge-demo', (c) => {
     activity: merge(() => {
       activityRuns++
       if (activityBeforeId > 0) return activityBefore(activityBeforeId, 3)
-      return ACTIVITY.slice(0, 4)
+      // Oldest-first window so prepending older events stays chronological.
+      return ACTIVITY.slice(0, 4).reverse()
     }).prepend().match('id'),
 
     notifications: merge(() => {

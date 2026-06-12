@@ -136,7 +136,7 @@ function fullVisit() {
           <span class="badge badge-secondary badge-outline">{{ activity.length }} events</span>
         </div>
         <p class="text-sm opacity-70">
-          Older timeline entries are prepended to the top instead of appended.
+          Older timeline entries are prepended above the list (oldest at top).
         </p>
         <ul class="mt-3 space-y-1 text-sm">
           <li

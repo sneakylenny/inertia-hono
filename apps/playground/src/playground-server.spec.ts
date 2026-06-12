@@ -173,7 +173,7 @@ describe('playground Hono + Inertia HTML shell', () => {
       prependProps?: string[]
       mergeProps?: string[]
     }
-    expect(body.props.activity?.map(item => item.id)).toEqual([14, 13, 12])
+    expect(body.props.activity?.map(item => item.id)).toEqual([12, 13, 14])
     expect(body.props.activityBefore).toBe(15)
     expect(body.prependProps).toEqual(['activity'])
     expect(body.mergeProps).toBeUndefined()
