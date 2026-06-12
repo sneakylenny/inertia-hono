@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import { deepMerge, merge } from './merge.js'
 import { resolveInertia } from './resolve.js'
 import { scroll } from './scroll.js'

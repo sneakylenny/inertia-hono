@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import { createInertia, sse, type InertiaVariables } from './index.js'
 
 function makeApp(opts?: Parameters<typeof createInertia>[0]) {

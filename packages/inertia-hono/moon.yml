@@ -29,7 +29,6 @@ tasks:
     inputs:
       - 'src/**/*'
       - 'package.json'
-      - 'vitest.config.ts'
 
   lint:
     command: 'bun run lint:inertia-hono'

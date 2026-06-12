@@ -1,7 +1,4 @@
-/** Node fetch/Headers match production Hono responses (happy-dom strips some headers). */
-// @vitest-environment node
-
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import { playgroundApp } from './server.js'
 
 describe('playground Hono + Inertia HTML shell', () => {

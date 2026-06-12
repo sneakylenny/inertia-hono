@@ -31,7 +31,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && bun build ./src/index.ts ./src/validator.ts --outdir ./dist --format esm --sourcemap --target node --external hono --external @sneakylenny/inertia-server --external @hono/standard-validator && tsc -p tsconfig.build.json",
-    "test": "vitest run",
+    "test": "bun test",
     "prepack": "cp ../../README.md ./README.md",
     "postpack": "rm -f ./README.md",
     "prepublishOnly": "bun run build"
@@ -56,10 +56,10 @@
   },
   "devDependencies": {
     "@hono/standard-validator": "^0.1.5",
+    "@types/bun": "latest",
     "@types/node": "^22.13.10",
     "hono": "^4.7.4",
     "typescript": "^5.8.2",
-    "valibot": "^1.0.0",
-    "vitest": "^3.0.9"
+    "valibot": "^1.0.0"
   }
 }

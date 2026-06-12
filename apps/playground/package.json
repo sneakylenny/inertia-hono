@@ -7,8 +7,8 @@
     "dev:server": "bun --watch --no-clear-screen run src/index.ts",
     "dev:vite": "vite",
     "start": "NODE_ENV=production bun run src/index.ts",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
     "build:client": "vite build",
     "build": "vite build"
   },
@@ -25,13 +25,10 @@
     "@tailwindcss/vite": "^4.2.2",
     "@types/bun": "latest",
     "@vitejs/plugin-vue": "^5.2.1",
-    "@vue/test-utils": "^2.4.6",
     "concurrently": "^9.1.2",
     "daisyui": "^5.5.19",
-    "happy-dom": "^17.4.4",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.8.2",
-    "vite": "5.4.14",
-    "vitest": "^3.0.9"
+    "vite": "5.4.14"
   }
 }

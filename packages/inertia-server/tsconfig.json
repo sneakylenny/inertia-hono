@@ -9,7 +9,7 @@
     "declarationMap": true,
     "noEmit": true,
     "rootDir": ".",
-    "types": ["node"]
+    "types": ["bun", "node"]
   },
-  "include": ["src/**/*.ts", "vitest.config.ts"]
+  "include": ["src/**/*.ts"]
 }
