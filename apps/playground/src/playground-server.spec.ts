@@ -157,6 +157,28 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(body.matchPropsOn).toEqual(['posts.id'])
   })
 
+  it('serves /merge-demo: partial reload emits prependProps for prepend merge', async () => {
+    const res = await playgroundApp.request('http://localhost/merge-demo?activityBefore=15', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'playground-1',
+        'X-Inertia-Partial-Component': 'MergeDemo',
+        'X-Inertia-Partial-Data': 'activity,activityBefore',
+        'Accept': 'application/json',
+      },
+    })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      props: { activity?: { id: number }[], activityBefore?: number }
+      prependProps?: string[]
+      mergeProps?: string[]
+    }
+    expect(body.props.activity?.map(item => item.id)).toEqual([14, 13, 12])
+    expect(body.props.activityBefore).toBe(15)
+    expect(body.prependProps).toEqual(['activity'])
+    expect(body.mergeProps).toBeUndefined()
+  })
+
   it('should partially reload on /todos and return only todos (plus errors)', async () => {
     const res = await playgroundApp.request('http://localhost/todos', {
       headers: {

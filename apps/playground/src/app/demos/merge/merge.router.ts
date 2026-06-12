@@ -51,8 +51,9 @@ function postsSlice(page: number, perPage: number) {
 
 function activityBefore(beforeId: number, count: number) {
   const idx = ACTIVITY.findIndex(item => item.id === beforeId)
-  if (idx <= 0) return []
-  return ACTIVITY.slice(Math.max(0, idx - count), idx)
+  if (idx < 0 || idx >= ACTIVITY.length - 1) return []
+  // ACTIVITY is newest-first; older events sit at higher indices.
+  return ACTIVITY.slice(idx + 1, idx + 1 + count)
 }
 
 function readInt(query: string | undefined, fallback: number) {
