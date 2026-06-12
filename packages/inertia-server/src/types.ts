@@ -1,3 +1,5 @@
+import type { InertiaOncePropEntry } from './once.js'
+
 /** Minimal request shape adapters map from any HTTP stack. */
 export type InertiaRequestLike = {
   method: string
@@ -25,6 +27,12 @@ export type InertiaPage = {
    * Optional — the client copies from `deferredProps` on the first response when unset.
    */
   initialDeferredProps?: Record<string, string[]>
+  /**
+   * [Once props](https://inertiajs.com/docs/v3/data-props/once-props) cached by the client,
+   * keyed by cache key. The client refills omitted values from its cache and resends
+   * `X-Inertia-Except-Once-Props` for entries it still holds. Omitted when there are none.
+   */
+  onceProps?: Record<string, InertiaOncePropEntry>
 }
 
 export type InertiaJsonHeaders = {

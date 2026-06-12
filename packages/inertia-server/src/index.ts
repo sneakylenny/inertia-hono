@@ -17,6 +17,12 @@ export {
   type InertiaDeferredProp,
 } from './deferred.js'
 export { defer, isInertiaDeferProp, type InertiaDeferProp } from './defer.js'
+export {
+  once,
+  isInertiaOnceProp,
+  type InertiaOnceProp,
+  type InertiaOncePropEntry,
+} from './once.js'
 export { filterPartialProps, isPartialDataReload } from './partial.js'
 export { getVersionMismatch } from './version.js'
 export { defaultHtmlShell, escapeForScriptJson } from './html.js'

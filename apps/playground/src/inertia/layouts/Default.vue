@@ -138,6 +138,14 @@ watch(
             </li>
             <li>
               <Link
+                href="/once-demo"
+                :class="{ 'menu-active': $page.url.startsWith('/once-demo') }"
+              >
+                Once props (client-side cache)
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/redirect-demo"
                 :class="{ 'menu-active': $page.url === '/redirect-internal-test' }"
               >

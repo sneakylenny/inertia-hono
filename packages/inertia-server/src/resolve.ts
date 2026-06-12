@@ -1,5 +1,6 @@
 import { isInertiaDeferProp, pendingDeferKeys } from './defer.js'
-import { resolveDeferredProps } from './deferred.js'
+import { isFilteringPartialReload, resolveDeferredProps } from './deferred.js'
+import { applyOnceProps } from './once.js'
 import { parseCommaList, readHeader } from './headers.js'
 import { filterPartialProps, isPartialDataReload } from './partial.js'
 import type { InertiaPage, InertiaRequestLike, ResolveInertiaResult } from './types.js'
@@ -108,11 +109,18 @@ export async function resolveInertia(
     mergedProps,
     filtered,
   )
+  const isFullVisit = !isFilteringPartialReload(input.request, input.component)
+  const { props: afterOnce, onceProps } = await applyOnceProps(
+    input.request,
+    isFullVisit,
+    mergedProps,
+    afterDefer,
+  )
   const props = await resolveDeferredProps(
     input.request,
     input.component,
     mergedProps,
-    afterDefer,
+    afterOnce,
   )
 
   const page: InertiaPage = {
@@ -122,6 +130,7 @@ export async function resolveInertia(
     version,
   }
   if (deferredProps) page.deferredProps = deferredProps
+  if (onceProps) page.onceProps = onceProps
   if (input.encryptHistory === true) page.encryptHistory = true
   if (input.clearHistory === true) page.clearHistory = true
   if (input.preserveFragment === true) page.preserveFragment = true

@@ -123,6 +123,54 @@ app.get('/dashboard', (c) =>
 
 See [Deferred props](https://inertiajs.com/deferred-props) in the Inertia docs.
 
+### Once Props
+
+Wrap a prop in `once()` to resolve it on the server a single time. The client caches the value and sends `X-Inertia-Except-Once-Props` on later visits, so the server skips the callback entirely — ideal for data that rarely changes (roles, settings, navigation). When the prop is cached, the server omits its value but still lists it under the page's `onceProps`, and the client refills it from its cache.
+
+```ts
+import { once, render } from '@sneakylenny/inertia-hono'
+
+app.get('/team', (c) =>
+  render(c, 'Team', {
+    members: db.members.list(),
+
+    // Resolved once, then cached on the client
+    roles: once(() => db.roles.all()),
+  }),
+)
+```
+
+Chain to customise behaviour:
+
+```ts
+app.get('/team', (c) =>
+  render(c, 'Team', {
+    // Expire the client cache after 1 hour (seconds), or pass an absolute Date
+    settings: once(() => loadSettings()).until(3600),
+    snapshot: once(() => loadSnapshot()).until(new Date('2026-01-01')),
+
+    // Force a fresh value, optionally based on a (sync or async) condition
+    flags: once(() => loadFlags()).fresh(() => isAdmin(c)),
+
+    // Omit on full visits; only resolve when explicitly requested via a partial reload
+    heavy: once(() => buildReport()).optional(),
+  }),
+)
+```
+
+Use `.as(key)` to share cached data across pages that name the prop differently — the callback resolves only for whichever page is visited first:
+
+```ts
+// Team/Index
+memberRoles: once(() => db.roles.all()).as('roles'),
+// Team/Invite
+availableRoles: once(() => db.roles.all()).as('roles'),
+```
+
+`once()` composes with partial reloads: inside a partial reload, a once prop is only resolved when its key is targeted. The client can force a fresh value with Inertia's `reset` option (sent as `X-Inertia-Reset`).
+
+See [Once props](https://inertiajs.com/docs/v3/data-props/once-props) in the Inertia docs.
+
 ### Server-Sent Events (SSE)
 
 Useful for live dashboards, notifications, or progress updates. Open an SSE response from any Hono route with a request-scoped, JSON-friendly API.
@@ -422,6 +470,17 @@ Mark a prop for [deferred loading](https://inertiajs.com/deferred-props) after r
 ### `partial.lazy(fn)` / `partial.optional(fn)` / `partial.always(fn)`
 
 Control prop evaluation during [partial reloads](https://inertiajs.com/partial-reloads).
+
+### `once(fn)`
+
+Mark a prop for [client-side caching](https://inertiajs.com/docs/v3/data-props/once-props). Resolved once on the server, then skipped on later visits while the client holds the value. Returns a builder with chainable methods:
+
+| Method               | Type                                                         | Description                                                                              |
+| -------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `.fresh(condition?)` | `boolean \| (() => boolean \| Promise<boolean>)`             | Force a fresh value, bypassing the cache. Defaults to `true` when called with no argument. |
+| `.until(value)`      | `number \| Date`                                             | Expire the client cache after `value` seconds, or at the given absolute `Date`.          |
+| `.as(key)`           | `string`                                                     | Cache key for sharing data across pages that name the prop differently.                  |
+| `.optional()`        | —                                                            | Omit on full visits; only resolve when explicitly requested via a partial reload.        |
 
 ### `toInertiaErrors(issues, options?)`
 
