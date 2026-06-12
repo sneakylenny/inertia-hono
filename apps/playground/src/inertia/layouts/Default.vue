@@ -146,10 +146,18 @@ watch(
             </li>
             <li>
               <Link
+                href="/merge-demo"
+                :class="{ 'menu-active': $page.url.startsWith('/merge-demo') }"
+              >
+                Merge props
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/scroll-demo"
                 :class="{ 'menu-active': $page.url.startsWith('/scroll-demo') }"
               >
-                Infinite scroll (merge props)
+                Infinite scroll
               </Link>
             </li>
             <li>

@@ -112,6 +112,51 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(body.props.appName).toBe('Inertia Hono playground')
   })
 
+  it('serves /merge-demo: full visit resolves merge props without merge directives', async () => {
+    const res = await playgroundApp.request('http://localhost/merge-demo', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'playground-1',
+        'Accept': 'application/json',
+      },
+    })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      component: string
+      props: {
+        posts?: { id: number, title: string }[]
+        settings?: { theme?: string }
+      }
+      mergeProps?: string[]
+    }
+    expect(body.component).toBe('MergeDemo')
+    expect(body.props.posts?.length).toBe(5)
+    expect(body.props.settings?.theme).toBe('light')
+    expect(body.mergeProps).toBeUndefined()
+  })
+
+  it('serves /merge-demo: partial reload emits mergeProps for append merge', async () => {
+    const res = await playgroundApp.request('http://localhost/merge-demo?postsPage=2', {
+      headers: {
+        'X-Inertia': 'true',
+        'X-Inertia-Version': 'playground-1',
+        'X-Inertia-Partial-Component': 'MergeDemo',
+        'X-Inertia-Partial-Data': 'posts,postsPage',
+        'Accept': 'application/json',
+      },
+    })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      props: { posts?: { id: number }[], postsPage?: number }
+      mergeProps?: string[]
+      matchPropsOn?: string[]
+    }
+    expect(body.props.posts?.length).toBe(5)
+    expect(body.props.postsPage).toBe(2)
+    expect(body.mergeProps).toEqual(['posts'])
+    expect(body.matchPropsOn).toEqual(['posts.id'])
+  })
+
   it('should partially reload on /todos and return only todos (plus errors)', async () => {
     const res = await playgroundApp.request('http://localhost/todos', {
       headers: {
