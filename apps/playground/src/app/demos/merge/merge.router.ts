@@ -53,7 +53,8 @@ function activityBefore(beforeId: number, count: number) {
   const idx = ACTIVITY.findIndex(item => item.id === beforeId)
   if (idx < 0 || idx >= ACTIVITY.length - 1) return []
   // ACTIVITY is newest-first; older events sit at higher indices.
-  return ACTIVITY.slice(idx + 1, idx + 1 + count)
+  // Reverse so the batch is oldest-first — prepend then keeps chronological order.
+  return ACTIVITY.slice(idx + 1, idx + 1 + count).reverse()
 }
 
 function readInt(query: string | undefined, fallback: number) {
@@ -64,6 +65,8 @@ function readInt(query: string | undefined, fallback: number) {
 const app = new Hono<{ Variables: InertiaVariables }>()
 
 app.get('/merge-demo', (c) => {
+  // Pagination cursors arrive as query params on partial-reload XHR requests only
+  // (the client uses `preserveUrl: true` so they never appear in the address bar).
   const postsPage = readInt(c.req.query('postsPage'), 1)
   const feedPage = readInt(c.req.query('feedPage'), 1)
   const notifBatch = Math.min(readInt(c.req.query('notifBatch'), 1), NOTIF_UPDATES.length)
@@ -71,12 +74,6 @@ app.get('/merge-demo', (c) => {
   const activityBeforeId = readInt(c.req.query('activityBefore'), 0)
 
   return render(c, 'MergeDemo', {
-    postsPage,
-    feedPage,
-    notifBatch,
-    settingsStep,
-    activityBefore: activityBeforeId,
-
     posts: merge(() => {
       postsRuns++
       return postsSlice(postsPage, 5)
@@ -85,7 +82,8 @@ app.get('/merge-demo', (c) => {
     activity: merge(() => {
       activityRuns++
       if (activityBeforeId > 0) return activityBefore(activityBeforeId, 3)
-      return ACTIVITY.slice(0, 4)
+      // Oldest-first window so prepending older events stays chronological.
+      return ACTIVITY.slice(0, 4).reverse()
     }).prepend().match('id'),
 
     notifications: merge(() => {

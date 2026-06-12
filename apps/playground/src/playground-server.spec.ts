@@ -141,18 +141,18 @@ describe('playground Hono + Inertia HTML shell', () => {
         'X-Inertia': 'true',
         'X-Inertia-Version': 'playground-1',
         'X-Inertia-Partial-Component': 'MergeDemo',
-        'X-Inertia-Partial-Data': 'posts,postsPage',
+        'X-Inertia-Partial-Data': 'posts',
         'Accept': 'application/json',
       },
     })
     expect(res.status).toBe(200)
     const body = (await res.json()) as {
-      props: { posts?: { id: number }[], postsPage?: number }
+      props: { posts?: { id: number }[] }
       mergeProps?: string[]
       matchPropsOn?: string[]
     }
     expect(body.props.posts?.length).toBe(5)
-    expect(body.props.postsPage).toBe(2)
+    expect(body.props.posts?.map(item => item.id)).toEqual([6, 7, 8, 9, 10])
     expect(body.mergeProps).toEqual(['posts'])
     expect(body.matchPropsOn).toEqual(['posts.id'])
   })
@@ -163,18 +163,17 @@ describe('playground Hono + Inertia HTML shell', () => {
         'X-Inertia': 'true',
         'X-Inertia-Version': 'playground-1',
         'X-Inertia-Partial-Component': 'MergeDemo',
-        'X-Inertia-Partial-Data': 'activity,activityBefore',
+        'X-Inertia-Partial-Data': 'activity',
         'Accept': 'application/json',
       },
     })
     expect(res.status).toBe(200)
     const body = (await res.json()) as {
-      props: { activity?: { id: number }[], activityBefore?: number }
+      props: { activity?: { id: number }[] }
       prependProps?: string[]
       mergeProps?: string[]
     }
-    expect(body.props.activity?.map(item => item.id)).toEqual([14, 13, 12])
-    expect(body.props.activityBefore).toBe(15)
+    expect(body.props.activity?.map(item => item.id)).toEqual([12, 13, 14])
     expect(body.prependProps).toEqual(['activity'])
     expect(body.mergeProps).toBeUndefined()
   })
