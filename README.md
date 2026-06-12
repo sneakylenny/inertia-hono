@@ -109,7 +109,7 @@ app.get('/dashboard', (c) =>
   render(c, 'Dashboard', {
     summary: { revenue: 1000 },
 
-    // Loaded after first paint in a follow-up request
+    // Loaded after the initial render in a follow-up request
     recentOrders: defer(async () => {
       return await db.orders.recent()
     }),
