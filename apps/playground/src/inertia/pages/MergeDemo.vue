@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+
+const POSTS_TOTAL = 24
+const POSTS_PER_PAGE = 5
+const ACTIVITY_TOTAL = 18
 
 type Post = { id: number, title: string }
 type Activity = { id: number, event: string }
@@ -18,11 +22,6 @@ const props = defineProps<{
   notifications: Notification[]
   settings: Settings
   feed: Feed
-  postsPage: number
-  feedPage: number
-  notifBatch: number
-  settingsStep: number
-  activityBefore: number
   debug: {
     postsRuns: number
     activityRuns: number
@@ -32,40 +31,55 @@ const props = defineProps<{
   }
 }>()
 
+const notifBatch = ref(1)
+const settingsStep = ref(1)
+
 const oldestActivityId = computed(() =>
   props.activity.length > 0 ? Math.min(...props.activity.map(item => item.id)) : 0,
 )
 
-const postsHasMore = computed(() => props.postsPage * 5 < 24)
-const notifHasMore = computed(() => props.notifBatch < 3)
-const settingsHasMore = computed(() => props.settingsStep < 3)
+const postsHasMore = computed(() => props.posts.length < POSTS_TOTAL)
+const activityHasMore = computed(
+  () => props.activity.length < ACTIVITY_TOTAL && oldestActivityId.value > 1,
+)
+const notifHasMore = computed(() => notifBatch.value < 3)
+const settingsHasMore = computed(() => settingsStep.value < 3)
 
-function reload(query: Record<string, string | number>, only: string[]) {
-  router.get('/merge-demo', query, {
+function partialReload(
+  data: Record<string, string | number>,
+  only: string[],
+) {
+  router.get('/merge-demo', data, {
     only,
     preserveState: true,
     preserveScroll: true,
+    preserveUrl: true,
   })
 }
 
 function loadMorePosts() {
-  reload({ postsPage: props.postsPage + 1 }, ['posts', 'postsPage'])
+  partialReload(
+    { postsPage: Math.floor(props.posts.length / POSTS_PER_PAGE) + 1 },
+    ['posts'],
+  )
 }
 
 function loadOlderActivity() {
-  reload({ activityBefore: oldestActivityId.value }, ['activity', 'activityBefore'])
+  partialReload({ activityBefore: oldestActivityId.value }, ['activity'])
 }
 
 function pushNotifications() {
-  reload({ notifBatch: props.notifBatch + 1 }, ['notifications', 'notifBatch'])
+  notifBatch.value++
+  partialReload({ notifBatch: notifBatch.value }, ['notifications'])
 }
 
 function applySettingsPatch() {
-  reload({ settingsStep: props.settingsStep + 1 }, ['settings', 'settingsStep'])
+  settingsStep.value++
+  partialReload({ settingsStep: settingsStep.value }, ['settings'])
 }
 
 function loadMoreFeed() {
-  reload({ feedPage: props.feedPage + 1 }, ['feed', 'feedPage'])
+  partialReload({ feedPage: props.feed.meta.page + 1 }, ['feed'])
 }
 
 function fullVisit() {
@@ -83,7 +97,9 @@ function fullVisit() {
       On a partial reload the client <strong>combines</strong> incoming props with what it
       already holds — arrays append (or prepend), objects merge, and
       <kbd class="kbd kbd-sm">.match('id')</kbd> updates existing rows instead of duplicating them.
-      A full visit always replaces props.
+      A full visit always replaces props. Pagination cursors are sent on partial reloads with
+      <kbd class="kbd kbd-sm">preserveUrl: true</kbd> so the address bar stays at
+      <code>/merge-demo</code>.
     </p>
 
     <div class="mt-4 flex flex-wrap gap-2 text-xs">
@@ -151,7 +167,7 @@ function fullVisit() {
           <button
             type="button"
             class="btn btn-secondary btn-sm"
-            :disabled="oldestActivityId <= 1"
+            :disabled="!activityHasMore"
             @click="loadOlderActivity"
           >
             Load older (partial)

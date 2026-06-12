@@ -65,6 +65,8 @@ function readInt(query: string | undefined, fallback: number) {
 const app = new Hono<{ Variables: InertiaVariables }>()
 
 app.get('/merge-demo', (c) => {
+  // Pagination cursors arrive as query params on partial-reload XHR requests only
+  // (the client uses `preserveUrl: true` so they never appear in the address bar).
   const postsPage = readInt(c.req.query('postsPage'), 1)
   const feedPage = readInt(c.req.query('feedPage'), 1)
   const notifBatch = Math.min(readInt(c.req.query('notifBatch'), 1), NOTIF_UPDATES.length)
@@ -72,12 +74,6 @@ app.get('/merge-demo', (c) => {
   const activityBeforeId = readInt(c.req.query('activityBefore'), 0)
 
   return render(c, 'MergeDemo', {
-    postsPage,
-    feedPage,
-    notifBatch,
-    settingsStep,
-    activityBefore: activityBeforeId,
-
     posts: merge(() => {
       postsRuns++
       return postsSlice(postsPage, 5)
