@@ -1,3 +1,6 @@
+import type { InertiaOncePropEntry } from './once.js'
+import type { InertiaScrollPropMeta } from './scroll.js'
+
 /** Minimal request shape adapters map from any HTTP stack. */
 export type InertiaRequestLike = {
   method: string
@@ -25,6 +28,33 @@ export type InertiaPage = {
    * Optional — the client copies from `deferredProps` on the first response when unset.
    */
   initialDeferredProps?: Record<string, string[]>
+  /**
+   * [Once props](https://inertiajs.com/docs/v3/data-props/once-props) cached by the client,
+   * keyed by cache key. The client refills omitted values from its cache and resends
+   * `X-Inertia-Except-Once-Props` for entries it still holds. Omitted when there are none.
+   */
+  onceProps?: Record<string, InertiaOncePropEntry>
+  /**
+   * Prop paths whose array values the client appends to (and objects shallow-merges into)
+   * the existing prop instead of replacing it. See [merge props](https://inertiajs.com/docs/v3/data-props/merging-props).
+   * Only applied on partial reloads; omitted when empty.
+   */
+  mergeProps?: string[]
+  /** Like {@link mergeProps} but array values are prepended. Omitted when empty. */
+  prependProps?: string[]
+  /** Prop paths merged recursively through nested objects/arrays. Omitted when empty. */
+  deepMergeProps?: string[]
+  /**
+   * Dot-paths (e.g. `posts.id`) telling the client to match existing array items by that
+   * field and update them in place instead of appending duplicates. Omitted when empty.
+   */
+  matchPropsOn?: string[]
+  /**
+   * [Infinite scroll](https://inertiajs.com/docs/v3/data-props/infinite-scroll) pagination
+   * metadata keyed by prop name. The client reads it to know which page to load next and
+   * whether to reset accumulated data. Omitted when there are none.
+   */
+  scrollProps?: Record<string, InertiaScrollPropMeta>
 }
 
 export type InertiaJsonHeaders = {

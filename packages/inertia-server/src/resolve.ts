@@ -1,5 +1,7 @@
 import { isInertiaDeferProp, pendingDeferKeys } from './defer.js'
-import { resolveDeferredProps } from './deferred.js'
+import { isFilteringPartialReload, resolveDeferredProps } from './deferred.js'
+import { applyMergeAndScroll } from './mergeScroll.js'
+import { applyOnceProps } from './once.js'
 import { parseCommaList, readHeader } from './headers.js'
 import { filterPartialProps, isPartialDataReload } from './partial.js'
 import type { InertiaPage, InertiaRequestLike, ResolveInertiaResult } from './types.js'
@@ -108,12 +110,27 @@ export async function resolveInertia(
     mergedProps,
     filtered,
   )
-  const props = await resolveDeferredProps(
+  const isFullVisit = !isFilteringPartialReload(input.request, input.component)
+  const { props: afterOnce, onceProps } = await applyOnceProps(
     input.request,
-    input.component,
+    isFullVisit,
     mergedProps,
     afterDefer,
   )
+  const resolved = await resolveDeferredProps(
+    input.request,
+    input.component,
+    mergedProps,
+    afterOnce,
+  )
+  const {
+    props,
+    mergeProps,
+    prependProps,
+    deepMergeProps,
+    matchPropsOn,
+    scrollProps,
+  } = await applyMergeAndScroll(input.request, input.component, resolved)
 
   const page: InertiaPage = {
     component: input.component,
@@ -122,6 +139,12 @@ export async function resolveInertia(
     version,
   }
   if (deferredProps) page.deferredProps = deferredProps
+  if (onceProps) page.onceProps = onceProps
+  if (mergeProps) page.mergeProps = mergeProps
+  if (prependProps) page.prependProps = prependProps
+  if (deepMergeProps) page.deepMergeProps = deepMergeProps
+  if (matchPropsOn) page.matchPropsOn = matchPropsOn
+  if (scrollProps) page.scrollProps = scrollProps
   if (input.encryptHistory === true) page.encryptHistory = true
   if (input.clearHistory === true) page.clearHistory = true
   if (input.preserveFragment === true) page.preserveFragment = true

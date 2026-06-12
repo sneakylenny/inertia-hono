@@ -109,7 +109,7 @@ app.get('/dashboard', (c) =>
   render(c, 'Dashboard', {
     summary: { revenue: 1000 },
 
-    // Loaded after first paint in a follow-up request
+    // Loaded after the initial render in a follow-up request
     recentOrders: defer(async () => {
       return await db.orders.recent()
     }),
@@ -122,6 +122,125 @@ app.get('/dashboard', (c) =>
 ```
 
 See [Deferred props](https://inertiajs.com/deferred-props) in the Inertia docs.
+
+### Once Props
+
+Wrap a prop in `once()` to resolve it on the server a single time. The client caches the value and sends `X-Inertia-Except-Once-Props` on later visits, so the server skips the callback entirely — ideal for data that rarely changes (roles, settings, navigation). When the prop is cached, the server omits its value but still lists it under the page's `onceProps`, and the client refills it from its cache.
+
+```ts
+import { once, render } from '@sneakylenny/inertia-hono'
+
+app.get('/team', (c) =>
+  render(c, 'Team', {
+    members: db.members.list(),
+
+    // Resolved once, then cached on the client
+    roles: once(() => db.roles.all()),
+  }),
+)
+```
+
+Chain to customise behaviour:
+
+```ts
+app.get('/team', (c) =>
+  render(c, 'Team', {
+    // Expire the client cache after 1 hour (seconds), or pass an absolute Date
+    settings: once(() => loadSettings()).until(3600),
+    snapshot: once(() => loadSnapshot()).until(new Date('2026-01-01')),
+
+    // Force a fresh value, optionally based on a (sync or async) condition
+    flags: once(() => loadFlags()).fresh(() => isAdmin(c)),
+
+    // Omit on full visits; only resolve when explicitly requested via a partial reload
+    heavy: once(() => buildReport()).optional(),
+  }),
+)
+```
+
+Use `.as(key)` to share cached data across pages that name the prop differently — the callback resolves only for whichever page is visited first:
+
+```ts
+// Team/Index
+memberRoles: once(() => db.roles.all()).as('roles'),
+// Team/Invite
+availableRoles: once(() => db.roles.all()).as('roles'),
+```
+
+`once()` composes with partial reloads: inside a partial reload, a once prop is only resolved when its key is targeted. The client can force a fresh value with Inertia's `reset` option (sent as `X-Inertia-Reset`).
+
+See [Once props](https://inertiajs.com/docs/v3/data-props/once-props) in the Inertia docs.
+
+### Merge Props
+
+By default a prop is replaced on every visit. Wrap it in `merge()` (or `deepMerge()`) and on [partial reloads](https://inertiajs.com/partial-reloads) the client **combines** the incoming value with what it already holds — arrays are appended, objects merged — instead of replacing it.
+
+```ts
+import { merge, deepMerge, render } from '@sneakylenny/inertia-hono'
+
+app.get('/feed', c =>
+  render(c, 'Feed', {
+    // Append new rows to the existing list
+    posts: merge(loadNextPosts()),
+
+    // Prepend instead of append
+    activity: merge(loadActivity()).prepend(),
+
+    // Match existing items by a field and update them in place (no duplicates)
+    notifications: merge(loadNotifications()).match('id'),
+
+    // Merge a nested array inside a paginator-shaped object (`page.data`)
+    page: merge(loadPage()).at('data').match('id'),
+
+    // Recursively merge nested objects/arrays
+    settings: deepMerge(loadSettings()),
+  }),
+)
+```
+
+Merging only applies on partial reloads — a full page visit always replaces the prop. The value may be a plain value or a (possibly async) thunk that runs only when the prop survives partial filtering.
+
+See [Merging props](https://inertiajs.com/docs/v3/data-props/merging-props) in the Inertia docs.
+
+### Infinite Scroll
+
+`scroll(items, metadata)` drives Inertia's [`<InfiniteScroll>`](https://inertiajs.com/docs/v3/data-props/infinite-scroll) component. Because Hono has no `Model::paginate()`, you supply the pagination metadata yourself — the framework-agnostic `offsetPaginate()` and `cursorPaginate()` helpers build it from any data source (an array, SQL `LIMIT/OFFSET`, a cursor query, anything). No ORM integration required.
+
+```ts
+import { scroll, offsetPaginate, cursorPaginate, render } from '@sneakylenny/inertia-hono'
+
+// Offset / page-number pagination
+app.get('/users', (c) => {
+  const page = Number(c.req.query('page') ?? '1')
+  const perPage = 20
+  const rows = db.users.list({ limit: perPage, offset: (page - 1) * perPage })
+  const total = db.users.count()
+
+  return render(c, 'Users', {
+    users: scroll(rows, offsetPaginate({ page, perPage, total })).match('id'),
+  })
+})
+
+// Cursor pagination (over-fetch one row to detect the next page)
+app.get('/feed', (c) => {
+  const cursor = c.req.query('cursor')
+  const perPage = 20
+  const rows = db.posts.after(cursor, perPage + 1)
+  const { items, metadata } = cursorPaginate({
+    items: rows,
+    perPage,
+    getCursor: r => r.id,
+    hasPrevious: Boolean(cursor),
+    currentCursor: cursor ?? null,
+  })
+
+  return render(c, 'Feed', { posts: scroll(items, metadata).match('id') })
+})
+```
+
+On the client, wrap the list in `<InfiniteScroll data="users">`. As the user scrolls, the component issues a partial reload for that prop with a merge-intent header; `scroll()` reads it to append (next page) or prepend (previous page), and emits the `scrollProps` metadata the component needs to know when to stop. Chain `.match(field)` to de-duplicate by key and `.resetWhen(condition)` to tell the client to drop accumulated data (e.g. after a filter change). Try the **Infinite scroll** demo in the [playground](apps/playground/).
+
+See [Infinite scroll](https://inertiajs.com/docs/v3/data-props/infinite-scroll) in the Inertia docs.
 
 ### Server-Sent Events (SSE)
 
@@ -422,6 +541,17 @@ Mark a prop for [deferred loading](https://inertiajs.com/deferred-props) after r
 ### `partial.lazy(fn)` / `partial.optional(fn)` / `partial.always(fn)`
 
 Control prop evaluation during [partial reloads](https://inertiajs.com/partial-reloads).
+
+### `once(fn)`
+
+Mark a prop for [client-side caching](https://inertiajs.com/docs/v3/data-props/once-props). Resolved once on the server, then skipped on later visits while the client holds the value. Returns a builder with chainable methods:
+
+| Method               | Type                                                         | Description                                                                              |
+| -------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `.fresh(condition?)` | `boolean \| (() => boolean \| Promise<boolean>)`             | Force a fresh value, bypassing the cache. Defaults to `true` when called with no argument. |
+| `.until(value)`      | `number \| Date`                                             | Expire the client cache after `value` seconds, or at the given absolute `Date`.          |
+| `.as(key)`           | `string`                                                     | Cache key for sharing data across pages that name the prop differently.                  |
+| `.optional()`        | —                                                            | Omit on full visits; only resolve when explicitly requested via a partial reload.        |
 
 ### `toInertiaErrors(issues, options?)`
 

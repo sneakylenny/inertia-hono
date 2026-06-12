@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import * as v from 'valibot'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import {
   createInertia,
   INERTIA_FLASH_COOKIE,
@@ -72,7 +72,7 @@ describe('inertiaValidator', () => {
     expect(res.headers.get('location')).toBe('http://localhost/todos')
 
     const setCookie = getSetCookie(res, INERTIA_FLASH_COOKIE)
-    expect(setCookie, 'flash cookie should be set').toBeTruthy()
+    expect(setCookie).toBeTruthy()
 
     const [cookiePair] = setCookie!.split(';')
     const follow = await app.request('http://localhost/todos', {

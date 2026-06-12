@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import { issueDotPath, toInertiaErrors } from './validation.js'
 
 function issue(

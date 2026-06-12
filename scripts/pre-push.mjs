@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 /**
  * Git pre-push hook: stdin lines are `<local_ref> <local_sha> <remote_ref> <remote_sha>`.
  * When any push updates `main`, run the same checks as `.github/workflows/ci.yml`.

@@ -138,6 +138,30 @@ watch(
             </li>
             <li>
               <Link
+                href="/once-demo"
+                :class="{ 'menu-active': $page.url.startsWith('/once-demo') }"
+              >
+                Once props (client-side cache)
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/merge-demo"
+                :class="{ 'menu-active': $page.url.startsWith('/merge-demo') }"
+              >
+                Merge props
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/scroll-demo"
+                :class="{ 'menu-active': $page.url.startsWith('/scroll-demo') }"
+              >
+                Infinite scroll
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/redirect-demo"
                 :class="{ 'menu-active': $page.url === '/redirect-internal-test' }"
               >

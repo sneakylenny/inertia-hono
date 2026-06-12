@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import {
   back,
   createInertia,
@@ -128,7 +128,7 @@ describe('back()', () => {
     expect(postRes.status).toBe(303)
 
     const setCookie = getSetCookie(postRes, INERTIA_FLASH_COOKIE)
-    expect(setCookie, 'flash cookie should be set').toBeTruthy()
+    expect(setCookie).toBeTruthy()
 
     const [cookiePair] = setCookie!.split(';')
     const getRes = await app.request('http://localhost/form', {
@@ -146,7 +146,7 @@ describe('back()', () => {
     expect(body.props.errors).toEqual({ email: 'Email is required' })
 
     const clearCookie = getSetCookie(getRes, INERTIA_FLASH_COOKIE)
-    expect(clearCookie, 'flash cookie should be cleared after read').toBeTruthy()
+    expect(clearCookie).toBeTruthy()
     expect(clearCookie!).toMatch(/Max-Age=0|expires=Thu, 01 Jan 1970/i)
   })
 

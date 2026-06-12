@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import { defer } from './defer.js'
 import { partial } from './deferred.js'
 import { resolveInertia } from './resolve.js'
