@@ -28,7 +28,7 @@
   "scripts": {
     "build": "rm -rf dist && bun build ./src/index.ts --outdir ./dist --format esm --sourcemap --target node && tsc -p tsconfig.build.json",
     "test": "bun test",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "moon run inertia-server:build"
   },
   "keywords": [
     "inertia",
