@@ -1,5 +1,11 @@
 # inertia-hono
 
+## 0.4.1
+
+### Patch Changes
+
+- bc8d9e8: Update documentation for once props, merge props, and infinite scroll.
+
 ## 0.4.0
 
 ### Minor Changes
