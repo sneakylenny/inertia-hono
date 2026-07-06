@@ -197,6 +197,52 @@ describe('playground Hono + Inertia HTML shell', () => {
     expect(body.props.appName).toBeUndefined()
   })
 
+  it('serves /once-demo/b: once() resolves on first visit and skips when cached', async () => {
+    const headers = {
+      'X-Inertia': 'true',
+      'X-Inertia-Version': 'playground-1',
+      'Accept': 'application/json',
+    }
+
+    const first = await playgroundApp.request('http://localhost/once-demo/b', { headers })
+    expect(first.status).toBe(200)
+    const firstBody = (await first.json()) as {
+      props: { config?: { runs: number, resolvedOn?: string }, configFromCache?: boolean }
+      onceProps?: Record<string, unknown>
+    }
+    expect(firstBody.props.config).toEqual({ runs: 1, resolvedOn: 'Page B' })
+    expect(firstBody.props.configFromCache).toBe(false)
+    expect(firstBody.onceProps).toEqual({ config: { prop: 'config' } })
+
+    const cached = await playgroundApp.request('http://localhost/once-demo/b', {
+      headers: {
+        ...headers,
+        'X-Inertia-Except-Once-Props': 'config',
+      },
+    })
+    expect(cached.status).toBe(200)
+    const cachedBody = (await cached.json()) as {
+      props: { config?: { runs: number }, configFromCache?: boolean }
+    }
+    expect(cachedBody.props.config).toBeUndefined()
+    expect(cachedBody.props.configFromCache).toBe(true)
+
+    const reset = await playgroundApp.request('http://localhost/once-demo/b', {
+      headers: {
+        ...headers,
+        'X-Inertia-Partial-Component': 'OnceDemoB',
+        'X-Inertia-Partial-Data': 'config',
+        'X-Inertia-Reset': 'config',
+      },
+    })
+    expect(reset.status).toBe(200)
+    const resetBody = (await reset.json()) as {
+      props: { config?: { runs: number, resolvedOn?: string }, configFromCache?: boolean }
+    }
+    expect(resetBody.props.config).toEqual({ runs: 2, resolvedOn: 'Page B' })
+    expect(resetBody.props.configFromCache).toBe(false)
+  })
+
   it('serves a live events SSE snapshot for button presses', async () => {
     const res = await playgroundApp.request('http://localhost/api/live-events/stream?once=1', {
       headers: { Accept: 'text/event-stream' },
