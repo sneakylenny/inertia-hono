@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3'
-import { computed } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   config: { runs: number, resolvedOn: string }
+  configFromCache: boolean
 }>()
 
 function forceRefresh() {
   router.reload({ reset: ['config'] })
 }
-
-const cacheHit = computed(() => props.config.resolvedOn !== 'Page B')
 </script>
 
 <template>
@@ -40,6 +38,7 @@ const cacheHit = computed(() => props.config.resolvedOn !== 'Page B')
       Both pages define the same <kbd class="kbd kbd-sm">config</kbd> prop using <kbd class="kbd kbd-sm">once()</kbd>.
       The server resolves the callback on the first visit and the client caches the result.
       Navigate back to Page A — its resolver is skipped entirely.
+      The cache status badge is demo-only; real apps just wrap the prop in <kbd class="kbd kbd-sm">once()</kbd>.
     </p>
 
     <div class="card mt-6 border border-primary bg-primary/10 shadow-sm">
@@ -67,9 +66,9 @@ const cacheHit = computed(() => props.config.resolvedOn !== 'Page B')
           <dd>
             <span
               class="badge badge-sm"
-              :class="cacheHit ? 'badge-success' : 'badge-warning'"
+              :class="configFromCache ? 'badge-success' : 'badge-warning'"
             >
-              {{ cacheHit ? 'hit — resolver skipped' : 'miss — resolved here' }}
+              {{ configFromCache ? 'hit — resolver skipped' : 'miss — resolved here' }}
             </span>
           </dd>
         </dl>
@@ -93,8 +92,8 @@ const cacheHit = computed(() => props.config.resolvedOn !== 'Page B')
         Note <strong>resolver ran: 1×</strong>, last resolved on: <em>Page A</em>, cache: <em>hit</em>.
       </li>
       <li>
-        Click <strong>Page A</strong> above. The count stays at 1 and "last resolved on"
-        still says <em>Page A</em> — Page A's resolver was not called again.
+        Click <strong>Page A</strong> above. The count stays at 1, "last resolved on"
+        still says <em>Page A</em>, and cache shows <em>hit</em> — Page A's resolver was not called again.
       </li>
       <li>
         Click <strong>Force refresh</strong> on either page. The count increments and
