@@ -1,0 +1,17 @@
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+id: 'create-inertia-hono'
+language: typescript
+layer: library
+stack: backend
+tags:
+  - 'publishable'
+
+tasks:
+  build:
+    command: 'bun run build'
+    inputs:
+      - 'src/**/*'
+      - 'package.json'
+    outputs:
+      - 'dist'
