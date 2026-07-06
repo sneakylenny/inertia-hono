@@ -34,7 +34,7 @@
     "test": "bun test",
     "prepack": "cp ../../README.md ./README.md",
     "postpack": "rm -f ./README.md",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "moon run inertia-hono:build"
   },
   "keywords": [
     "inertia",

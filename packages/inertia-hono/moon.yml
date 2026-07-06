@@ -4,6 +4,8 @@ id: 'inertia-hono'
 language: typescript
 layer: library
 stack: backend
+tags:
+  - 'publishable'
 
 dependsOn:
   - 'inertia-server'

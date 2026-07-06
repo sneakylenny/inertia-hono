@@ -37,7 +37,7 @@ jobs:
           auto-install: true
 
       - run: bun install --frozen-lockfile
-      - run: moon run :build
+      - run: moon run '#publishable:build'
 
       - uses: changesets/action@v1
         with:

@@ -4,6 +4,8 @@ id: 'inertia-server'
 language: typescript
 layer: library
 stack: backend
+tags:
+  - 'publishable'
 
 tasks:
   build:

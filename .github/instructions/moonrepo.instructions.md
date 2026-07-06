@@ -1,7 +1,7 @@
 ---
 name: Moonrepo workflow
 description: Understand that this repository is organized and orchestrated with Moonrepo.
-applyTo: "**"
+applyTo: '**'
 ---
 
 This repository uses Moonrepo for task orchestration and project relationships.
@@ -26,6 +26,7 @@ From the repository root:
 Project-scoped examples:
 
 - Build the adapter package: `moon run inertia-hono:build`
+- Build publishable packages (npm): `moon run '#publishable:build'`
 - Test the protocol package: `moon run inertia-server:test`
 - Start the demo app: `moon run playground:dev`
 - Lint the demo app: `moon run playground:lint`
@@ -37,3 +38,13 @@ Project-scoped examples:
 - When a task already exists in Moon, do not invent a parallel workflow.
 - Use Bun inside project tasks, but let Moon coordinate cross-project execution.
 - If unsure what to run, start with the nearest project task, then expand to dependent projects as needed.
+
+## Publishable packages
+
+Projects that are tagged `publishable` in their `moon.yml`. The release workflow builds only those projects:
+
+```sh
+moon run '#publishable:build'
+```
+
+See the [Moon run command](https://moonrepo.dev/docs/commands/run) for tag-based task selection.

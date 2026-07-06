@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm --banner \"#!/usr/bin/env node\"",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "moon run create-inertia-hono:build"
   },
   "keywords": [
     "inertia",
