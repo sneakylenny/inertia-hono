@@ -152,7 +152,7 @@ app.get('/team', (c) =>
     // Force a fresh value, optionally based on a (sync or async) condition
     flags: once(() => loadFlags()).fresh(() => isAdmin(c)),
 
-    // Omit on full visits; only resolve when explicitly requested via a partial reload
+    // Omit on full visits, only resolve when explicitly requested via a partial reload
     heavy: once(() => buildReport()).optional(),
   }),
 )
@@ -178,7 +178,7 @@ By default a prop is replaced on every visit. Wrap it in `merge()` (or `deepMerg
 ```ts
 import { merge, deepMerge, render } from '@sneakylenny/inertia-hono'
 
-app.get('/feed', c =>
+app.get('/feed', (c) =>
   render(c, 'Feed', {
     // Append new rows to the existing list
     posts: merge(loadNextPosts()),
@@ -229,7 +229,7 @@ app.get('/feed', (c) => {
   const { items, metadata } = cursorPaginate({
     items: rows,
     perPage,
-    getCursor: r => r.id,
+    getCursor: (r) => r.id,
     hasPrevious: Boolean(cursor),
     currentCursor: cursor ?? null,
   })
@@ -238,7 +238,7 @@ app.get('/feed', (c) => {
 })
 ```
 
-On the client, wrap the list in `<InfiniteScroll data="users">`. As the user scrolls, the component issues a partial reload for that prop with a merge-intent header; `scroll()` reads it to append (next page) or prepend (previous page), and emits the `scrollProps` metadata the component needs to know when to stop. Chain `.match(field)` to de-duplicate by key and `.resetWhen(condition)` to tell the client to drop accumulated data (e.g. after a filter change). Try the **Infinite scroll** demo in the [playground](apps/playground/).
+On the client, wrap the list in `<InfiniteScroll data="users">`. As the user scrolls, the component issues a partial reload for that prop with a merge-intent header. `scroll()` reads it to append the next page or prepend the previous page, and it emits the `scrollProps` metadata the component needs to know when to stop. Chain `.match(field)` to de-duplicate by key and `.resetWhen(condition)` to tell the client to drop accumulated data, for example after a filter change. Try the **Infinite scroll** demo in the [playground](apps/playground/).
 
 See [Infinite scroll](https://inertiajs.com/docs/v3/data-props/infinite-scroll) in the Inertia docs.
 
@@ -317,7 +317,7 @@ See [Partial reloads](https://inertiajs.com/partial-reloads) in the Inertia docs
 > [!NOTE]
 > Requires `flashSecret` to be set in `createInertia({ flashSecret })`.
 
-`back(c, payload?)` redirects (`303`) to the `Referer`, optionally carrying a one-shot data payload. The payload is stashed in a signed cookie; on the next request the middleware consumes it and merges the data into shared props automatically — useful for flashing validation errors, toast messages, or any other ephemeral state to the page you land on.
+`back(c, payload?)` redirects (`303`) to the `Referer`, optionally carrying a one-shot data payload. The payload is stashed in a signed cookie. On the next request the middleware consumes it and merges the data into shared props automatically, which is useful for flashing validation errors, toast messages, or any other ephemeral state to the page you land on.
 
 Enable it by passing a `flashSecret` to `createInertia`:
 
@@ -379,7 +379,7 @@ See [`inertiaValidator`](#inertiavalidatortarget-schema-options) in the API refe
 > [!NOTE]
 > Requires `createInertia({ flashSecret })` and `@hono/standard-validator` as a peer dependency.
 
-**Full control:** For custom failure handling (e.g. rendering the same page with extra context), use `toInertiaErrors` to map Standard Schema issues (Valibot, Zod v3+, ArkType, Effect Schema, ...) into Inertia's [`errors` page prop](https://inertiajs.com/docs/v3/the-basics/forms#form-errors) yourself. Keys are dotted paths (e.g. `items.0.name`); first issue per path wins.
+**Full control:** For custom failure handling, such as rendering the same page with extra context, use `toInertiaErrors` to map Standard Schema issues (Valibot, Zod v3+, ArkType, Effect Schema, ...) into Inertia's [`errors` page prop](https://inertiajs.com/docs/v3/the-basics/forms#form-errors) yourself. Keys are dotted paths, for example `items.0.name`. The first issue per path wins.
 
 ```ts
 import { sValidator } from '@hono/standard-validator'
@@ -507,7 +507,7 @@ Merge props into the current request's shared data. Can be called from any middl
 
 ### `location(c, url, status?)`
 
-Trigger an [external redirect](https://inertiajs.com/redirects#external-redirects). On Inertia requests returns a `409` with `X-Inertia-Location`; on regular requests performs a standard HTTP redirect.
+Trigger an [external redirect](https://inertiajs.com/redirects#external-redirects). On Inertia requests it returns a `409` with `X-Inertia-Location`. On regular requests it performs a standard HTTP redirect.
 
 **Parameters:**
 
@@ -522,10 +522,10 @@ Redirect back to the `Referer` (`303` by default) with an optional `{ errors, fl
 
 **Parameters:**
 
-| Parameter | Type                                                                   | Description                                                                                                               |
-| --------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `payload` | `{ errors?: Record<string, string>, flash?: Record<string, unknown> }` | Optional data to flash to the next request via a signed cookie.                                                           |
-| `options` | `{ fallback?: string, status?: number }`                               | `fallback` is the redirect target when `Referer` is missing (default: `/`); `status` is the HTTP status (default: `303`). |
+| Parameter | Type                                                                   | Description                                                                                                                       |
+| --------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `payload` | `{ errors?: Record<string, string>, flash?: Record<string, unknown> }` | Optional data to flash to the next request via a signed cookie.                                                                   |
+| `options` | `{ fallback?: string, status?: number }`                               | `fallback` is the redirect target when `Referer` is missing, defaulting to `/`. `status` is the HTTP status, defaulting to `303`. |
 
 ### `defer(fn, group?)`
 
@@ -536,7 +536,7 @@ Mark a prop for [deferred loading](https://inertiajs.com/deferred-props) after r
 | Parameter | Type                 | Description                                                                       |
 | --------- | -------------------- | --------------------------------------------------------------------------------- |
 | `fn`      | `() => Promise<any>` | Async function that resolves the prop value.                                      |
-| `group`   | `string`             | Optional group name; props in the same group are fetched together in one request. |
+| `group`   | `string`             | Optional group name. Props in the same group are fetched together in one request. |
 
 ### `partial.lazy(fn)` / `partial.optional(fn)` / `partial.always(fn)`
 
@@ -546,12 +546,12 @@ Control prop evaluation during [partial reloads](https://inertiajs.com/partial-r
 
 Mark a prop for [client-side caching](https://inertiajs.com/docs/v3/data-props/once-props). Resolved once on the server, then skipped on later visits while the client holds the value. Returns a builder with chainable methods:
 
-| Method               | Type                                                         | Description                                                                              |
-| -------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `.fresh(condition?)` | `boolean \| (() => boolean \| Promise<boolean>)`             | Force a fresh value, bypassing the cache. Defaults to `true` when called with no argument. |
-| `.until(value)`      | `number \| Date`                                             | Expire the client cache after `value` seconds, or at the given absolute `Date`.          |
-| `.as(key)`           | `string`                                                     | Cache key for sharing data across pages that name the prop differently.                  |
-| `.optional()`        | —                                                            | Omit on full visits; only resolve when explicitly requested via a partial reload.        |
+| Method               | Type                                             | Description                                                                                |
+| -------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `.fresh(condition?)` | `boolean \| (() => boolean \| Promise<boolean>)` | Force a fresh value, bypassing the cache. Defaults to `true` when called with no argument. |
+| `.until(value)`      | `number \| Date`                                 | Expire the client cache after `value` seconds, or at the given absolute `Date`.            |
+| `.as(key)`           | `string`                                         | Cache key for sharing data across pages that name the prop differently.                    |
+| `.optional()`        | —                                                | Omit on full visits. Only resolve when explicitly requested via a partial reload.          |
 
 ### `toInertiaErrors(issues, options?)`
 
