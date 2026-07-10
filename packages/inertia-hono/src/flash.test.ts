@@ -7,33 +7,7 @@ import {
   render,
   type InertiaVariables,
 } from './index.js'
-
-const SECRET = 'test-flash-secret'
-
-function makeApp(opts?: Parameters<typeof createInertia>[0]) {
-  const { middleware } = createInertia({
-    version: 'v1',
-    flashSecret: SECRET,
-    ...opts,
-  })
-  const app = new Hono<{ Variables: InertiaVariables }>()
-  app.use(middleware)
-  return app
-}
-
-/**
- * Extract the first `Set-Cookie` value that starts with a given cookie name.
- * Hono's `Set-Cookie` is typically a single header; split on ", " as a safety net
- * if the adapter combines them.
- */
-function getSetCookie(res: Response, name: string): string | null {
-  const raw = res.headers.get('set-cookie')
-  if (!raw) return null
-  for (const entry of raw.split(/,\s(?=[^,;]+=)/)) {
-    if (entry.trim().startsWith(`${name}=`)) return entry.trim()
-  }
-  return null
-}
+import { makeApp, getSetCookie } from './test-helpers.js'
 
 describe('back()', () => {
   it('redirects 303 to the same-origin Referer', async () => {

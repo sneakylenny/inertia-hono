@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import {
   isFilteringPartialReload,
-  isInertiaDeferred,
+  isInertiaDeferredProp,
   partial,
   resolveDeferredProps,
 } from './deferred.js'
@@ -101,10 +101,10 @@ describe('resolveDeferredProps', () => {
 
 describe('isInertiaDeferred', () => {
   it('recognizes lazy/optional/always', () => {
-    expect(isInertiaDeferred(partial.lazy(() => 1))).toBe(true)
-    expect(isInertiaDeferred(partial.optional(() => 1))).toBe(true)
-    expect(isInertiaDeferred(partial.always(() => 1))).toBe(true)
-    expect(isInertiaDeferred({})).toBe(false)
-    expect(isInertiaDeferred(() => 1)).toBe(false)
+    expect(isInertiaDeferredProp(partial.lazy(() => 1))).toBe(true)
+    expect(isInertiaDeferredProp(partial.optional(() => 1))).toBe(true)
+    expect(isInertiaDeferredProp(partial.always(() => 1))).toBe(true)
+    expect(isInertiaDeferredProp({})).toBe(false)
+    expect(isInertiaDeferredProp(() => 1)).toBe(false)
   })
 })

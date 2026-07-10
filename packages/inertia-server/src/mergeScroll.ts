@@ -8,10 +8,7 @@ import {
   type InertiaScrollPropMeta,
 } from './scroll.js'
 import type { InertiaRequestLike } from './types.js'
-
-async function awaitMaybe<T>(v: T | Promise<T>): Promise<T> {
-  return await Promise.resolve(v)
-}
+import { awaitMaybe } from './utils.js'
 
 async function resolveReset(
   condition: boolean | (() => boolean | Promise<boolean>),

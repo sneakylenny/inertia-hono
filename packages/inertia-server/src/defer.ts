@@ -1,4 +1,4 @@
-import { readHeader, parseCommaList } from './headers.js'
+import { readHeader, parseCommaList, HEADER_PARTIAL_DATA } from './headers.js'
 import type { InertiaRequestLike } from './types.js'
 import { isPartialDataReload } from './partial.js'
 
@@ -65,7 +65,7 @@ export function pendingDeferKeys(
 
   const partialDataReload = isPartialDataReload(request, component)
   const partialKeys = partialDataReload
-    ? new Set(parseCommaList(readHeader(request.headers, 'x-inertia-partial-data')))
+    ? new Set(parseCommaList(readHeader(request.headers, HEADER_PARTIAL_DATA)))
     : null
 
   const partialGroups = new Set<string>()

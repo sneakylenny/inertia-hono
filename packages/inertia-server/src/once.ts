@@ -1,5 +1,6 @@
-import { parseCommaList, readHeader } from './headers.js'
+import { parseCommaList, readHeader, HEADER_EXCEPT_ONCE_PROPS, HEADER_RESET } from './headers.js'
 import type { InertiaRequestLike } from './types.js'
+import { awaitMaybe } from './utils.js'
 
 /** @internal */
 export const INERTIA_ONCE = Symbol.for('inertia.once')
@@ -98,10 +99,6 @@ export function isInertiaOnceProp(value: unknown): value is InertiaOnceProp {
   )
 }
 
-async function awaitMaybe<T>(v: T | Promise<T>): Promise<T> {
-  return await Promise.resolve(v)
-}
-
 async function resolveFreshCondition(cond: FreshCondition): Promise<boolean> {
   if (cond === undefined || cond === false) return false
   if (cond === true) return true
@@ -133,8 +130,8 @@ export async function applyOnceProps(
   props: Record<string, unknown>
   onceProps: Record<string, InertiaOncePropEntry> | undefined
 }> {
-  const exceptKeys = new Set(parseCommaList(readHeader(request.headers, 'x-inertia-except-once-props')))
-  const resetKeys = new Set(parseCommaList(readHeader(request.headers, 'x-inertia-reset')))
+  const exceptKeys = new Set(parseCommaList(readHeader(request.headers, HEADER_EXCEPT_ONCE_PROPS)))
+  const resetKeys = new Set(parseCommaList(readHeader(request.headers, HEADER_RESET)))
   const working: Record<string, unknown> = { ...filtered }
   const onceProps: Record<string, InertiaOncePropEntry> = {}
   let hasOnceProps = false

@@ -7,10 +7,10 @@ export type {
   InertiaVersionMismatchResult,
   ResolveInertiaResult,
 } from './types.js'
-export { readHeader, isInertiaRequest, parseCommaList } from './headers.js'
+export { readHeader, isInertiaRequest, parseCommaList, HEADER_INERTIA, HEADER_INERTIA_VERSION, HEADER_INERTIA_LOCATION, HEADER_PARTIAL_COMPONENT, HEADER_PARTIAL_DATA, HEADER_PARTIAL_EXCEPT, HEADER_EXCEPT_ONCE_PROPS, HEADER_RESET } from './headers.js'
 export {
   isFilteringPartialReload,
-  isInertiaDeferred,
+  isInertiaDeferredProp as isInertiaDeferred,
   partial,
   resolveDeferredProps,
   type InertiaDeferredKind,

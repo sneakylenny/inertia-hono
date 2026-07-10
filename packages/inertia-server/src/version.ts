@@ -1,4 +1,4 @@
-import { isInertiaRequest, readHeader } from './headers.js'
+import { isInertiaRequest, readHeader, HEADER_INERTIA_VERSION } from './headers.js'
 import type { InertiaRequestLike } from './types.js'
 
 /**
@@ -13,7 +13,7 @@ export function getVersionMismatch(
   if (!isInertiaRequest(req)) return { mismatch: false }
   if (req.method.toUpperCase() !== 'GET') return { mismatch: false }
 
-  const client = readHeader(req.headers, 'x-inertia-version')
+  const client = readHeader(req.headers, HEADER_INERTIA_VERSION)
   if (client === undefined || client === '') return { mismatch: false }
 
   const sv = String(serverVersion)

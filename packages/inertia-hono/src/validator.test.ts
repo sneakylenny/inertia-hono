@@ -1,35 +1,11 @@
-import { Hono } from 'hono'
 import * as v from 'valibot'
 import { describe, expect, it } from 'bun:test'
 import {
-  createInertia,
   INERTIA_FLASH_COOKIE,
   render,
-  type InertiaVariables,
 } from './index.js'
 import { inertiaValidator } from './validator.js'
-
-const SECRET = 'test-validator-secret'
-
-function makeApp(opts?: Parameters<typeof createInertia>[0]) {
-  const { middleware } = createInertia({
-    version: 'v1',
-    flashSecret: SECRET,
-    ...opts,
-  })
-  const app = new Hono<{ Variables: InertiaVariables }>()
-  app.use(middleware)
-  return app
-}
-
-function getSetCookie(res: Response, name: string): string | null {
-  const raw = res.headers.get('set-cookie')
-  if (!raw) return null
-  for (const entry of raw.split(/,\s(?=[^,;]+=)/)) {
-    if (entry.trim().startsWith(`${name}=`)) return entry.trim()
-  }
-  return null
-}
+import { makeApp, getSetCookie } from './test-helpers.js'
 
 const todoSchema = v.object({
   text: v.pipe(v.string('Text is required.'), v.minLength(1, 'Text is required.')),

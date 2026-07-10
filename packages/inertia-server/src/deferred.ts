@@ -1,5 +1,6 @@
-import { readHeader } from './headers.js'
+import { readHeader, HEADER_PARTIAL_COMPONENT, HEADER_PARTIAL_DATA, HEADER_PARTIAL_EXCEPT } from './headers.js'
 import type { InertiaRequestLike } from './types.js'
+import { awaitMaybe } from './utils.js'
 
 /** @internal */
 export const INERTIA_DEFERRED = Symbol.for('inertia.deferred')
@@ -49,7 +50,7 @@ export const partial = {
   always,
 } as const
 
-export function isInertiaDeferred(value: unknown): value is InertiaDeferredProp {
+export function isInertiaDeferredProp(value: unknown): value is InertiaDeferredProp {
   return isDeferredProp(value)
 }
 
@@ -65,18 +66,14 @@ export function isFilteringPartialReload(
   req: InertiaRequestLike,
   component: string,
 ): boolean {
-  const partialComponent = readHeader(req.headers, 'x-inertia-partial-component')
+  const partialComponent = readHeader(req.headers, HEADER_PARTIAL_COMPONENT)
   if (!partialComponent || partialComponent !== component) return false
-  const partialExceptRaw = readHeader(req.headers, 'x-inertia-partial-except')
-  const partialDataRaw = readHeader(req.headers, 'x-inertia-partial-data')
+  const partialExceptRaw = readHeader(req.headers, HEADER_PARTIAL_EXCEPT)
+  const partialDataRaw = readHeader(req.headers, HEADER_PARTIAL_DATA)
   return (
     (partialExceptRaw !== undefined && partialExceptRaw !== '')
     || (partialDataRaw !== undefined && partialDataRaw !== '')
   )
-}
-
-async function awaitMaybe<T>(v: T | Promise<T>): Promise<T> {
-  return await Promise.resolve(v)
 }
 
 async function resolveOne(value: unknown): Promise<unknown> {

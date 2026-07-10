@@ -1,4 +1,4 @@
-import { parseCommaList, readHeader } from './headers.js'
+import { parseCommaList, readHeader, HEADER_PARTIAL_COMPONENT, HEADER_PARTIAL_DATA, HEADER_PARTIAL_EXCEPT } from './headers.js'
 import type { InertiaRequestLike } from './types.js'
 
 /**
@@ -10,9 +10,9 @@ export function isPartialDataReload(
   req: InertiaRequestLike,
   component: string,
 ): boolean {
-  const partialComponent = readHeader(req.headers, 'x-inertia-partial-component')
+  const partialComponent = readHeader(req.headers, HEADER_PARTIAL_COMPONENT)
   if (!partialComponent || partialComponent !== component) return false
-  const partialDataRaw = readHeader(req.headers, 'x-inertia-partial-data')
+  const partialDataRaw = readHeader(req.headers, HEADER_PARTIAL_DATA)
   return partialDataRaw !== undefined && partialDataRaw !== ''
 }
 
@@ -25,13 +25,13 @@ export function filterPartialProps(
   component: string,
   props: Record<string, unknown>,
 ): Record<string, unknown> {
-  const partialComponent = readHeader(req.headers, 'x-inertia-partial-component')
+  const partialComponent = readHeader(req.headers, HEADER_PARTIAL_COMPONENT)
   if (!partialComponent || partialComponent !== component) {
     return props
   }
 
-  const partialExceptRaw = readHeader(req.headers, 'x-inertia-partial-except')
-  const partialDataRaw = readHeader(req.headers, 'x-inertia-partial-data')
+  const partialExceptRaw = readHeader(req.headers, HEADER_PARTIAL_EXCEPT)
+  const partialDataRaw = readHeader(req.headers, HEADER_PARTIAL_DATA)
   const errors = props.errors ?? {}
 
   if (partialExceptRaw !== undefined && partialExceptRaw !== '') {

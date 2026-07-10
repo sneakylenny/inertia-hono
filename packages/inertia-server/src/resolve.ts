@@ -2,7 +2,8 @@ import { isInertiaDeferProp, pendingDeferKeys } from './defer.js'
 import { isFilteringPartialReload, resolveDeferredProps } from './deferred.js'
 import { applyMergeAndScroll } from './mergeScroll.js'
 import { applyOnceProps } from './once.js'
-import { parseCommaList, readHeader } from './headers.js'
+import { parseCommaList, readHeader, HEADER_PARTIAL_DATA, HEADER_INERTIA_LOCATION } from './headers.js'
+import { awaitMaybe } from './utils.js'
 import { filterPartialProps, isPartialDataReload } from './partial.js'
 import type { InertiaPage, InertiaRequestLike, ResolveInertiaResult } from './types.js'
 import { getVersionMismatch } from './version.js'
@@ -41,10 +42,6 @@ function normalizeProps(props: Record<string, unknown>): Record<string, unknown>
   return { ...props, errors }
 }
 
-async function awaitMaybe<T>(v: T | Promise<T>): Promise<T> {
-  return await Promise.resolve(v)
-}
-
 /**
  * Strip or resolve `defer()` props before lazy/partial resolution.
  * @see https://inertiajs.com/docs/v3/data-props/deferred-props
@@ -68,7 +65,7 @@ async function applyDeferProps(
     }
   }
   else {
-    const raw = readHeader(request.headers, 'x-inertia-partial-data')
+    const raw = readHeader(request.headers, HEADER_PARTIAL_DATA)
     const keys = raw ? parseCommaList(raw) : []
     for (const key of keys) {
       if (key === 'errors') continue
@@ -98,7 +95,7 @@ export async function resolveInertia(
     return {
       kind: 'version-mismatch',
       status: 409,
-      headers: { 'X-Inertia-Location': mismatch.location },
+      headers: { [HEADER_INERTIA_LOCATION]: mismatch.location },
     }
   }
 

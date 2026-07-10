@@ -1,16 +1,6 @@
-import { Hono } from 'hono'
 import { describe, expect, it } from 'bun:test'
-import { createInertia, sse, type InertiaVariables } from './index.js'
-
-function makeApp(opts?: Parameters<typeof createInertia>[0]) {
-  const { middleware } = createInertia({
-    version: 'v1',
-    ...opts,
-  })
-  const app = new Hono<{ Variables: InertiaVariables }>()
-  app.use(middleware)
-  return app
-}
+import { sse } from './index.js'
+import { makeApp } from './test-helpers.js'
 
 describe('sse()', () => {
   it('returns an event-stream response and JSON-encodes object payloads', async () => {
