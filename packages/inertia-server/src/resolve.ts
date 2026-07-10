@@ -142,9 +142,9 @@ export async function resolveInertia(
   if (deepMergeProps) page.deepMergeProps = deepMergeProps
   if (matchPropsOn) page.matchPropsOn = matchPropsOn
   if (scrollProps) page.scrollProps = scrollProps
-  if (input.encryptHistory === true) page.encryptHistory = true
-  if (input.clearHistory === true) page.clearHistory = true
-  if (input.preserveFragment === true) page.preserveFragment = true
+  if (input.encryptHistory) page.encryptHistory = true
+  if (input.clearHistory) page.clearHistory = true
+  if (input.preserveFragment) page.preserveFragment = true
 
   if (!isInertiaRequest(input.request)) {
     const pageJson = JSON.stringify(page)

@@ -1,6 +1,6 @@
 import { html, raw } from 'hono/html'
 import type { HtmlEscapedString } from 'hono/utils/html'
-import type { InertiaPage, ResolveInertiaInput } from '@sneakylenny/inertia-server'
+import { escapeAttrValue, escapeForScriptJson, type InertiaPage, type ResolveInertiaInput } from '@sneakylenny/inertia-server'
 
 /** Entry of a Vite build manifest (`dist/.vite/manifest.json`). */
 export type ViteManifestEntry = {
@@ -84,18 +84,6 @@ function prefixBase(base: string, path: string): string {
   const b = base.replace(/\/+$/, '')
   const p = path.startsWith('/') ? path.slice(1) : path
   return `${b || ''}/${p}`
-}
-
-function escapeAttrValue(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-}
-
-/** Avoid `</script>` sequences breaking out of the embedded JSON. */
-function escapeJsonForScript(json: string): string {
-  return json.replace(/</g, '\\u003c')
 }
 
 function renderAttrs(attrs?: Record<string, string>): HtmlEscapedString {
@@ -209,7 +197,7 @@ export function createViteHtmlRenderer(
   const lang = options.lang ?? 'en'
 
   return async ({ page, pageJson, rootElementId, pageScriptDataAttribute }) => {
-    const safePageJson = raw(escapeJsonForScript(pageJson))
+    const safePageJson = raw(escapeForScriptJson(pageJson))
     const title = options.title ? options.title(page) : page.component
     const headExtra = await resolveHead(options.head, page)
     const scripts = dev

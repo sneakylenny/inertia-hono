@@ -1,4 +1,4 @@
-function escapeAttr(value: string): string {
+export function escapeAttrValue(value: string): string {
   return value
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
@@ -22,14 +22,14 @@ export function defaultHtmlShell(input: {
 }): string {
   const title = input.title ?? 'App'
   const safeJson = escapeForScriptJson(input.pageJson)
-  const dataPage = escapeAttr(input.pageScriptDataAttribute)
-  const rootId = escapeAttr(input.rootElementId)
+  const dataPage = escapeAttrValue(input.pageScriptDataAttribute)
+  const rootId = escapeAttrValue(input.rootElementId)
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-inertia="">${escapeAttr(title)}</title>
+<title data-inertia="">${escapeAttrValue(title)}</title>
 </head>
 <body>
 <script data-page="${dataPage}" type="application/json">${safeJson}</script>
